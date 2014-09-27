@@ -12,4 +12,5 @@ import de.mq.vaadin.util.JUnitSuiteUtil;
 @SuiteClasses({JUnitSuiteWeb.class, JUnitSuiteUtil.class, JUnitSuiteDomain.class})
 public class AllTests {
 
+	
 }
