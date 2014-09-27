@@ -15,7 +15,6 @@ public interface Address extends AddressStringAware {
 	void assign(GeoCoordinates geoCoordinates);
 
 	GeoCoordinates coordinates();
-	
-	
+
 
 }
