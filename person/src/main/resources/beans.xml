@@ -27,7 +27,5 @@
 		<property name="fallbackToSystemLocale" value="false" />
 	</bean>
 
-
-
 	<context:component-scan base-package="de.mq.phone.web,de.mq.phone.domain,de.mq.vaadin.util" />
 </beans>
