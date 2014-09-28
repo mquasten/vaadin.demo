@@ -12,4 +12,5 @@ import org.junit.runners.Suite.SuiteClasses;
 		StartViewTest.class,UserModelTest.class, PersonSearchViewTest.class })
 public class JUnitSuiteWeb {
 
+
 }
