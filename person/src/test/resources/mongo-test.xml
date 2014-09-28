@@ -35,3 +35,6 @@
 
 <context:component-scan base-package="de.mq.phone.domain.person.support"/>
 </beans>
+
+
+
