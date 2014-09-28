@@ -6,7 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
+import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.util.ObjectProperty;
+import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.AbstractField;
@@ -28,7 +32,7 @@ class PersonEditView extends CustomComponent implements View {
 	enum Fields {
 		Name(0,0),
 		FirstName(0,1),
-		
+		Alias(0,2),
 		Street(1,0),
 		HouseNumber(1,1),
 		Zip(1,2),
@@ -42,6 +46,10 @@ class PersonEditView extends CustomComponent implements View {
 		Fields(int row, int col) {
 			this.col=col;
 			this.row=row;
+		}
+		
+		String property() {
+			return StringUtils.uncapitalize(name());
 		}
 	}
 	
@@ -69,11 +77,13 @@ class PersonEditView extends CustomComponent implements View {
 		final GridLayout editFormLayout = new GridLayout(4,3);
 	
 		editFormLayout.setMargin(true);
-		
-		
+		final PropertysetItem personItem = new PropertysetItem();
+		final FieldGroup binder = new FieldGroup(personItem);
+		binder.setBuffered(true);
 		
 		for(final Fields field : Fields.values()) {
-			addInputField(editFormLayout, field);
+			personItem.addItemProperty(field.property(), new ObjectProperty<String>(""));
+			addInputField(editFormLayout, field,binder);
 		}
 		
 		final Panel buttonPanel = new Panel();
@@ -102,7 +112,7 @@ class PersonEditView extends CustomComponent implements View {
 
 	
 
-	private AbstractField<?> addInputField(final GridLayout editFormLayout, final Fields fieldDesc) {
+	private AbstractField<?> addInputField(final GridLayout editFormLayout, final Fields fieldDesc, final FieldGroup binder) {
 		final HorizontalLayout  fieldLayout = new HorizontalLayout();
 		fieldLayout.setMargin(true);
 	
@@ -110,8 +120,7 @@ class PersonEditView extends CustomComponent implements View {
 		editFormLayout.addComponent(fieldLayout,fieldDesc.col,fieldDesc.row);
 		final TextField field = new TextField("<" + fieldDesc.name() +">");
 		fieldLayout.addComponent(field);
-		
-		
+		binder.bind(field, fieldDesc.property());
 		return field;
 	}
 
