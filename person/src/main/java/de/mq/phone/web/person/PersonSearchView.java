@@ -153,7 +153,7 @@ class PersonSearchView extends CustomComponent implements View  {
 		newButton.addClickListener(event -> {
 		
 			System.out.println("Goto editor...");
-			viewNav.navigateTo(PersonEditView.class, "19680528" , "can'tGetYouOutOfMyHead");
+			viewNav.navigateTo(PersonEditView.class);
 		});
 		buttonLayout.addComponent(newButton);
 		buttonLayout.addComponent(updateButton);
