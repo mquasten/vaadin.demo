@@ -135,9 +135,7 @@ class PersonEditView extends CustomComponent implements View {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		// TODO Auto-generated method stub
-		System.out.println("***");
-		System.out.println(event.getParameters());
+		
 	}
 
 }
