@@ -5,6 +5,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -22,6 +23,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
+import de.mq.phone.domain.person.Person;
 import de.mq.vaadin.util.ViewNav;
 
 @Component
@@ -31,7 +33,7 @@ class PersonEditView extends CustomComponent implements View {
 
 	enum Fields {
 		Name(0,0),
-		FirstName(0,1),
+		Firstname(0,1),
 		Alias(0,2),
 		
 		Street(1,0),
@@ -57,10 +59,12 @@ class PersonEditView extends CustomComponent implements View {
 	
 	private static final long serialVersionUID = 1L;
 	private final ViewNav viewNav ; 
+	private final Converter<PropertysetItem, Person> itemSet2Person;
 	
 	@Autowired
-	PersonEditView(final ViewNav viewNav) {
+	PersonEditView(final ViewNav viewNav, final @ConverterQualifier(ConverterQualifier.Type.Item2Person) Converter<PropertysetItem, Person> itemSet2Person) {
 		this.viewNav=viewNav;
+		this.itemSet2Person=itemSet2Person;
 	}
 	
 	
@@ -79,12 +83,12 @@ class PersonEditView extends CustomComponent implements View {
 	
 		editFormLayout.setMargin(true);
 		
-		final PropertysetItem personSearchItem = new PropertysetItem();
-		final FieldGroup binder = new FieldGroup(personSearchItem);
+		final PropertysetItem personItem = new PropertysetItem();
+		final FieldGroup binder = new FieldGroup(personItem);
 		binder.setBuffered(true);
 		
 		for(final Fields field : Fields.values()) {
-			personSearchItem.addItemProperty(field.property(), new ObjectProperty<String>(""));
+			personItem.addItemProperty(field.property(), new ObjectProperty<String>(""));
 			binder.bind(addInputField(editFormLayout, field), field.property());
 		}
 		
@@ -103,11 +107,13 @@ class PersonEditView extends CustomComponent implements View {
 		saveButton.addClickListener(event -> { 
 			try {
 				binder.commit();
+				Person person = itemSet2Person.convert(personItem);
+				System.out.println(">>>" + person.person());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			System.out.println(personSearchItem.getItemProperty("name"));
+			
 			
 		});
 		

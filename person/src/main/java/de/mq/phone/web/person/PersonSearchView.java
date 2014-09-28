@@ -151,8 +151,6 @@ class PersonSearchView extends CustomComponent implements View  {
 		final Button deleteButton = new Button();
 	
 		newButton.addClickListener(event -> {
-		
-			System.out.println("Goto editor...");
 			viewNav.navigateTo(PersonEditView.class);
 		});
 		buttonLayout.addComponent(newButton);
