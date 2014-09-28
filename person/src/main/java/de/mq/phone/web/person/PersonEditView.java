@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
+import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.AbstractField;
@@ -28,6 +30,7 @@ class PersonEditView extends CustomComponent implements View {
 	enum Fields {
 		Name(0,0),
 		FirstName(0,1),
+		Alias(0,2),
 		
 		Street(1,0),
 		HouseNumber(1,1),
@@ -70,8 +73,9 @@ class PersonEditView extends CustomComponent implements View {
 	
 		editFormLayout.setMargin(true);
 		
-		
-		
+		final PropertysetItem personSearchItem = new PropertysetItem();
+		final FieldGroup binder = new FieldGroup(personSearchItem);
+		binder.setBuffered(true);
 		for(final Fields field : Fields.values()) {
 			addInputField(editFormLayout, field);
 		}
@@ -88,6 +92,11 @@ class PersonEditView extends CustomComponent implements View {
 		buttonLayout.addComponent(cancelButton);
 		buttonLayout.addComponent(saveButton);
 	
+		saveButton.addClickListener(event -> { 
+			System.out.println(personSearchItem.getItemProperty("name"));
+			
+		});
+		
 		panel.setContent(editFormLayout);
 		mainLayoout.addComponent(panel);
 		mainLayoout.addComponent(buttonPanel);
@@ -96,10 +105,7 @@ class PersonEditView extends CustomComponent implements View {
 
 
 
-	
 
-
-	
 
 	private AbstractField<?> addInputField(final GridLayout editFormLayout, final Fields fieldDesc) {
 		final HorizontalLayout  fieldLayout = new HorizontalLayout();
