@@ -95,6 +95,8 @@ class PersonEditView extends CustomComponent implements View {
 		
 		cancelButton.addClickListener(event ->  viewNav.navigateTo(PersonSearchView.class));
 		final Button saveButton = new Button("<Save>");
+		
+		saveButton.addClickListener(event -> { personItem.getItemProperty("name"); });
 		buttonLayout.addComponent(cancelButton);
 		buttonLayout.addComponent(saveButton);
 	
