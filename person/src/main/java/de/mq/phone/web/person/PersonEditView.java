@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -46,6 +48,10 @@ class PersonEditView extends CustomComponent implements View {
 			this.col=col;
 			this.row=row;
 		}
+		
+		String property() {
+			return StringUtils.uncapitalize(name());
+		}
 	}
 	
 	
@@ -76,8 +82,10 @@ class PersonEditView extends CustomComponent implements View {
 		final PropertysetItem personSearchItem = new PropertysetItem();
 		final FieldGroup binder = new FieldGroup(personSearchItem);
 		binder.setBuffered(true);
+		
 		for(final Fields field : Fields.values()) {
-			addInputField(editFormLayout, field);
+			personSearchItem.addItemProperty(field.property(), new ObjectProperty<String>(""));
+			binder.bind(addInputField(editFormLayout, field), field.property());
 		}
 		
 		final Panel buttonPanel = new Panel();
@@ -93,6 +101,12 @@ class PersonEditView extends CustomComponent implements View {
 		buttonLayout.addComponent(saveButton);
 	
 		saveButton.addClickListener(event -> { 
+			try {
+				binder.commit();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			System.out.println(personSearchItem.getItemProperty("name"));
 			
 		});
@@ -115,7 +129,6 @@ class PersonEditView extends CustomComponent implements View {
 		editFormLayout.addComponent(fieldLayout,fieldDesc.col,fieldDesc.row);
 		final TextField field = new TextField("<" + fieldDesc.name() +">");
 		fieldLayout.addComponent(field);
-		
 		
 		return field;
 	}
