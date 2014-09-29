@@ -1,5 +1,8 @@
 package de.mq.phone.web.person;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,8 @@ import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.ErrorMessage;
+import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
@@ -38,22 +43,25 @@ class PersonEditView extends CustomComponent implements View {
 		
 		Street(1,0),
 		HouseNumber(1,1),
-		Zip(1,2),
+		ZipCode(1,2),
 		City(1,3),
 		
-		Iban(2,0),
-		Bic(2,1);
+		IBan(2,0),
+		BankIdentifierCode(2,1);
 		
 		int row;
 		int col;
+	
 		Fields(int row, int col) {
 			this.col=col;
 			this.row=row;
+		
 		}
 		
 		String property() {
 			return StringUtils.uncapitalize(name());
 		}
+		
 	}
 	
 	
@@ -86,7 +94,7 @@ class PersonEditView extends CustomComponent implements View {
 		final PropertysetItem personItem = new PropertysetItem();
 		final FieldGroup binder = new FieldGroup(personItem);
 		binder.setBuffered(true);
-		
+	
 		for(final Fields field : Fields.values()) {
 			personItem.addItemProperty(field.property(), new ObjectProperty<String>(""));
 			binder.bind(addInputField(editFormLayout, field), field.property());
@@ -106,9 +114,16 @@ class PersonEditView extends CustomComponent implements View {
 	
 		saveButton.addClickListener(event -> { 
 			try {
+				
+				((AbstractField<?>) binder.getField(Fields.Name.property())).setComponentError(new UserError("Bad click"));
 				binder.commit();
+			
 				Person person = itemSet2Person.convert(personItem);
 				System.out.println(">>>" + person.person());
+				if( person.address() != null)
+				System.out.println("???" + person.address().address());
+				if( person.bankingAccount() != null)
+				System.out.println("!!!" + person.bankingAccount().account());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -136,6 +151,7 @@ class PersonEditView extends CustomComponent implements View {
 		final TextField field = new TextField("<" + fieldDesc.name() +">");
 		fieldLayout.addComponent(field);
 		
+		field.setRequiredError("Mussfeld");
 		return field;
 	}
 

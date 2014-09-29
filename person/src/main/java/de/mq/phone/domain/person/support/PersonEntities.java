@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.FieldCallback;
 
+import de.mq.phone.domain.person.Address;
 import de.mq.phone.domain.person.AddressStringAware;
 import de.mq.phone.domain.person.Contact;
 import de.mq.phone.domain.person.Person;
@@ -49,6 +50,11 @@ public  final class PersonEntities {
 	public static Person newPerson() {
 		return BeanUtils.instantiateClass(PersonImpl.class, Person.class);
 	}
+	
+	public static Address newAddress() {
+		return BeanUtils.instantiateClass(AddressImpl.class, Address.class);
+	}
+	
 	
 	public static PersonStringAware newPerson(final String searchString) {
 		return new PersonStringAware() {
