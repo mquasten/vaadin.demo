@@ -1,7 +1,6 @@
 package de.mq.phone.web.person;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
 
 import javax.annotation.PostConstruct;
 
@@ -17,11 +16,11 @@ import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
@@ -94,10 +93,12 @@ class PersonEditView extends CustomComponent implements View {
 		final PropertysetItem personItem = new PropertysetItem();
 		final FieldGroup binder = new FieldGroup(personItem);
 		binder.setBuffered(true);
-	
+		//final Map<Fields, AbstractField<String>> fields = new HashMap<>();
 		for(final Fields field : Fields.values()) {
 			personItem.addItemProperty(field.property(), new ObjectProperty<String>(""));
-			binder.bind(addInputField(editFormLayout, field), field.property());
+			final AbstractField<String> inputField = addInputField(editFormLayout, field);
+			binder.bind(inputField, field.property());
+			//fields.put(field, inputField);
 		}
 		
 		final Panel buttonPanel = new Panel();
@@ -107,18 +108,34 @@ class PersonEditView extends CustomComponent implements View {
 		buttonLayout.setMargin(true);
 		final Button cancelButton = new Button("<Cancel>");
 		
-		cancelButton.addClickListener(event ->  viewNav.navigateTo(PersonSearchView.class));
+		cancelButton.addClickListener(event -> { viewNav.navigateTo(PersonSearchView.class); resetErrors(binder.getFields()); });
 		final Button saveButton = new Button("<Save>");
 		buttonLayout.addComponent(cancelButton);
 		buttonLayout.addComponent(saveButton);
 	
 		saveButton.addClickListener(event -> { 
+		
+			resetErrors(binder.getFields());
+		
+			mandatoryFieldCheck(binder, Fields.Name.property());
+			
+			
+			if( addressMandatory(binder) ) {
+				for(final String addressFields : new String[]{Fields.City.property(), Fields.ZipCode.property(), Fields.Street.property(), Fields.HouseNumber.property()}){
+					mandatoryFieldCheck(binder, addressFields);
+				}
+			} 
+			
+			if(StringUtils.hasText((String)binder.getField(Fields.BankIdentifierCode.property()).getValue()) ) {
+				mandatoryFieldCheck(binder, Fields.IBan.property());
+			}
 			try {
 				
-				((AbstractField<?>) binder.getField(Fields.Name.property())).setComponentError(new UserError("Bad click"));
+				
+				
 				binder.commit();
 			
-				Person person = itemSet2Person.convert(personItem);
+				final Person person = itemSet2Person.convert(personItem);
 				System.out.println(">>>" + person.person());
 				if( person.address() != null)
 				System.out.println("???" + person.address().address());
@@ -140,9 +157,40 @@ class PersonEditView extends CustomComponent implements View {
 
 
 
+	private void mandatoryFieldCheck(final FieldGroup binder, String name ) {
+		final AbstractField<?> field =  (AbstractField<?>) binder.getField(name);
+		if ( ! StringUtils.hasText( (String) field.getValue() )) {
+			field.setComponentError(new UserError("Mandatory"));
+			
+		}
+	}
 
 
-	private AbstractField<?> addInputField(final GridLayout editFormLayout, final Fields fieldDesc) {
+
+	private void resetErrors(final Collection<Field<?>> collection) {
+		for(Field<?> field : collection){
+			
+			((AbstractField<?>)field).setComponentError(null);
+		}
+	}
+
+
+
+	private boolean addressMandatory(final FieldGroup binder ) {
+		for(final String addressFields : new String[]{Fields.City.property(), Fields.ZipCode.property(), Fields.HouseNumber.property(), Fields.HouseNumber.property()}){
+			final AbstractField<?> field =  (AbstractField<?>) binder.getField(addressFields);
+			if( StringUtils.hasText( (String) field.getValue()) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+
+
+
+	private AbstractField<String> addInputField(final GridLayout editFormLayout, final Fields fieldDesc) {
 		final HorizontalLayout  fieldLayout = new HorizontalLayout();
 		fieldLayout.setMargin(true);
 	
@@ -150,6 +198,7 @@ class PersonEditView extends CustomComponent implements View {
 		editFormLayout.addComponent(fieldLayout,fieldDesc.col,fieldDesc.row);
 		final TextField field = new TextField("<" + fieldDesc.name() +">");
 		fieldLayout.addComponent(field);
+		field.setId(fieldDesc.property());
 		
 		field.setRequiredError("Mussfeld");
 		return field;
