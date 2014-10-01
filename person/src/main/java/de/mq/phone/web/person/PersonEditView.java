@@ -1,8 +1,14 @@
 package de.mq.phone.web.person;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+
 
 import javax.annotation.PostConstruct;
+
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -10,6 +16,9 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.MapBindingResult;
+import org.springframework.validation.ValidationUtils;
 
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.ObjectProperty;
@@ -26,6 +35,8 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+
+
 
 import de.mq.phone.domain.person.Person;
 import de.mq.vaadin.util.ViewNav;
@@ -60,6 +71,8 @@ class PersonEditView extends CustomComponent implements View {
 		String property() {
 			return StringUtils.uncapitalize(name());
 		}
+		
+		
 		
 	}
 	
@@ -116,7 +129,13 @@ class PersonEditView extends CustomComponent implements View {
 		saveButton.addClickListener(event -> { 
 		
 			resetErrors(binder.getFields());
+			final MapBindingResult bindingResult = new MapBindingResult(toMap(binder), "person");
+			
 		
+			ValidationUtils.invokeValidator(new PersonFieldSetValidator(), toMap(binder), bindingResult);
+			for( FieldError error : bindingResult.getFieldErrors()) {
+				System.out.println(error.getField() + ":" +error.getDefaultMessage() + ": " + error.getCode());
+			}
 			mandatoryFieldCheck(binder, Fields.Name.property());
 			
 			
@@ -206,6 +225,16 @@ class PersonEditView extends CustomComponent implements View {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
+		
+	}
+	
+	private final Map<String,String> toMap(final FieldGroup group) {
+		final Map<String,String> results = new HashMap<>();
+		for(final Field<?> field : group.getFields() ) {
+			group.getPropertyId(field);
+			results.put((String) group.getPropertyId(field) , (String) field.getValue());
+		}
+		return results;
 		
 	}
 
