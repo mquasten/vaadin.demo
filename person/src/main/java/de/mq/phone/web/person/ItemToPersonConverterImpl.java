@@ -1,11 +1,12 @@
 package de.mq.phone.web.person;
 
+import java.util.Map;
+
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.vaadin.data.util.PropertysetItem;
 
 import de.mq.phone.domain.person.Address;
 import de.mq.phone.domain.person.Person;
@@ -13,11 +14,11 @@ import de.mq.phone.domain.person.support.BankingAccount;
 import de.mq.phone.domain.person.support.PersonEntities;
 
 @Component
-@ConverterQualifier(ConverterQualifier.Type.Item2Person)
-public class ItemToPersonConverterImpl implements Converter<PropertysetItem, Person>{
+@ConverterQualifier(ConverterQualifier.Type.Map2Person)
+public class ItemToPersonConverterImpl implements Converter<Map<String,?>, Person>{
 
 	@Override
-	public Person convert(final PropertysetItem items) {
+	public Person convert(final Map<String,?> items) {
 		final Person person = PersonEntities.newPerson();
 		toModel(items, person);
 		final Address address = PersonEntities.newAddress();
@@ -35,13 +36,13 @@ public class ItemToPersonConverterImpl implements Converter<PropertysetItem, Per
 		return person;
 	}
 
-	private <T> void  toModel(final PropertysetItem items, final T source) {
+	private <T> void  toModel(final Map<String,?> items, final T source) {
 		ReflectionUtils.doWithFields(source.getClass(),  field -> { 
 		
 			
-			if( items.getItemPropertyIds().contains(field.getName()) ) {
+			if( items.containsKey(field.getName()) ) {
 				field.setAccessible(true);
-			   field.set(source, items.getItemProperty(field.getName()).getValue());
+			   field.set(source, items.get(field.getName()));
 			}
 			
 			
@@ -49,5 +50,7 @@ public class ItemToPersonConverterImpl implements Converter<PropertysetItem, Per
 			
 		} );
 	}
+
+	
 
 }

@@ -70,7 +70,7 @@ public class PersonRepositoryIntegrationTest {
 	
 	
 	@Test
-	//@Ignore
+	@Ignore
 	public final void forCriteria() {
 		final Contact contact = new PhoneImpl("19680528");
 		final Person person = new PersonImpl("Minogue ", "Kylie");

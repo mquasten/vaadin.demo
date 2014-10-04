@@ -15,7 +15,7 @@ public @interface ConverterQualifier {
 		public enum Type{
 			PersonList2Container,
 			Item2PersonSearchSet,
-			Item2Person;
+			Map2Person;
 		}
 		
 		Type value();

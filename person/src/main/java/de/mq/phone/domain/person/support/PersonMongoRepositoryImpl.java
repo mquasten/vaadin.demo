@@ -36,24 +36,46 @@ public class PersonMongoRepositoryImpl implements PersonRepository {
 	@Override
 	public final void save(final Person person) {
 		invokeCallback(person);
+		skipEmptyString(person);
 		for(final Contact contact : person.contacts()){
+			skipEmptyString(contact);
 			invokeCallback(contact);
 		}
 		
 		invokeAddressCalbback(person.address());
 		
 		if( person.bankingAccount() != null){
+			skipEmptyString(person.bankingAccount());
 			invokeCallback(person.bankingAccount());
 		}
 		
 		mongoOperations.save(person);
 	}
 	
+	
+	private void skipEmptyString(final Object entity) {
+		ReflectionUtils.doWithFields(entity.getClass(), field -> { 
+			field.setAccessible(true);
+			ReflectionUtils.setField(field, entity, null);
+		}, field -> { 
+			if(  ! field.getType().equals(String.class)) {
+				return false;
+			}
+			field.setAccessible(true);
+			if( StringUtils.hasText((String) ReflectionUtils.getField(field, entity))) {
+				return false;
+			}
+			return true;
+	    });
+	}
+	
+	
+	
 	void invokeAddressCalbback(final Address address) {
 		if( address == null) {
 			return;
 		}
-		
+		skipEmptyString(address);
 		invokeCallback(address);
 		if( address.coordinates()==null ) {
 			return;

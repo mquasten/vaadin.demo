@@ -1,8 +1,11 @@
 package de.mq.vaadin.util;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -13,7 +16,14 @@ import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Field;
 
 @Component
-public class BindingResultsToFieldGroupMapperImpl implements BindingResultsToFieldGroupMapper {
+class BindingResultsToFieldGroupMapperImpl implements BindingResultsToFieldGroupMapper {
+
+	private final MessageSource messageSource;
+	
+	@Autowired
+	BindingResultsToFieldGroupMapperImpl(final MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
 
 	/* (non-Javadoc)
 	 * @see de.mq.vaadin.util.BindingResultsToFieldGroupMapper#mapInto(org.springframework.validation.BindingResult, com.vaadin.data.fieldgroup.FieldGroup)
@@ -27,8 +37,10 @@ public class BindingResultsToFieldGroupMapperImpl implements BindingResultsToFie
 		   	return group; 
 		   }
 			for(final FieldError error :  bindingResults.getFieldErrors() ) {
-				 ((AbstractComponent) group.getField(error.getField())).setComponentError(new UserError(error.getCode()));
+				final AbstractComponent field = (AbstractComponent) group.getField(error.getField());
+				field.setComponentError(new UserError(getString(error.getCode(), field.getLocale())));
 			}
+		
 			return group; 
 	}
 
@@ -37,7 +49,7 @@ public class BindingResultsToFieldGroupMapperImpl implements BindingResultsToFie
 	 */
 	
 	@Override
-	public Map<String, String> convert(final FieldGroup group) {
+	public Map<String, ?> convert(final FieldGroup group) {
 		final Map<String,String> results = new HashMap<>();
 		for(final Field<?> field : group.getFields() ) {
 			group.getPropertyId(field);
@@ -45,5 +57,9 @@ public class BindingResultsToFieldGroupMapperImpl implements BindingResultsToFie
 		}
 		return results;
 	} 
+	
+	private String getString(final String key, final Locale locale) {
+		return messageSource.getMessage(key, null, locale);
+	}
 
 }

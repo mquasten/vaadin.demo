@@ -5,18 +5,18 @@
 	<artifactId>addressbook</artifactId>
 	<packaging>war</packaging>
 	<version>1.0</version>
-	
+
 	<name>Vaadin Web Application</name>
-<url>http://maven.apache.org</url>
+	<url>http://maven.apache.org</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<vaadin.version>7.0.0</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
-		<junit.version>4.8.1</junit.version>
+		<junit.version>4.9</junit.version>
 		<mockito.version>1.9.5</mockito.version>
 		<spring.version>4.1.0.RELEASE</spring.version>
-		
-		
+
+
 	</properties>
 	<repositories>
 		<repository>
@@ -80,32 +80,32 @@
 			<artifactId>spring-beans</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-		
-	<dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-expression</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-		
-		
-		
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-expression</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
-      <version>${spring.version}</version>
-    </dependency>
-		
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
 		<!-- mongodb java driver -->
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongo-java-driver</artifactId>
 			<version>2.11.0</version>
-		
+
 		</dependency>
 
 		<!-- Spring data mongodb -->
@@ -206,8 +206,9 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.mortbay.jetty</groupId>
+				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
+				<version>9.2.3.v20140905</version>
 			</plugin>
 		</plugins>
 		<pluginManagement>
@@ -244,19 +245,19 @@
 						</lifecycleMappingMetadata>
 					</configuration>
 				</plugin>
-    
-    
-    
-</plugins>
+
+
+
+			</plugins>
 		</pluginManagement>
 	</build>
-	
+
 	<reporting>
-	<plugins>
-	
-	
-	</plugins>
+		<plugins>
+
+
+		</plugins>
 	</reporting>
-	
-	
+
+
 </project>

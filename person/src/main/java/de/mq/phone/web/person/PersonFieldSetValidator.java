@@ -14,6 +14,7 @@ import de.mq.phone.web.person.PersonEditView.Fields;
 @Component
 public class PersonFieldSetValidator implements Validator{
 
+	private static final String FIELD_MANDATORY = "person_field_mandatory";
 	private static final String[] BANKING_ACCOUNT_FIELDS = new String[] {Fields.IBan.property() , Fields.BankIdentifierCode.property()};
 	static final String[] ADDRESS_FIELDS = new String[] { Fields.City.property(), Fields.ZipCode.property(), Fields.Street.property(), Fields.HouseNumber.property()};
 
@@ -28,7 +29,7 @@ public class PersonFieldSetValidator implements Validator{
 	public void validate(final Object target, final Errors errors) {
 		@SuppressWarnings("unchecked")
 		final Map<String,String> source =  (Map<String, String>) target;
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors,Fields.Name.property(), "Mandatory");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors,Fields.Name.property(), FIELD_MANDATORY);
 		
 		validateAddress(source, errors);
 		
@@ -42,7 +43,7 @@ public class PersonFieldSetValidator implements Validator{
 			return;
 		}
 		for(final String key : BANKING_ACCOUNT_FIELDS){
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, key,"Mandatory");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, key,FIELD_MANDATORY);
 		}
 	}
 
@@ -52,7 +53,7 @@ public class PersonFieldSetValidator implements Validator{
 			return;
 		}
 		for(final String key : ADDRESS_FIELDS){
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, key,"Mandatory");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, key,FIELD_MANDATORY);
 		}
 	}
 

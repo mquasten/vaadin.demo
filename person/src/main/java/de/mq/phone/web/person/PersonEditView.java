@@ -1,19 +1,14 @@
 package de.mq.phone.web.person;
 
-import java.util.Map;
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.MapBindingResult;
-import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.Validator;
+import org.springframework.validation.BindingResult;
 
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.ObjectProperty;
@@ -26,11 +21,12 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
-import de.mq.phone.domain.person.Person;
 import de.mq.vaadin.util.BindingResultsToFieldGroupMapper;
 import de.mq.vaadin.util.ViewNav;
 
@@ -38,7 +34,7 @@ import de.mq.vaadin.util.ViewNav;
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS, value = "session")
 class PersonEditView extends CustomComponent implements View {
 
-	private static final String PERSON_BINDING_NAME = "person";
+	
 	private static final String I18N_EDIT_PERSON_PREFIX = "edit_person_";
 	private static final String I18N_EDIT_PERSON_SAVE = "edit_person_save";
 	private static final String I18N_EDIT_PERSON_CANCEL = "edit_person_cancel";
@@ -67,22 +63,22 @@ class PersonEditView extends CustomComponent implements View {
 	}
 
 	private static final long serialVersionUID = 1L;
+	private final PersonEditController personEditController;
 	private final ViewNav viewNav;
-	private final Converter<PropertysetItem, Person> itemSet2Person;
-	private final Validator personItemSetValidator;
 	private final BindingResultsToFieldGroupMapper bindingResultMapper;
 
 	private final UserModel userModel;
 	private final MessageSource messageSource;
-
+	
+	
 	@Autowired
-	PersonEditView(final UserModel userModel, final ViewNav viewNav, final @ConverterQualifier(ConverterQualifier.Type.Item2Person) Converter<PropertysetItem, Person> itemSet2Person, final Validator personItemSetValidator, final BindingResultsToFieldGroupMapper bindingResultMapper, final MessageSource messageSource) {
+	PersonEditView(final PersonEditController personEditController, final UserModel userModel, final ViewNav viewNav, final BindingResultsToFieldGroupMapper bindingResultMapper, final MessageSource messageSource) {
 		this.viewNav = viewNav;
-		this.itemSet2Person = itemSet2Person;
-		this.personItemSetValidator = personItemSetValidator;
 		this.bindingResultMapper = bindingResultMapper;
 		this.userModel = userModel;
 		this.messageSource = messageSource;
+		this.personEditController=personEditController;
+	
 	}
 
 	@PostConstruct
@@ -117,32 +113,16 @@ class PersonEditView extends CustomComponent implements View {
 
 		saveButton.addClickListener(event -> {
 
-			final Map<String, String> fieldMap = bindingResultMapper.convert(binder);
-
-			final MapBindingResult bindingResult = new MapBindingResult(fieldMap, PERSON_BINDING_NAME);
-
-			ValidationUtils.invokeValidator(personItemSetValidator, fieldMap, bindingResult);
-
+			BindingResult  bindingResult = personEditController.validateAndSave(bindingResultMapper.convert(binder));
+			
+			
 			bindingResultMapper.mapInto(bindingResult, binder);
-
-			if (bindingResult.hasErrors()) {
-				return;
+			if( bindingResult.hasGlobalErrors() ) {
+			
+				Notification.show(getString(bindingResult.getGlobalError().getCode() , bindingResult.getGlobalError().getArguments()), Type.ERROR_MESSAGE);
 			}
 
-			try {
-
-				binder.commit();
-
-				final Person person = itemSet2Person.convert(personItem);
-				System.out.println(person.person());
-				if (person.address() != null)
-					System.out.println(person.address().address());
-				if (person.bankingAccount() != null)
-					System.out.println(person.bankingAccount().account());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
 
 		});
 
@@ -183,6 +163,9 @@ class PersonEditView extends CustomComponent implements View {
 
 	private String getString(final String key) {
 		return messageSource.getMessage(key, null, getLocale());
+	}
+	private String getString(final String key, Object[] args) {
+		return messageSource.getMessage(key, args, getLocale());
 	}
 
 }
