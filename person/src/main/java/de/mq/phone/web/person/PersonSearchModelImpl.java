@@ -63,12 +63,13 @@ class PersonSearchModelImpl extends SubjectImpl<PersonSearchModel, PersonSearchM
 	 */
 	@Override
 	public  final void  setSearchCriteria(final Object bean) {
-		for(final Class<?> clazz : search.keySet()) {
+		
+	for(final Class<?> clazz : search.keySet()) {
 			if (clazz.isInstance(bean) ) {
 				search.put(clazz, bean);
 				return;
 			}
-		}
+		} 
 		throw new IllegalArgumentException("Wrong Type for search " + bean.getClass());
 	}
 	

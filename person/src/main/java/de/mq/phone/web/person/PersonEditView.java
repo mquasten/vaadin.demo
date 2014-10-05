@@ -18,7 +18,6 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Field;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
@@ -27,6 +26,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
+import de.mq.phone.web.person.PersonEditModel.EventType;
 import de.mq.vaadin.util.BindingResultsToFieldGroupMapper;
 import de.mq.vaadin.util.ViewNav;
 
@@ -67,17 +67,19 @@ class PersonEditView extends CustomComponent implements View {
 	private final ViewNav viewNav;
 	private final BindingResultsToFieldGroupMapper bindingResultMapper;
 
+	private final PersonEditModel personEditModel;
 	private final UserModel userModel;
 	private final MessageSource messageSource;
 	
 	
 	@Autowired
-	PersonEditView(final PersonEditController personEditController, final UserModel userModel, final ViewNav viewNav, final BindingResultsToFieldGroupMapper bindingResultMapper, final MessageSource messageSource) {
+	PersonEditView(final PersonEditController personEditController, final PersonEditModel personEditModel, final UserModel userModel, final ViewNav viewNav, final BindingResultsToFieldGroupMapper bindingResultMapper, final MessageSource messageSource) {
 		this.viewNav = viewNav;
 		this.bindingResultMapper = bindingResultMapper;
 		this.userModel = userModel;
 		this.messageSource = messageSource;
 		this.personEditController=personEditController;
+		this.personEditModel=personEditModel;
 	
 	}
 
@@ -92,7 +94,7 @@ class PersonEditView extends CustomComponent implements View {
 		final PropertysetItem personItem = new PropertysetItem();
 		final FieldGroup binder = new FieldGroup(personItem);
 		binder.setBuffered(true);
-		
+	
 		for (final Fields field : Fields.values()) {
 			personItem.addItemProperty(field.property(), new ObjectProperty<String>(""));
 			final AbstractField<String> inputField = addInputField(editFormLayout, field);
@@ -112,27 +114,19 @@ class PersonEditView extends CustomComponent implements View {
 		buttonLayout.addComponent(saveButton);
 
 		saveButton.addClickListener(event -> {
-
-			BindingResult  bindingResult = personEditController.validateAndSave(bindingResultMapper.convert(binder));
-			
+			final BindingResult  bindingResult = personEditController.validateAndSave(bindingResultMapper.convert(binder), personEditModel);
 			
 			bindingResultMapper.mapInto(bindingResult, binder);
 			if( bindingResult.hasGlobalErrors() ) {
-			
 				Notification.show(getString(bindingResult.getGlobalError().getCode() , bindingResult.getGlobalError().getArguments()), Type.ERROR_MESSAGE);
 			}
-
-			
 
 		});
 
 		userModel.register((model, event) -> {
 			setLocale(userModel.getLocale());
-			for (Field<?> field : binder.getFields()) {
-				final String key = I18N_EDIT_PERSON_PREFIX + binder.getPropertyId(field);
-				field.setCaption(getString(key.toLowerCase()));
-			}
-
+			binder.getFields().forEach(field -> field.setCaption(getString((I18N_EDIT_PERSON_PREFIX + binder.getPropertyId(field)).toLowerCase())) );
+			
 			panel.setCaption(getString(I18N_EDIT_PERSON_HEADLINE));
 			cancelButton.setCaption(getString(I18N_EDIT_PERSON_CANCEL));
 			saveButton.setCaption(getString(I18N_EDIT_PERSON_SAVE));
@@ -142,6 +136,10 @@ class PersonEditView extends CustomComponent implements View {
 		mainLayoout.addComponent(panel);
 		mainLayoout.addComponent(buttonPanel);
 		setCompositionRoot(mainLayoout);
+		
+		personEditModel.register((model, event) -> { 
+			bindingResultMapper.mapInto(personEditController.person(personEditModel), binder);
+		}, EventType.PersonChanged);
 	}
 
 	private AbstractField<String> addInputField(final GridLayout editFormLayout, final Fields fieldDesc) {
@@ -150,6 +148,7 @@ class PersonEditView extends CustomComponent implements View {
 
 		editFormLayout.addComponent(fieldLayout, fieldDesc.col, fieldDesc.row);
 		final TextField field = new TextField();
+		field.setNullRepresentation("");
 		fieldLayout.addComponent(field);
 		field.setId(fieldDesc.property());
 
@@ -157,8 +156,12 @@ class PersonEditView extends CustomComponent implements View {
 	}
 
 	@Override
-	public void enter(ViewChangeEvent event) {
-
+	public void enter(final ViewChangeEvent event) {
+		if(! StringUtils.hasText(event.getParameters())) {
+			personEditController.assign(personEditModel);
+		} else {
+			personEditController.assign(personEditModel, event.getParameters());
+		}
 	}
 
 	private String getString(final String key) {

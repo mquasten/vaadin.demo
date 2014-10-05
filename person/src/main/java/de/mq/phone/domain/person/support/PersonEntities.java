@@ -2,12 +2,9 @@ package de.mq.phone.domain.person.support;
 
 
 
-import java.lang.reflect.Field;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.ReflectionUtils.FieldCallback;
 
 import de.mq.phone.domain.person.Address;
 import de.mq.phone.domain.person.AddressStringAware;
@@ -27,22 +24,15 @@ public  final class PersonEntities {
 	
 	public static String id(final PersonStringAware person) {
 		final String[] ids = { null };
-		ReflectionUtils.doWithFields(person.getClass(), new FieldCallback() {
+		ReflectionUtils.doWithFields(person.getClass(), field -> {
+			field.setAccessible(true);
+			if (!field.isAnnotationPresent(Id.class)) {
+				return;
+			}
+			ids[0] = (String) field.get(person);
 
-			@Override
-			public void doWith(final Field field) throws IllegalArgumentException,
-					IllegalAccessException {
-				 field.setAccessible(true);
-				 if( ! field.isAnnotationPresent(Id.class) ) {
-					 return ;
-				 }
-				 ids[0]= (String) field.get(person);
-				
-			}});
-			
-			
-			
-			
+		});
+
 		return ids[0];
 		
 	}

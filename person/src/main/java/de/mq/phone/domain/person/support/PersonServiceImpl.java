@@ -35,6 +35,9 @@ class PersonServiceImpl implements PersonService {
 		personRepository.save(person);
 	}
 
-	
+	@Override
+	public final Person person(final String id) {
+		return personRepository.forId(id);
+	}
 
 }

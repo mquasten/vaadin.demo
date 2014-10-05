@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
+
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
@@ -153,6 +154,7 @@ class PersonSearchView extends CustomComponent implements View  {
 		newButton.addClickListener(event -> {
 			viewNav.navigateTo(PersonEditView.class);
 		});
+		
 		buttonLayout.addComponent(newButton);
 		buttonLayout.addComponent(updateButton);
 		buttonLayout.addComponent(deleteButton);
@@ -191,6 +193,15 @@ class PersonSearchView extends CustomComponent implements View  {
 		tableLayout.addComponent(table);
 		table.setSizeFull();
 		table.setEditable(false);
+		
+		updateButton.addClickListener(event -> {
+			final String personId = (String) table.getValue();
+			if(personId==null){
+				return;
+			}
+			
+			viewNav.navigateTo(PersonEditView.class, personId);
+		});
 
 		setCompositionRoot(mainLayoout);
 		getCompositionRoot().setSizeFull();
@@ -214,10 +225,8 @@ class PersonSearchView extends CustomComponent implements View  {
 			table.setColumnHeader(ADDRESS, getString("table_address"));
 			table.setColumnHeader(BANKING_ACCOUNT, getString("table_bank"));
 			table.setColumnHeader(CONTACTS, getString("table_contacts"));
-			for (final Object itemId : languageBox.getItemIds()) {
-				languageBox.setItemCaption(itemId, ((Locale) itemId).getDisplayLanguage(userModel.getLocale()));
-			}
-
+			languageBox.getItemIds().forEach(itemId -> languageBox.setItemCaption(itemId, ((Locale) itemId).getDisplayLanguage(userModel.getLocale())));
+			
 			mainLayoout.removeAllComponents();
 			mainLayoout.addComponent(panel);
 			mainLayoout.addComponent(tablePanel);
@@ -228,11 +237,7 @@ class PersonSearchView extends CustomComponent implements View  {
 
 	private void search(final PropertysetItem personSearchItem, final FieldGroup binder) {
 		commitBinder(binder);
-		
-		for (final Object criteriaBean : itemToPersonSearchSetConverter.convert(personSearchItem)) {
-			model.setSearchCriteria(criteriaBean);
-		}
-
+		itemToPersonSearchSetConverter.convert(personSearchItem).forEach(criteriaBean -> model.setSearchCriteria(criteriaBean));
 		personSearchController.assignPersons(model);
 	}
 
@@ -242,6 +247,7 @@ class PersonSearchView extends CustomComponent implements View  {
 		table.addGeneratedColumn(CONTACTS, (source, itemId, ColumnId) -> contactColumnGenerator(table, itemId));
 
 		table.setVisibleColumns(new Object[] { PERSON, CONTACTS, ADDRESS, BANKING_ACCOUNT });
+	
 		for (final Object itemId : table.getVisibleColumns()) {
 			table.setColumnExpandRatio(itemId, 1f);
 		}
@@ -250,9 +256,8 @@ class PersonSearchView extends CustomComponent implements View  {
 	ListSelect contactColumnGenerator(final Table table, final Object itemId) {
 		final Collection<?> contacts = (Collection<?>) table.getContainerDataSource().getItem(itemId).getItemProperty(CONTACTS).getValue();
 		final ListSelect listSelect = new ListSelect();
-		for (final Object contact : contacts) {
-			listSelect.addItem(contact);
-		}
+		contacts.forEach(contact -> listSelect.addItem(contact) );
+		
 		listSelect.setNullSelectionAllowed(false);
 		listSelect.setSizeFull();
 		listSelect.setRows(contacts.size());

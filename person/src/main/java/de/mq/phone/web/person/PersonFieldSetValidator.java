@@ -42,7 +42,7 @@ public class PersonFieldSetValidator implements Validator{
 		if( ! required(source, BANKING_ACCOUNT_FIELDS)) {
 			return;
 		}
-		for(final String key : BANKING_ACCOUNT_FIELDS){
+		for(final String key :  new String[] {Fields.IBan.property()}){
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, key,FIELD_MANDATORY);
 		}
 	}

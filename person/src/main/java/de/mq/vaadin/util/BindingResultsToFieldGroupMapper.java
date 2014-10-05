@@ -12,5 +12,7 @@ public interface BindingResultsToFieldGroupMapper extends  Mapper<BindingResult,
 	FieldGroup mapInto(final BindingResult bindingResults, final FieldGroup group);
 
 	Map<String, ?> convert(final FieldGroup group);
+	
+	FieldGroup mapInto(final Map<String,?> bindingResults, final FieldGroup group);
 
 }

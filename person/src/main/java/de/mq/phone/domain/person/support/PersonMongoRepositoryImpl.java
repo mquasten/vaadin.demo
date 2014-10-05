@@ -1,6 +1,5 @@
 package de.mq.phone.domain.person.support;
 
-import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 
@@ -10,7 +9,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.ReflectionUtils.MethodCallback;
 import org.springframework.util.StringUtils;
 
 import de.mq.phone.domain.person.Address;
@@ -37,10 +35,11 @@ public class PersonMongoRepositoryImpl implements PersonRepository {
 	public final void save(final Person person) {
 		invokeCallback(person);
 		skipEmptyString(person);
-		for(final Contact contact : person.contacts()){
+		person.contacts().forEach(contact -> {
 			skipEmptyString(contact);
 			invokeCallback(contact);
-		}
+		} );
+		
 		
 		invokeAddressCalbback(person.address());
 		
@@ -84,17 +83,15 @@ public class PersonMongoRepositoryImpl implements PersonRepository {
 	}
 
 	private void invokeCallback(final Object entity) {
-		ReflectionUtils.doWithMethods(entity.getClass(), new MethodCallback() {
+		ReflectionUtils.doWithMethods(entity.getClass(), method -> {
 
-			@Override
-			public void doWith(final Method method) throws IllegalArgumentException, IllegalAccessException {
-				if (! method.isAnnotationPresent(BeforeSave.class)) {
-					return;
-				}
-				method.setAccessible(true);
-				ReflectionUtils.invokeMethod(method, entity);
-				
-			}});
+			if (!method.isAnnotationPresent(BeforeSave.class)) {
+				return;
+			}
+			method.setAccessible(true);
+			ReflectionUtils.invokeMethod(method, entity);
+
+		});
 	}
 	
 	public final void dropPersons() {
@@ -122,6 +119,11 @@ public class PersonMongoRepositoryImpl implements PersonRepository {
 		
 		return Collections.unmodifiableList(mongoOperations.find(query, Person.class, "person"));
 	
+	}
+	
+	@Override
+	public final Person forId(final String id) {
+		return mongoOperations.findById(id, PersonImpl.class);
 	}
 
 }

@@ -13,5 +13,7 @@ public interface PersonRepository {
 
 	List<Person> forCriterias(final PersonStringAware person, final AddressStringAware address, Contact contact);
 
+	Person forId(final String id);
+
 	
 }
