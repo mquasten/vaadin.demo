@@ -1,5 +1,8 @@
 package de.mq.phone.web.person;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +19,12 @@ import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Panel;
@@ -41,23 +46,34 @@ class PersonEditView extends CustomComponent implements View {
 	private static final String I18N_EDIT_PERSON_HEADLINE = "edit_person_headline";
 
 	enum Fields {
-		Name(0, 0), Firstname(0, 1), Alias(0, 2),
+		Name(0, 0, new TextField()), Firstname(0, 1, new TextField()), Alias(0, 2, new TextField()),
 
-		Street(1, 0), HouseNumber(1, 1), ZipCode(1, 2), City(1, 3),
+		Street(1, 0,new TextField()), HouseNumber(1, 1,new TextField()), ZipCode(1, 2,new TextField()), City(1, 3,new TextField()),
 
-		IBan(2, 0), BankIdentifierCode(2, 1);
+		IBan(2, 0,new TextField()), BankIdentifierCode(2, 1,new TextField()),
+		
+		Contacts(3,0, new ListSelect());
 
 		private final int row;
 		private final int col;
+		private AbstractField<?> field;
 
-		Fields(int row, int col) {
+		Fields(int row, int col, AbstractField<?> field) {
 			this.col = col;
 			this.row = row;
-
+			this.field=field;
 		}
 
 		String property() {
 			return StringUtils.uncapitalize(name());
+		}
+		
+		AbstractField<?> field(){
+			if (field instanceof AbstractTextField) {
+				 ((AbstractTextField) field).setNullRepresentation("");
+				
+			}
+			return this.field;
 		}
 
 	}
@@ -88,7 +104,7 @@ class PersonEditView extends CustomComponent implements View {
 		final VerticalLayout mainLayoout = new VerticalLayout();
 		mainLayoout.setMargin(true);
 		final Panel panel = new Panel();
-		final GridLayout editFormLayout = new GridLayout(4, 3);
+		final GridLayout editFormLayout = new GridLayout(4, 4);
 		editFormLayout.setMargin(true);
 
 		final PropertysetItem personItem = new PropertysetItem();
@@ -96,10 +112,19 @@ class PersonEditView extends CustomComponent implements View {
 		binder.setBuffered(true);
 	
 		for (final Fields field : Fields.values()) {
+			final AbstractField<?> inputField = addInputField(editFormLayout, field);
 			personItem.addItemProperty(field.property(), new ObjectProperty<String>(""));
-			final AbstractField<String> inputField = addInputField(editFormLayout, field);
-			binder.bind(inputField, field.property());
+			
+			if (inputField instanceof TextField) {
+				binder.bind(inputField, field.property());
+				personItem.addItemProperty(field.property(), new ObjectProperty<String>(""));
+			} else {
+				personItem.addItemProperty(field.property(), new ObjectProperty<List<?>>(new ArrayList<>()));
+			}
+			
 		}
+		
+		
 
 		final Panel buttonPanel = new Panel();
 
@@ -142,13 +167,14 @@ class PersonEditView extends CustomComponent implements View {
 		}, EventType.PersonChanged);
 	}
 
-	private AbstractField<String> addInputField(final GridLayout editFormLayout, final Fields fieldDesc) {
+	private AbstractField<?> addInputField(final GridLayout editFormLayout, final Fields fieldDesc) {
 		final HorizontalLayout fieldLayout = new HorizontalLayout();
 		fieldLayout.setMargin(true);
 
 		editFormLayout.addComponent(fieldLayout, fieldDesc.col, fieldDesc.row);
-		final TextField field = new TextField();
-		field.setNullRepresentation("");
+		final AbstractField<?> field = fieldDesc.field();
+		
+		field.setWidth("15em");
 		fieldLayout.addComponent(field);
 		field.setId(fieldDesc.property());
 

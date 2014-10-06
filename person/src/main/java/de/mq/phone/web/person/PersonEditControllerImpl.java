@@ -42,6 +42,7 @@ public class PersonEditControllerImpl implements PersonEditController {
 			personService.save(map2Person.mapInto(map, personEditModel.getPerson()));
 		} catch ( final Exception ex) {
 			bindingResult.addError(new ObjectError(PERSON_BINDING_NAME, new String[] { "person_save_error"}, new String[] {ex.getMessage()} , null ));
+		   ex.printStackTrace();
 		}
 		
 		return bindingResult;
