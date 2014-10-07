@@ -1,8 +1,5 @@
 package de.mq.phone.web.person;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,8 +68,13 @@ class PersonEditView extends CustomComponent implements View {
 		AbstractField<?> field(){
 			if (field instanceof AbstractTextField) {
 				 ((AbstractTextField) field).setNullRepresentation("");
-				
 			}
+			
+			if (field instanceof ListSelect) {
+				((ListSelect) field).setNullSelectionAllowed(false);
+				((ListSelect) field).setItemCaptionPropertyId(property());
+			}
+			
 			return this.field;
 		}
 
@@ -86,17 +88,17 @@ class PersonEditView extends CustomComponent implements View {
 	private final PersonEditModel personEditModel;
 	private final UserModel userModel;
 	private final MessageSource messageSource;
-	
+	private final ContactMapper contactMapper;
 	
 	@Autowired
-	PersonEditView(final PersonEditController personEditController, final PersonEditModel personEditModel, final UserModel userModel, final ViewNav viewNav, final BindingResultsToFieldGroupMapper bindingResultMapper, final MessageSource messageSource) {
+	PersonEditView(final PersonEditController personEditController, final PersonEditModel personEditModel, final UserModel userModel, final ViewNav viewNav, final BindingResultsToFieldGroupMapper bindingResultMapper, final MessageSource messageSource, final ContactMapper contactMapper) {
 		this.viewNav = viewNav;
 		this.bindingResultMapper = bindingResultMapper;
 		this.userModel = userModel;
 		this.messageSource = messageSource;
 		this.personEditController=personEditController;
 		this.personEditModel=personEditModel;
-	
+		this.contactMapper=contactMapper;
 	}
 
 	@PostConstruct
@@ -118,14 +120,9 @@ class PersonEditView extends CustomComponent implements View {
 			if (inputField instanceof TextField) {
 				binder.bind(inputField, field.property());
 				personItem.addItemProperty(field.property(), new ObjectProperty<String>(""));
-			} else {
-				personItem.addItemProperty(field.property(), new ObjectProperty<List<?>>(new ArrayList<>()));
-			}
-			
+			} 
 		}
 		
-		
-
 		final Panel buttonPanel = new Panel();
 
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
@@ -151,7 +148,7 @@ class PersonEditView extends CustomComponent implements View {
 		userModel.register((model, event) -> {
 			setLocale(userModel.getLocale());
 			binder.getFields().forEach(field -> field.setCaption(getString((I18N_EDIT_PERSON_PREFIX + binder.getPropertyId(field)).toLowerCase())) );
-			
+			Fields.Contacts.field().setCaption(getString((I18N_EDIT_PERSON_PREFIX + Fields.Contacts.property().toLowerCase())));
 			panel.setCaption(getString(I18N_EDIT_PERSON_HEADLINE));
 			cancelButton.setCaption(getString(I18N_EDIT_PERSON_CANCEL));
 			saveButton.setCaption(getString(I18N_EDIT_PERSON_SAVE));
@@ -164,6 +161,8 @@ class PersonEditView extends CustomComponent implements View {
 		
 		personEditModel.register((model, event) -> { 
 			bindingResultMapper.mapInto(personEditController.person(personEditModel), binder);
+			((ListSelect) Fields.Contacts.field()).setContainerDataSource(contactMapper.convert(personEditModel.getPerson().contacts()));
+			
 		}, EventType.PersonChanged);
 	}
 
