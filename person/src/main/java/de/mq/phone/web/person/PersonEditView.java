@@ -1,5 +1,7 @@
 package de.mq.phone.web.person;
 
+import java.util.Arrays;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,9 +91,10 @@ class PersonEditView extends CustomComponent implements View {
 	private final UserModel userModel;
 	private final MessageSource messageSource;
 	private final ContactMapper contactMapper;
+	private final ContactEditor contactEditor;
 	
 	@Autowired
-	PersonEditView(final PersonEditController personEditController, final PersonEditModel personEditModel, final UserModel userModel, final ViewNav viewNav, final BindingResultsToFieldGroupMapper bindingResultMapper, final MessageSource messageSource, final ContactMapper contactMapper) {
+	PersonEditView(final PersonEditController personEditController, final PersonEditModel personEditModel, final UserModel userModel, final ViewNav viewNav, final BindingResultsToFieldGroupMapper bindingResultMapper, final MessageSource messageSource, final ContactMapper contactMapper, final ContactEditor contactEditor) {
 		this.viewNav = viewNav;
 		this.bindingResultMapper = bindingResultMapper;
 		this.userModel = userModel;
@@ -99,6 +102,7 @@ class PersonEditView extends CustomComponent implements View {
 		this.personEditController=personEditController;
 		this.personEditModel=personEditModel;
 		this.contactMapper=contactMapper;
+		this.contactEditor=contactEditor;
 	}
 
 	@PostConstruct
@@ -112,16 +116,21 @@ class PersonEditView extends CustomComponent implements View {
 		final PropertysetItem personItem = new PropertysetItem();
 		final FieldGroup binder = new FieldGroup(personItem);
 		binder.setBuffered(true);
-	
-		for (final Fields field : Fields.values()) {
+		
+		Arrays.stream(Fields.values()).forEach(field -> {
 			final AbstractField<?> inputField = addInputField(editFormLayout, field);
 			personItem.addItemProperty(field.property(), new ObjectProperty<String>(""));
-			
 			if (inputField instanceof TextField) {
 				binder.bind(inputField, field.property());
 				personItem.addItemProperty(field.property(), new ObjectProperty<String>(""));
-			} 
-		}
+			}
+			
+		});
+		
+		final HorizontalLayout fieldLayout = new HorizontalLayout();
+	
+		fieldLayout.addComponent(contactEditor);
+		editFormLayout.addComponent(fieldLayout, 1, 3);
 		
 		final Panel buttonPanel = new Panel();
 
