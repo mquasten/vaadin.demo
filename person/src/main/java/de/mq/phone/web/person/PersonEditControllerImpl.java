@@ -58,6 +58,11 @@ public class PersonEditControllerImpl implements PersonEditController {
 	}
 	
 	@Override
+	public final void assign(final  PersonEditModel personEditModel, final Map<String,?> contactData) {
+		System.out.println(contactData);
+	}
+	
+	@Override
 	public final Map<String,?> person(final PersonEditModel personEditModel) {
 		return map2Person.convert(personEditModel.getPerson());
 	}

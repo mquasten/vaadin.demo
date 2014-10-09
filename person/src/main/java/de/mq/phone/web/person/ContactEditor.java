@@ -34,6 +34,8 @@ class ContactEditor extends CustomComponent {
 	}
 
 	private static final long serialVersionUID = 1L;
+	
+	
 
 	@PostConstruct
 	void init() {

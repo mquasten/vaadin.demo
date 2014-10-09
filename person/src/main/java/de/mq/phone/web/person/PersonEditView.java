@@ -44,6 +44,7 @@ class PersonEditView extends CustomComponent implements View {
 	private static final String I18N_EDIT_PERSON_CANCEL = "edit_person_cancel";
 	private static final String I18N_EDIT_PERSON_HEADLINE = "edit_person_headline";
 
+
 	enum Fields {
 		Name(0, 0, new TextField()), Firstname(0, 1, new TextField()), Alias(0, 2, new TextField()),
 
@@ -74,7 +75,8 @@ class PersonEditView extends CustomComponent implements View {
 			
 			if (field instanceof ListSelect) {
 				((ListSelect) field).setNullSelectionAllowed(false);
-				((ListSelect) field).setItemCaptionPropertyId(property());
+				((ListSelect) field).setItemCaptionPropertyId(CONTACT_STRING_PROPERTY);
+				field.setImmediate(true);
 			}
 			
 			return this.field;
@@ -83,6 +85,10 @@ class PersonEditView extends CustomComponent implements View {
 	}
 
 	private static final long serialVersionUID = 1L;
+	static final String CONTACT_DOMAIN_PROPERTY = "contact";
+	static final String CONTACT_STRING_PROPERTY = "contactAsString";
+	static final String CONTACT_ID_PROPERTY = "id";
+	
 	private final PersonEditController personEditController;
 	private final ViewNav viewNav;
 	private final BindingResultsToFieldGroupMapper bindingResultMapper;
@@ -126,6 +132,8 @@ class PersonEditView extends CustomComponent implements View {
 			}
 			
 		});
+		
+		Fields.Contacts.field.addValueChangeListener(event ->  personEditController.assign(personEditModel, bindingResultMapper.convert(((ListSelect)Fields.Contacts.field()).getItem( event.getProperty().getValue()))));
 		
 		final HorizontalLayout fieldLayout = new HorizontalLayout();
 	

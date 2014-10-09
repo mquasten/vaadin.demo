@@ -14,4 +14,6 @@ public interface PersonEditController {
 
 	Map<String, ?> person(final PersonEditModel personEditModel);
 
+	void assign(PersonEditModel personEditModel, Map<String, ?> contactData);
+
 }

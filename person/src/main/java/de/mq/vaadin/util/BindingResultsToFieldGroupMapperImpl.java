@@ -9,6 +9,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 
+import com.vaadin.data.Item;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractComponent;
@@ -60,6 +61,18 @@ class BindingResultsToFieldGroupMapperImpl implements BindingResultsToFieldGroup
 	public FieldGroup mapInto(final Map<String, ?> values, final FieldGroup group) {
 		group.getFields().forEach(field ->  ((Field<Object>) field).setValue(values.get((String) group.getPropertyId(field))));
 		return group;
+	}
+
+	@Override
+	public Map<String, ?> convert(final Item item) {
+		final Map<String, Object> results = new HashMap<>();
+		if( item == null){
+			return results;
+		}
+		item.getItemPropertyIds().forEach(id -> { 
+			results.put((String) id,item.getItemProperty(id).getValue());
+		});
+		return  results;
 	}
 
 }
