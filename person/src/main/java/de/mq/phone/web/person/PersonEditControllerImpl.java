@@ -1,6 +1,8 @@
 package de.mq.phone.web.person;
 
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -10,6 +12,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
+import de.mq.phone.domain.person.Contact;
 import de.mq.phone.domain.person.PersonService;
 import de.mq.phone.domain.person.support.PersonEntities;
 
@@ -58,8 +61,8 @@ public class PersonEditControllerImpl implements PersonEditController {
 	}
 	
 	@Override
-	public final void assign(final  PersonEditModel personEditModel, final Map<String,?> contactData) {
-		System.out.println(contactData);
+	public final void assign(final  PersonEditModel personEditModel, final Entry<UUID, Contact> contactEntry) {
+		personEditModel.setCurrentContact(contactEntry);
 	}
 	
 	@Override

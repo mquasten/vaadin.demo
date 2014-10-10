@@ -1,6 +1,8 @@
 package de.mq.phone.web.person;
 
 import java.util.Arrays;
+import java.util.Map.Entry;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
@@ -30,6 +32,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
+import de.mq.phone.domain.person.Contact;
 import de.mq.phone.web.person.PersonEditModel.EventType;
 import de.mq.vaadin.util.BindingResultsToFieldGroupMapper;
 import de.mq.vaadin.util.ViewNav;
@@ -87,7 +90,7 @@ class PersonEditView extends CustomComponent implements View {
 	private static final long serialVersionUID = 1L;
 	static final String CONTACT_DOMAIN_PROPERTY = "contact";
 	static final String CONTACT_STRING_PROPERTY = "contactAsString";
-	static final String CONTACT_ID_PROPERTY = "id";
+	
 	
 	private final PersonEditController personEditController;
 	private final ViewNav viewNav;
@@ -97,10 +100,10 @@ class PersonEditView extends CustomComponent implements View {
 	private final UserModel userModel;
 	private final MessageSource messageSource;
 	private final ContactMapper contactMapper;
-	private final ContactEditor contactEditor;
+	private final ContactEditorView contactEditor;
 	
 	@Autowired
-	PersonEditView(final PersonEditController personEditController, final PersonEditModel personEditModel, final UserModel userModel, final ViewNav viewNav, final BindingResultsToFieldGroupMapper bindingResultMapper, final MessageSource messageSource, final ContactMapper contactMapper, final ContactEditor contactEditor) {
+	PersonEditView(final PersonEditController personEditController, final PersonEditModel personEditModel, final UserModel userModel, final ViewNav viewNav, final BindingResultsToFieldGroupMapper bindingResultMapper, final MessageSource messageSource, final ContactMapper contactMapper, final ContactEditorView contactEditor) {
 		this.viewNav = viewNav;
 		this.bindingResultMapper = bindingResultMapper;
 		this.userModel = userModel;
@@ -111,6 +114,7 @@ class PersonEditView extends CustomComponent implements View {
 		this.contactEditor=contactEditor;
 	}
 
+	
 	@PostConstruct
 	public final void init() {
 		final VerticalLayout mainLayoout = new VerticalLayout();
@@ -133,8 +137,8 @@ class PersonEditView extends CustomComponent implements View {
 			
 		});
 		
-		Fields.Contacts.field.addValueChangeListener(event ->  personEditController.assign(personEditModel, bindingResultMapper.convert(((ListSelect)Fields.Contacts.field()).getItem( event.getProperty().getValue()))));
-		
+		addConatctChangeListener();
+		 
 		final HorizontalLayout fieldLayout = new HorizontalLayout();
 	
 		fieldLayout.addComponent(contactEditor);
@@ -181,6 +185,12 @@ class PersonEditView extends CustomComponent implements View {
 			((ListSelect) Fields.Contacts.field()).setContainerDataSource(contactMapper.convert(personEditModel.getPerson().contacts()));
 			
 		}, EventType.PersonChanged);
+	}
+
+
+	@SuppressWarnings("unchecked")
+	private void addConatctChangeListener() {
+		Fields.Contacts.field.addValueChangeListener(event -> personEditController.assign(personEditModel, (Entry<UUID,Contact>)bindingResultMapper.convert(((ListSelect)Fields.Contacts.field()).getItem( event.getProperty().getValue())).get(CONTACT_DOMAIN_PROPERTY)));
 	}
 
 	private AbstractField<?> addInputField(final GridLayout editFormLayout, final Fields fieldDesc) {

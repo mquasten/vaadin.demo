@@ -1,8 +1,12 @@
 package de.mq.phone.web.person;
 
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.springframework.validation.BindingResult;
+
+import de.mq.phone.domain.person.Contact;
 
 public interface PersonEditController {
 
@@ -14,6 +18,6 @@ public interface PersonEditController {
 
 	Map<String, ?> person(final PersonEditModel personEditModel);
 
-	void assign(PersonEditModel personEditModel, Map<String, ?> contactData);
+	void assign(PersonEditModel personEditModel,Entry<UUID,Contact> contactEntry);
 
 }
