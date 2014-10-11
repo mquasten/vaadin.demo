@@ -29,7 +29,7 @@ public class UserModelTest {
 	@Test
 	public final void changeLocale() {
 		@SuppressWarnings("unchecked")
-		Observer<UserModel, UserModel.EventType> observer = Mockito.mock(Observer.class);
+		Observer<UserModel.EventType> observer = Mockito.mock(Observer.class);
 		userModel.register(observer, UserModel.EventType.LocaleChanges);
 		Assert.assertNull(userModel.getLocale());
 		userModel.setLocale(Locale.GERMAN);

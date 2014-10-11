@@ -23,7 +23,7 @@ public class PersonSearchModelTest {
 	public final void setPersons() {
 		
 		@SuppressWarnings("unchecked")
-		final Observer<PersonSearchModel, PersonSearchModel.EventType> observer = Mockito.mock( Observer.class);
+		final Observer< PersonSearchModel.EventType> observer = Mockito.mock( Observer.class);
 		personSearchModel.register(observer, PersonSearchModel.EventType.PersonsChanges);
 	
 		final List<Person> persons = new ArrayList<>();
@@ -32,7 +32,7 @@ public class PersonSearchModelTest {
 		
 		Assert.assertEquals(persons, personSearchModel.getPersons());
 		
-		Mockito.verify(observer, Mockito.times(1)).process(personSearchModel, PersonSearchModel.EventType.PersonsChanges);
+		Mockito.verify(observer, Mockito.times(1)).process( PersonSearchModel.EventType.PersonsChanges);
 	}
 	
 	@Test

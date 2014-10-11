@@ -80,7 +80,7 @@ class ContactEditorView extends CustomComponent {
 		});
 
 		
-		personEditModel.register((model, event) -> bindingResultMapper.mapInto(contactMapper.contactToMap(personEditModel.getSelectedContact()), binder) , PersonEditModel.EventType.ContactsChanged );
+		personEditModel.register(event -> bindingResultMapper.mapInto(contactMapper.contactToMap(personEditModel.getSelectedContact()), binder) , PersonEditModel.EventType.ContactsChanged );
 		
 		setCompositionRoot(mainLayoout);
 	}

@@ -166,7 +166,7 @@ class PersonEditView extends CustomComponent implements View {
 
 		});
 
-		userModel.register((model, event) -> {
+		userModel.register( event -> {
 			setLocale(userModel.getLocale());
 			binder.getFields().forEach(field -> field.setCaption(getString((I18N_EDIT_PERSON_PREFIX + binder.getPropertyId(field)).toLowerCase())) );
 			Fields.Contacts.field().setCaption(getString((I18N_EDIT_PERSON_PREFIX + Fields.Contacts.property().toLowerCase())));
@@ -180,7 +180,7 @@ class PersonEditView extends CustomComponent implements View {
 		mainLayoout.addComponent(buttonPanel);
 		setCompositionRoot(mainLayoout);
 		
-		personEditModel.register((model, event) -> { 
+		personEditModel.register( event -> { 
 			bindingResultMapper.mapInto(personEditController.person(personEditModel), binder);
 			((ListSelect) Fields.Contacts.field()).setContainerDataSource(contactMapper.convert(personEditModel.getPerson().contacts()));
 			

@@ -37,7 +37,7 @@ public class UserModelImpl  extends SubjectImpl<UserModel, UserModel.EventType> 
 	@Override         
 	public final void setLocale(final Locale locale) {
 		this.locale=locale;
-		notifyObservers(this, UserModel.EventType.LocaleChanges);
+		notifyObservers(UserModel.EventType.LocaleChanges);
 	}
 
 	@Override       

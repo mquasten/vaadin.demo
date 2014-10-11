@@ -3,8 +3,8 @@ package de.mq.vaadin.util;
 
 
 @FunctionalInterface
-public interface Observer<Model, EventType>  {
+public interface Observer<EventType>  {
 
-	void  process(final Model model, final EventType event);
+	void  process(final EventType event);
 	
 }

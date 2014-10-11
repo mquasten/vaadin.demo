@@ -45,7 +45,7 @@ class PersonSearchModelImpl extends SubjectImpl<PersonSearchModel, PersonSearchM
 	public final void setPersons(final List<Person> persons) {
 		this.persons.clear();
 		this.persons.addAll(persons);
-		notifyObservers(this, EventType.PersonsChanges);
+		notifyObservers(EventType.PersonsChanges);
 	}
 
 

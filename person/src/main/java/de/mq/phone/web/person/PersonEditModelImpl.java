@@ -20,7 +20,7 @@ class PersonEditModelImpl extends SubjectImpl<PersonEditModel, PersonEditModel.E
 	@Override
 	public final void setCurrentContact(final Entry<UUID,Contact> currentContact){
 		this.currentContact=currentContact;
-		notifyObservers(this, EventType.ContactsChanged);
+		notifyObservers(EventType.ContactsChanged);
 	}
 	@Override
 	public final Entry<UUID,Contact> getSelectedContact(){
@@ -33,7 +33,7 @@ class PersonEditModelImpl extends SubjectImpl<PersonEditModel, PersonEditModel.E
 	@Override
 	public final void setPerson(final Person person) {
 		this.person = person;
-		notifyObservers(this, EventType.PersonChanged);
+		notifyObservers(EventType.PersonChanged);
 	}
 
 	/* (non-Javadoc)

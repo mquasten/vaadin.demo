@@ -116,7 +116,7 @@ public class PersonSearchViewTest {
 		Mockito.verify(personSearchModel, Mockito.times(1)).register(modelChangeObserverCaptor.capture(), modelEventCaptor.capture());
 		@SuppressWarnings("rawtypes")
 		final Observer observer = localeObserverCaptor.getValue();
-		observer.process(userModel, UserModel.EventType.LocaleChanges);
+		observer.process(UserModel.EventType.LocaleChanges);
 		components(personSearchView, components);
 		Assert.assertFalse(components.isEmpty());
 	}
@@ -182,7 +182,7 @@ public class PersonSearchViewTest {
 		Mockito.when(personSearchModel.getPersons()).thenReturn(persons);
 
 		ReflectionTestUtils.setField(personSearchView, "personListContainerConverter", new PersonListToItemContainerConverter());
-		modelChangeObserverCaptor.getValue().process(personSearchModel, PersonSearchModel.EventType.PersonsChanges);
+		modelChangeObserverCaptor.getValue().process(PersonSearchModel.EventType.PersonsChanges);
 
 		final Table table = (Table) components.get(CONTACT_TABLE_CAPTION);
 		Assert.assertEquals(searchResult.person(), table.getContainerProperty(searchResult.id(), PersonSearchView.PERSON).getValue());

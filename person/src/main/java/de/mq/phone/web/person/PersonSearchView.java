@@ -206,9 +206,9 @@ class PersonSearchView extends CustomComponent implements View  {
 		setCompositionRoot(mainLayoout);
 		getCompositionRoot().setSizeFull();
 
-		model.register((model, event) -> personChangeObserver(table), PersonSearchModel.EventType.PersonsChanges);
+		model.register(event -> personChangeObserver(table), PersonSearchModel.EventType.PersonsChanges);
 
-		userModel.register((model, event) -> {
+		userModel.register( event -> {
 			setLocale(userModel.getLocale());
 			panel.setCaption(getString(I18N_SEARCH_PANEL_CAPTION));
 			nameField.setCaption(getString(I18N_SEARCH_PERSON_FIELD_CAPTION));

@@ -12,19 +12,19 @@ import org.springframework.util.Assert;
 
 public class SubjectImpl<Model,EventType > implements Subject<Model, EventType> {
 	
-	private Map<EventType, Collection<Observer<Model, EventType>>> observers = new HashMap<>(); 
+	private Map<EventType, Collection<Observer<EventType>>> observers = new HashMap<>(); 
 	
 	/* (non-Javadoc)
 	 * @see de.mq.vaadin.util.Subject#register(de.mq.vaadin.util.Observer, EventType)
 	 */
 	@Override
-	public final void register(final Observer<Model, EventType>  observer, final EventType event) {
+	public final void register(final Observer<EventType>  observer, final EventType event) {
 		Assert.notNull(event);
 		Assert.notNull(observer);
 		if( ! observers.containsKey(event) ) {
-			observers.put(event, new HashSet<Observer<Model, EventType>>());
+			observers.put(event, new HashSet<Observer<EventType>>());
 		}
-		final Collection<Observer<Model, EventType>> observerList  =  observers.get(event);
+		final Collection<Observer<EventType>> observerList  =  observers.get(event);
 		Assert.notNull(observerList);
 		observerList.add(observer);
 	}
@@ -33,13 +33,13 @@ public class SubjectImpl<Model,EventType > implements Subject<Model, EventType> 
 	 * @see de.mq.vaadin.util.Subject#remove(de.mq.vaadin.util.Observer, EventType)
 	 */
 	@Override
-	public final void remove(final Observer<Model, EventType>  observer, final EventType event) {
+	public final void remove(final Observer<EventType>  observer, final EventType event) {
 		Assert.notNull(event);
 		Assert.notNull(observer);
 		if( ! observers.containsKey(event)){
 			return;
 		}
-		final Collection<Observer<Model, EventType>> observerList  =  observers.get(event);
+		final Collection<Observer<EventType>> observerList  =  observers.get(event);
 		observerList.remove(observer);
 	}
 	
@@ -47,25 +47,22 @@ public class SubjectImpl<Model,EventType > implements Subject<Model, EventType> 
 	 * @see de.mq.vaadin.util.Subject#remove(de.mq.vaadin.util.Observer)
 	 */
 	@Override
-	public final void remove(final Observer<Model, EventType>  observer) {
-		for(final Collection<Observer<Model, EventType>> observerList : observers.values()){
-			observerList.remove(observer);
-		}
+	public final void remove(final Observer<EventType>  observer) {
+		observers.values().forEach(observerList -> observerList.remove(observer));
 	}
 	
 	/* (non-Javadoc)
 	 * @see de.mq.vaadin.util.Subject#notifyObservers(Model, EventType)
 	 */
 	@Override
-	public final  void notifyObservers(final Model model, final EventType event) {
+	public final  void notifyObservers(final EventType event) {
 		Assert.notNull(event);
-		Assert.notNull(model);
 		if( ! observers.containsKey(event) ) {
 			return;
 		}
-		for(final Observer<Model, EventType> observer : observers.get(event)){
-			observer.process(model, event);;
-		}
+		
+		observers.get(event).forEach(observer -> observer.process(event));
+		
 	}
 
 }
