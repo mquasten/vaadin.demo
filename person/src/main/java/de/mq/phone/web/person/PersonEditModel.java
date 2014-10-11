@@ -21,4 +21,8 @@ interface PersonEditModel extends  Subject<PersonEditModel, PersonEditModel.Even
 
 	Entry<UUID, Contact> getSelectedContact();
 
+	boolean isMailContact();
+
+	boolean isPhoneContact();
+
 }

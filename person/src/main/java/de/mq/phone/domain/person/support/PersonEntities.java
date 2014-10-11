@@ -22,6 +22,22 @@ public  final class PersonEntities {
 	}
 	
 	
+	public static boolean isMailContact(Contact contact) {
+		if (contact instanceof EMailContact) {
+			return true;
+		}
+		return false;
+		
+	}
+	
+	public static boolean isPhoneContact(Contact contact) {
+		if (contact instanceof PhoneImpl) {
+			return true;
+		}
+		return false;
+		
+	}
+	
 	public static String id(final PersonStringAware person) {
 		final String[] ids = { null };
 		ReflectionUtils.doWithFields(person.getClass(), field -> {

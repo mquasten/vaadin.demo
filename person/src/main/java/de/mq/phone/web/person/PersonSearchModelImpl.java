@@ -87,5 +87,7 @@ class PersonSearchModelImpl extends SubjectImpl<PersonSearchModel, PersonSearchM
 	public final AddressStringAware getSearchCriteriaAddress() {
 		return   (AddressStringAware) search.get(AddressStringAware.class);
 	}
+	
+	
 
 }

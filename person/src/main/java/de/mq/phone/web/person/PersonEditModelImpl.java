@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import de.mq.phone.domain.person.Contact;
 import de.mq.phone.domain.person.Person;
+import de.mq.phone.domain.person.support.PersonEntities;
 import de.mq.vaadin.util.SubjectImpl;
 
 @Component
@@ -42,5 +43,20 @@ class PersonEditModelImpl extends SubjectImpl<PersonEditModel, PersonEditModel.E
 	@Override
 	public final Person getPerson() {
 		return person;
+	}
+	
+	@Override
+	public final boolean isMailContact()  {
+		if( currentContact==null){
+			return false;
+		}
+		return PersonEntities.isMailContact(currentContact.getValue());
+	}
+	@Override
+	public final boolean isPhoneContact()  {
+		if( currentContact==null){
+			return false;
+		}
+		return PersonEntities.isPhoneContact(currentContact.getValue());
 	}
 }

@@ -15,6 +15,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.IndexedContainer;
 
 import de.mq.phone.domain.person.Contact;
+import de.mq.phone.domain.person.support.PersonEntities;
 
 @Component
 public class ContactMapperImpl implements ContactMapper {
@@ -57,7 +58,13 @@ public class ContactMapperImpl implements ContactMapper {
 		ReflectionUtils.doWithFields(entry.getValue().getClass(), field -> { field.setAccessible(true); results.put(field.getName(), field.get(entry.getValue()));}, field -> {
 			return field.getType().equals(String.class);
 			});
+		
+		if( ! PersonEntities.isMailContact(entry.getValue()) ) {
+			results.remove(PersonEditView.CONTACT_DOMAIN_PROPERTY);
+		}
 		return results;
 	}
+	
+	
 
 }

@@ -2,7 +2,6 @@ package de.mq.phone.web.person;
 
 import java.util.Arrays;
 
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +41,7 @@ class ContactEditorView extends CustomComponent {
 
 		TextField field() {
 			 field.setCaption("<" + property() + ">");
+			 field.setVisible(false);
 			return field;
 		}
 	}
@@ -61,7 +61,7 @@ class ContactEditorView extends CustomComponent {
 
 	@PostConstruct
 	void init() {
-
+		setVisible(false);
 		final VerticalLayout mainLayoout = new VerticalLayout();
 
 		mainLayoout.setMargin(true);
@@ -80,7 +80,23 @@ class ContactEditorView extends CustomComponent {
 		});
 
 		
-		personEditModel.register(event -> bindingResultMapper.mapInto(contactMapper.contactToMap(personEditModel.getSelectedContact()), binder) , PersonEditModel.EventType.ContactsChanged );
+		personEditModel.register(event -> {
+			bindingResultMapper.mapInto(contactMapper.contactToMap(personEditModel.getSelectedContact()), binder); 
+		   binder.getFields().forEach(field ->  field.setVisible(false));
+		   setVisible(false);
+		   if( personEditModel.isMailContact() ) {
+		   	Fields.Contact.field().setVisible(true);
+		   	setVisible(true);
+		   	return;
+		   }
+		   if( personEditModel.isPhoneContact()) {
+		   	Arrays.stream( Fields.values()).filter(field -> field != Fields.Contact ).forEach(field -> field.field().setVisible(true));
+		   	setVisible(true); 
+		   }
+		   
+		}, PersonEditModel.EventType.ContactsChanged );
+			
+	
 		
 		setCompositionRoot(mainLayoout);
 	}
