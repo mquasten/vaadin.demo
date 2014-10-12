@@ -15,6 +15,8 @@ public interface ContactMapper extends Converter<Collection<Contact>,Container> 
 
 	Container convert(Collection<Contact> contacts);
 	
-	public Map<String, Object> contactToMap(final Entry<UUID,Contact> source);
+	Map<String, Object> contactToMap(final Entry<UUID,Contact> source);
+	
+	Contact  mapInto(final Map<String,?> map, final Contact contact);
 
 }

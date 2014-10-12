@@ -3,8 +3,11 @@ package de.mq.phone.web.person;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import de.mq.phone.domain.person.Contact;
 import de.mq.phone.domain.person.Person;
@@ -21,7 +24,7 @@ class PersonEditModelImpl extends SubjectImpl<PersonEditModel, PersonEditModel.E
 	@Override
 	public final void setCurrentContact(final Entry<UUID,Contact> currentContact){
 		this.currentContact=currentContact;
-		notifyObservers(EventType.ContactsChanged);
+		notifyObservers(EventType.ContactChanged);
 	}
 	@Override
 	public final Entry<UUID,Contact> getSelectedContact(){
@@ -58,5 +61,13 @@ class PersonEditModelImpl extends SubjectImpl<PersonEditModel, PersonEditModel.E
 			return false;
 		}
 		return PersonEntities.isPhoneContact(currentContact.getValue());
+	}
+	@Override
+	public void setCurrentContact(final Contact contact) {
+	
+		Assert.notNull(currentContact);
+		currentContact.setValue(contact);
+		notifyObservers(EventType.ContactTakeOver);
+		
 	}
 }

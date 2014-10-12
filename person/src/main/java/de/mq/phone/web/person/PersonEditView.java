@@ -115,6 +115,8 @@ class PersonEditView extends CustomComponent implements View {
 	}
 
 	
+	
+	@SuppressWarnings("unchecked")
 	@PostConstruct
 	public final void init() {
 		final VerticalLayout mainLayoout = new VerticalLayout();
@@ -185,6 +187,9 @@ class PersonEditView extends CustomComponent implements View {
 			((ListSelect) Fields.Contacts.field()).setContainerDataSource(contactMapper.convert(personEditModel.getPerson().contacts()));
 			
 		}, EventType.PersonChanged);
+		
+		
+		personEditModel.register(event ->  ((ListSelect) Fields.Contacts.field()).getItem(personEditModel.getSelectedContact().getKey()).getItemProperty(CONTACT_STRING_PROPERTY).setValue(personEditModel.getSelectedContact().getValue().contact()) , EventType.ContactTakeOver);
 	}
 
 

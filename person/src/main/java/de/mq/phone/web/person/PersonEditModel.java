@@ -10,14 +10,17 @@ import de.mq.vaadin.util.Subject;
 interface PersonEditModel extends  Subject<PersonEditModel, PersonEditModel.EventType > {
 	enum EventType {
 		PersonChanged,
-		ContactsChanged;
-	}
+		ContactChanged,
+		ContactTakeOver;
+		}
 	
 	void setPerson(final Person person);
 
 	Person getPerson();
 
 	void setCurrentContact(final Entry<UUID, Contact> currentContact);
+	
+	void setCurrentContact(Contact contact);
 
 	Entry<UUID, Contact> getSelectedContact();
 

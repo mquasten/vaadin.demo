@@ -22,11 +22,13 @@ public class PersonEditControllerImpl implements PersonEditController {
 	private final Validator personItemSetValidator;
 	private final MapToPersonMapper map2Person;
 	private final PersonService personService;
+	private final ContactMapper contactMapper;
 	@Autowired
-	public PersonEditControllerImpl(final PersonService personService, MapToPersonMapper map2Person,final Validator personItemSetValidator) {
+	public PersonEditControllerImpl(final PersonService personService, MapToPersonMapper map2Person,final Validator personItemSetValidator, final ContactMapper contactMapper) {
 		this.personItemSetValidator = personItemSetValidator;
 		this.map2Person=map2Person;
 		this.personService=personService;
+		this.contactMapper=contactMapper;
 	}
 
 	/* (non-Javadoc)
@@ -49,6 +51,24 @@ public class PersonEditControllerImpl implements PersonEditController {
 		}
 		
 		return bindingResult;
+	}
+	
+	
+	public final BindingResult validateAndTakeOver(final Map<String,?> map, final PersonEditModel personEditModel ) {
+		final MapBindingResult bindingResult = new MapBindingResult(map, "contact");
+		
+		if(  personEditModel.getSelectedContact() == null){
+			return bindingResult;
+		}
+		
+		if( bindingResult.hasErrors()) {
+			return bindingResult;
+		}
+		
+		personEditModel.setCurrentContact(contactMapper.mapInto(map, personEditModel.getSelectedContact().getValue()));
+		
+		return bindingResult;
+		
 	}
 	@Override
 	public final void assign(final PersonEditModel personEditModel) {

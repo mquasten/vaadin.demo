@@ -19,5 +19,6 @@ public interface PersonEditController {
 	Map<String, ?> person(final PersonEditModel personEditModel);
 
 	void assign(PersonEditModel personEditModel,Entry<UUID,Contact> contactEntry);
+	BindingResult validateAndTakeOver(final Map<String,?> map, final PersonEditModel personEditModel );
 
 }

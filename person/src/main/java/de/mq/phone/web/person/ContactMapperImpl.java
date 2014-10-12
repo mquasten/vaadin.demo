@@ -39,7 +39,7 @@ public class ContactMapperImpl implements ContactMapper {
 			final UUID id = newId();
 			final Item item = ic.addItem(id);
 			item.getItemProperty(PersonEditView.CONTACT_STRING_PROPERTY).setValue(contact.contact());
-			item.getItemProperty(PersonEditView.CONTACT_DOMAIN_PROPERTY).setValue(new AbstractMap.SimpleEntry<UUID,Contact>(newId(), contact) );
+			item.getItemProperty(PersonEditView.CONTACT_DOMAIN_PROPERTY).setValue(new AbstractMap.SimpleEntry<UUID,Contact>(id, contact) );
 			
 		});
 		return ic;
@@ -63,6 +63,15 @@ public class ContactMapperImpl implements ContactMapper {
 			results.remove(PersonEditView.CONTACT_DOMAIN_PROPERTY);
 		}
 		return results;
+	}
+
+	@Override
+	public Contact mapInto(final Map<String, ?> map, final Contact contact) {
+		ReflectionUtils.doWithFields(contact.getClass(), field -> { 
+			field.setAccessible(true);
+			field.set(contact, map.get(field.getName()));
+		});
+		return contact;
 	}
 	
 	
