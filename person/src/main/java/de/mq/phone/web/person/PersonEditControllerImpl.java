@@ -15,20 +15,23 @@ import org.springframework.validation.Validator;
 import de.mq.phone.domain.person.Contact;
 import de.mq.phone.domain.person.PersonService;
 import de.mq.phone.domain.person.support.PersonEntities;
+import de.mq.phone.web.person.ValidatorQualifier.Type;
 
 @Controller
 public class PersonEditControllerImpl implements PersonEditController {
 	static final String PERSON_BINDING_NAME = "person";
 	private final Validator personItemSetValidator;
+	private final Validator mailValidator;
 	private final MapToPersonMapper map2Person;
 	private final PersonService personService;
 	private final ContactMapper contactMapper;
 	@Autowired
-	public PersonEditControllerImpl(final PersonService personService, MapToPersonMapper map2Person,final Validator personItemSetValidator, final ContactMapper contactMapper) {
+	public PersonEditControllerImpl(final PersonService personService, MapToPersonMapper map2Person,@ValidatorQualifier(Type.Person) final Validator personItemSetValidator, @ValidatorQualifier(Type.EMail) final Validator mailValidator, final ContactMapper contactMapper) {
 		this.personItemSetValidator = personItemSetValidator;
 		this.map2Person=map2Person;
 		this.personService=personService;
 		this.contactMapper=contactMapper;
+		this.mailValidator=mailValidator;
 	}
 
 	/* (non-Javadoc)
@@ -62,6 +65,18 @@ public class PersonEditControllerImpl implements PersonEditController {
 		}
 		
 		if( bindingResult.hasErrors()) {
+			return bindingResult;
+		}
+		
+		if( personEditModel.isMailContact() ) {
+			ValidationUtils.invokeValidator(mailValidator, map, bindingResult);
+		}
+		
+		if( personEditModel.isPhoneContact()){
+			
+		}
+		
+		if(bindingResult.hasErrors() ){
 			return bindingResult;
 		}
 		

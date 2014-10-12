@@ -1,7 +1,6 @@
 package de.mq.phone.web.person;
 
 import java.util.Arrays;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -92,7 +91,10 @@ class ContactEditorView extends CustomComponent {
 		mainLayoout.addComponent(changeButton);
 		
 		changeButton.addClickListener(event -> { 
-			final BindingResult bidingResult = personEditController.validateAndTakeOver(bindingResultMapper.convert(binder), personEditModel);
+			final BindingResult bindingResult = personEditController.validateAndTakeOver(bindingResultMapper.convert(binder), personEditModel);
+			
+			
+			bindingResultMapper.mapInto(bindingResult, binder);
 		});
 		
 		

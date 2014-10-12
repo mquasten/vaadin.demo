@@ -9,9 +9,11 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import de.mq.phone.web.person.PersonEditView.Fields;
+import de.mq.phone.web.person.ValidatorQualifier.Type;
 
 
 @Component
+@ValidatorQualifier(Type.Person)
 public class PersonFieldSetValidator implements Validator{
 
 	private static final String FIELD_MANDATORY = "person_field_mandatory";
