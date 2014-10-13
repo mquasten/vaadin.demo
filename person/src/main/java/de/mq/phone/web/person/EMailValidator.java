@@ -9,7 +9,7 @@ import org.springframework.validation.Validator;
 import de.mq.phone.web.person.ValidatorQualifier.Type;
 @Component
 @ValidatorQualifier(Type.EMail)
-public class EMailtValidator implements Validator{
+public class EMailValidator implements Validator{
 	
 	private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";  
 

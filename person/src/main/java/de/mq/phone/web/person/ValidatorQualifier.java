@@ -16,6 +16,7 @@ public @interface ValidatorQualifier {
 		public enum Type{
 			Person,
 			EMail,
+			Phone;
 		}
 		
 		Type value();

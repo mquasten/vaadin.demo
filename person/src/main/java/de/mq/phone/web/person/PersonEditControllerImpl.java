@@ -22,16 +22,18 @@ public class PersonEditControllerImpl implements PersonEditController {
 	static final String PERSON_BINDING_NAME = "person";
 	private final Validator personItemSetValidator;
 	private final Validator mailValidator;
+	private final Validator phoneValidator;
 	private final MapToPersonMapper map2Person;
 	private final PersonService personService;
 	private final ContactMapper contactMapper;
 	@Autowired
-	public PersonEditControllerImpl(final PersonService personService, MapToPersonMapper map2Person,@ValidatorQualifier(Type.Person) final Validator personItemSetValidator, @ValidatorQualifier(Type.EMail) final Validator mailValidator, final ContactMapper contactMapper) {
+	public PersonEditControllerImpl(final PersonService personService, MapToPersonMapper map2Person,@ValidatorQualifier(Type.Person) final Validator personItemSetValidator, @ValidatorQualifier(Type.EMail) final Validator mailValidator,@ValidatorQualifier(Type.Phone) final Validator phoneValidator, final ContactMapper contactMapper) {
 		this.personItemSetValidator = personItemSetValidator;
 		this.map2Person=map2Person;
 		this.personService=personService;
 		this.contactMapper=contactMapper;
 		this.mailValidator=mailValidator;
+		this.phoneValidator=phoneValidator;
 	}
 
 	/* (non-Javadoc)
@@ -73,7 +75,7 @@ public class PersonEditControllerImpl implements PersonEditController {
 		}
 		
 		if( personEditModel.isPhoneContact()){
-			
+			ValidationUtils.invokeValidator(phoneValidator, map, bindingResult);
 		}
 		
 		if(bindingResult.hasErrors() ){
