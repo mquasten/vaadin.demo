@@ -5,6 +5,7 @@ import java.util.Arrays;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,10 @@ import de.mq.vaadin.util.BindingResultsToFieldGroupMapper;
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS, value = "session")
 class ContactEditorView extends CustomComponent {
 
+	private static final String I18N_EDIT_CONTACT_HEADLINE = "edit_contact_headline";
+
+	private static final String I18N_EDIT_CONTACT_BUTTON = "edit_contact_change_button";
+
 	enum Fields {
 		Contact(new TextField()), CountryCode(new TextField()), NationalDestinationCode(new TextField()), SubscriberNumber(new TextField());
 
@@ -43,7 +48,6 @@ class ContactEditorView extends CustomComponent {
 		}
 
 		TextField field() {
-			 field.setCaption("<" + property() + ">");
 			 field.setVisible(false);
 			return field;
 		}
@@ -54,15 +58,19 @@ class ContactEditorView extends CustomComponent {
 	private final PersonEditModel personEditModel;
 	private final BindingResultsToFieldGroupMapper bindingResultMapper;
 	private final ContactMapper contactMapper;
-	
+	private final UserModel userModel;
+	private final MessageSource messageSource;
 	private final PersonEditController personEditController; 
+	private final String I18N_EDIT_CONTACT_PREFIX="edit_contact_"; 
 	
 	@Autowired
-	ContactEditorView(final PersonEditModel personEditModel, final PersonEditController personEditController,final BindingResultsToFieldGroupMapper bindingResultMapper, final ContactMapper contactMapper) {
+	ContactEditorView(final PersonEditModel personEditModel, final PersonEditController personEditController,final BindingResultsToFieldGroupMapper bindingResultMapper, final ContactMapper contactMapper, final UserModel userModel, final MessageSource messageSource) {
 		this.personEditModel=personEditModel;
 		this.personEditController=personEditController;
 		this.bindingResultMapper=bindingResultMapper;
 		this.contactMapper=contactMapper;
+		this.userModel=userModel;
+		this.messageSource=messageSource;
 	}
 
 	@PostConstruct
@@ -73,7 +81,7 @@ class ContactEditorView extends CustomComponent {
 		mainLayoout.setMargin(true);
 		final GridLayout formLayout = new GridLayout();
 		mainLayoout.addComponent(formLayout);
-		formLayout.setCaption("<Kontakt bearbeiten>");
+		
 		final PropertysetItem contactItem = new PropertysetItem();
 		final FieldGroup binder = new FieldGroup(contactItem);
 		binder.setBuffered(true);
@@ -86,7 +94,7 @@ class ContactEditorView extends CustomComponent {
 		});
 
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
-		final Button changeButton = new Button("<übernehmen>"); 
+		final Button changeButton = new Button(); 
 		buttonLayout.addComponent(changeButton);
 		mainLayoout.addComponent(changeButton);
 		
@@ -115,8 +123,19 @@ class ContactEditorView extends CustomComponent {
 		}, PersonEditModel.EventType.ContactChanged );
 			
 	
+		userModel.register(event -> { 
+			setLocale(userModel.getLocale());
+			changeButton.setCaption(getString(I18N_EDIT_CONTACT_BUTTON));
+			formLayout.setCaption(getString(I18N_EDIT_CONTACT_HEADLINE));
+			binder.getFields().forEach(field -> field.setCaption(getString((I18N_EDIT_CONTACT_PREFIX + binder.getPropertyId(field)).toLowerCase())) );
+		}, UserModel.EventType.LocaleChanges);
+		
 		
 		setCompositionRoot(mainLayoout);
+	}
+	
+	private String getString(final String key) {
+		return messageSource.getMessage(key, null, getLocale());
 	}
 
 }
