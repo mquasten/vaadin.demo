@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
@@ -14,14 +15,20 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
 import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractTextField;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -31,8 +38,10 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.BaseTheme;
 
 import de.mq.phone.domain.person.Contact;
+import de.mq.phone.domain.person.support.PersonEntities;
 import de.mq.phone.web.person.PersonEditModel.EventType;
 import de.mq.vaadin.util.BindingResultsToFieldGroupMapper;
 import de.mq.vaadin.util.ViewNav;
@@ -56,6 +65,8 @@ class PersonEditView extends CustomComponent implements View {
 		IBan(2, 0,new TextField()), BankIdentifierCode(2, 1,new TextField()),
 		
 		Contacts(3,0, new ListSelect());
+		
+		
 
 		private final int row;
 		private final int col;
@@ -138,6 +149,33 @@ class PersonEditView extends CustomComponent implements View {
 			}
 			
 		});
+		
+		final HorizontalLayout typeLayout= new HorizontalLayout();
+		typeLayout.setMargin(true);
+		final ComboBox typeComboBox = new ComboBox("<Neuer Kontakt>");
+		final Container ic = new IndexedContainer();
+		
+		ic.addContainerProperty("type", String.class, "");
+		
+		ic.addItem("x").getItemProperty("type").setValue("Pfone");
+		ic.addItem("y").getItemProperty("type").setValue("EMail");
+	
+		typeComboBox.setItemCaptionPropertyId("type");
+		typeComboBox.setContainerDataSource( ic);
+		typeLayout.addComponent(typeComboBox);
+		
+		Button pictureButton = new Button();
+     
+      pictureButton.setIcon(new ThemeResource("add-icon.png"));
+      pictureButton.setStyleName(BaseTheme.BUTTON_LINK);
+      typeLayout.addComponent(pictureButton);
+      typeLayout.setComponentAlignment(pictureButton, Alignment.BOTTOM_LEFT);
+     
+		
+		
+		editFormLayout.addComponent(typeLayout, 2, 3);
+		
+		
 		
 		addConatctChangeListener();
 		 
@@ -227,5 +265,7 @@ class PersonEditView extends CustomComponent implements View {
 	private String getString(final String key, Object[] args) {
 		return messageSource.getMessage(key, args, getLocale());
 	}
+	
+	
 
 }
