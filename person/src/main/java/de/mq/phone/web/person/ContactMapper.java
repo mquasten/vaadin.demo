@@ -1,6 +1,7 @@
 package de.mq.phone.web.person;
 
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -18,5 +19,9 @@ public interface ContactMapper extends Converter<Collection<Contact>,Container> 
 	Map<String, Object> contactToMap(final Entry<UUID,Contact> source);
 	
 	Contact  mapInto(final Map<String,?> map, final Contact contact);
+	
+	Container convert(final Locale locale);
+	
+   
 
 }

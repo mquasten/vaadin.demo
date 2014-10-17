@@ -96,5 +96,13 @@ public  final class PersonEntities {
 			}
 		};
 	}
+	
+	public static Contact newPhone() {
+		return BeanUtils.instantiateClass(PhoneImpl.class, Contact.class);
+	}
+	
+	public static Contact newEMail() {
+		return BeanUtils.instantiateClass(EMailContact.class, Contact.class);
+	}
 
 }

@@ -3,10 +3,13 @@ package de.mq.phone.web.person;
 import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
@@ -18,9 +21,17 @@ import de.mq.phone.domain.person.Contact;
 import de.mq.phone.domain.person.support.PersonEntities;
 
 @Component
-public class ContactMapperImpl implements ContactMapper {
+class ContactMapperImpl implements ContactMapper {
 
 	private static final double UUID_RANDOM_SCALE = 1e18;
+	
+	private final MessageSource messageSource;
+	
+	@Autowired
+	ContactMapperImpl(final MessageSource messageSource) {
+		this.messageSource=messageSource;
+	}
+	
 
 	/*
 	 * (non-Javadoc)
@@ -44,6 +55,8 @@ public class ContactMapperImpl implements ContactMapper {
 		});
 		return ic;
 	}
+	
+	
 
 	private UUID newId() {
 		return new UUID(Math.round(UUID_RANDOM_SCALE * Math.random()), Math.round(UUID_RANDOM_SCALE * Math.random()));
@@ -72,6 +85,20 @@ public class ContactMapperImpl implements ContactMapper {
 			field.set(contact, map.get(field.getName()));
 		});
 		return contact;
+	}
+
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Container convert(Locale locale) {
+		final Container ic = new IndexedContainer();
+		
+		ic.addContainerProperty(PersonEditView.CONTACT_TYPE_PROPERTY, String.class, "");
+		
+		ic.addItem(PersonEntities.newPhone()).getItemProperty("type").setValue(messageSource.getMessage("contact_type_phone", null, locale));
+		ic.addItem(PersonEntities.newEMail()).getItemProperty("type").setValue(messageSource.getMessage("contact_type_mail", null, locale));
+		return ic;
 	}
 	
 	

@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
@@ -15,10 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
 import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.navigator.View;
@@ -41,7 +37,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
 import de.mq.phone.domain.person.Contact;
-import de.mq.phone.domain.person.support.PersonEntities;
 import de.mq.phone.web.person.PersonEditModel.EventType;
 import de.mq.vaadin.util.BindingResultsToFieldGroupMapper;
 import de.mq.vaadin.util.ViewNav;
@@ -51,6 +46,7 @@ import de.mq.vaadin.util.ViewNav;
 class PersonEditView extends CustomComponent implements View {
 
 	
+	private static final String I18N_CONTACT_TYPE = "contact_type";
 	private static final String I18N_EDIT_PERSON_PREFIX = "edit_person_";
 	private static final String I18N_EDIT_PERSON_SAVE = "edit_person_save";
 	private static final String I18N_EDIT_PERSON_CANCEL = "edit_person_cancel";
@@ -102,6 +98,7 @@ class PersonEditView extends CustomComponent implements View {
 	static final String CONTACT_DOMAIN_PROPERTY = "contact";
 	static final String CONTACT_STRING_PROPERTY = "contactAsString";
 	
+	static final String CONTACT_TYPE_PROPERTY="type";
 	
 	private final PersonEditController personEditController;
 	private final ViewNav viewNav;
@@ -152,16 +149,12 @@ class PersonEditView extends CustomComponent implements View {
 		
 		final HorizontalLayout typeLayout= new HorizontalLayout();
 		typeLayout.setMargin(true);
-		final ComboBox typeComboBox = new ComboBox("<Neuer Kontakt>");
-		final Container ic = new IndexedContainer();
-		
-		ic.addContainerProperty("type", String.class, "");
-		
-		ic.addItem("x").getItemProperty("type").setValue("Pfone");
-		ic.addItem("y").getItemProperty("type").setValue("EMail");
+		final ComboBox typeComboBox = new ComboBox();
+		typeComboBox.setNullSelectionAllowed(false);
+	   typeComboBox.setNewItemsAllowed(false);
 	
-		typeComboBox.setItemCaptionPropertyId("type");
-		typeComboBox.setContainerDataSource( ic);
+		typeComboBox.setItemCaptionPropertyId(CONTACT_TYPE_PROPERTY);
+		
 		typeLayout.addComponent(typeComboBox);
 		
 		Button pictureButton = new Button();
@@ -213,6 +206,8 @@ class PersonEditView extends CustomComponent implements View {
 			panel.setCaption(getString(I18N_EDIT_PERSON_HEADLINE));
 			cancelButton.setCaption(getString(I18N_EDIT_PERSON_CANCEL));
 			saveButton.setCaption(getString(I18N_EDIT_PERSON_SAVE));
+			typeComboBox.setContainerDataSource( contactMapper.convert(getLocale()));
+		   typeComboBox.setCaption(getString(I18N_CONTACT_TYPE));
 
 		}, UserModel.EventType.LocaleChanges);
 		panel.setContent(editFormLayout);
