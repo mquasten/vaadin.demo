@@ -1,11 +1,13 @@
 package de.mq.phone.web.person;
 
+import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
@@ -14,12 +16,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 
+import com.vaadin.data.Item;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.Alignment;
@@ -34,7 +36,6 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.BaseTheme;
 
 import de.mq.phone.domain.person.Contact;
 import de.mq.phone.web.person.PersonEditModel.EventType;
@@ -147,22 +148,32 @@ class PersonEditView extends CustomComponent implements View {
 			
 		});
 		
-		final HorizontalLayout typeLayout= new HorizontalLayout();
+		final VerticalLayout typeLayout= new VerticalLayout();
 		typeLayout.setMargin(true);
+		
+		
 		final ComboBox typeComboBox = new ComboBox();
 		typeComboBox.setNullSelectionAllowed(false);
 	   typeComboBox.setNewItemsAllowed(false);
-	
 		typeComboBox.setItemCaptionPropertyId(CONTACT_TYPE_PROPERTY);
+	
+		
+		
 		
 		typeLayout.addComponent(typeComboBox);
 		
-		Button pictureButton = new Button();
+		
+		Button addButton = new Button();
      
-      pictureButton.setIcon(new ThemeResource("add-icon.png"));
-      pictureButton.setStyleName(BaseTheme.BUTTON_LINK);
-      typeLayout.addComponent(pictureButton);
-      typeLayout.setComponentAlignment(pictureButton, Alignment.BOTTOM_LEFT);
+		addButton.addClickListener(event -> { 
+			System.out.println(typeComboBox.getValue());
+		
+			final Contact contact =  BeanUtils.instantiateClass((Class<Contact>)typeComboBox.getValue().getClass(), Contact.class);
+			personEditController.assign(personEditModel, new AbstractMap.SimpleEntry<>(new UUID(Math.round(1e12 * Math.random()), Math.round(1e12 * Math.random())) , contact));
+		});
+     
+      typeLayout.addComponent(addButton);
+      typeLayout.setComponentAlignment(addButton, Alignment.BOTTOM_LEFT);
      
 		
 		
@@ -208,6 +219,13 @@ class PersonEditView extends CustomComponent implements View {
 			saveButton.setCaption(getString(I18N_EDIT_PERSON_SAVE));
 			typeComboBox.setContainerDataSource( contactMapper.convert(getLocale()));
 		   typeComboBox.setCaption(getString(I18N_CONTACT_TYPE));
+		   
+		   if( ! typeComboBox.getContainerDataSource().getItemIds().isEmpty() ) {
+			
+		   	typeComboBox.setValue(typeComboBox.getContainerDataSource().getItemIds().iterator().next());
+			}
+		   
+		   addButton.setCaption(getString("contact_add"));
 
 		}, UserModel.EventType.LocaleChanges);
 		panel.setContent(editFormLayout);
@@ -222,7 +240,15 @@ class PersonEditView extends CustomComponent implements View {
 		}, EventType.PersonChanged);
 		
 		
-		personEditModel.register(event ->  ((ListSelect) Fields.Contacts.field()).getItem(personEditModel.getSelectedContact().getKey()).getItemProperty(CONTACT_STRING_PROPERTY).setValue(personEditModel.getSelectedContact().getValue().contact()) , EventType.ContactTakeOver);
+		personEditModel.register(event ->  {
+			final Item item = ((ListSelect) Fields.Contacts.field()).getItem(personEditModel.getSelectedContact().getKey());
+		   if( item == null){
+		   	System.out.println("map new Contact) into container");;
+		   	return;
+		   }
+			
+			item.getItemProperty(CONTACT_STRING_PROPERTY).setValue(personEditModel.getSelectedContact().getValue().contact());}
+		, EventType.ContactTakeOver);
 	}
 
 
