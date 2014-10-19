@@ -1,6 +1,7 @@
 package de.mq.phone.web.person;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 import javax.annotation.PostConstruct;
 
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.MapBindingResult;
 
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.ObjectProperty;
@@ -110,6 +112,9 @@ class ContactEditorView extends CustomComponent {
 			bindingResultMapper.mapInto(contactMapper.contactToMap(personEditModel.getSelectedContact()), binder); 
 		   binder.getFields().forEach(field ->  field.setVisible(false));
 		   setVisible(false);
+		 
+		   bindingResultMapper.mapInto(new MapBindingResult(new HashMap<>(),"contact"), binder);
+		   
 		   if( personEditModel.isMailContact() ) {
 		   	Fields.Contact.field().setVisible(true);
 		   	setVisible(true);
@@ -119,6 +124,8 @@ class ContactEditorView extends CustomComponent {
 		   	Arrays.stream( Fields.values()).filter(field -> field != Fields.Contact ).forEach(field -> field.field().setVisible(true));
 		   	setVisible(true); 
 		   }
+		   
+		  
 		   
 		}, PersonEditModel.EventType.ContactChanged );
 			

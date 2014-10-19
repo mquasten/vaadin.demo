@@ -22,6 +22,6 @@ public interface ContactMapper extends Converter<Collection<Contact>,Container> 
 	
 	Container convert(final Locale locale);
 	
-   
+	static final double UUID_RANDOM_SCALE = 1e18;
 
 }

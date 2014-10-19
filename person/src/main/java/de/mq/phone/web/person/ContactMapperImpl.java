@@ -23,7 +23,7 @@ import de.mq.phone.domain.person.support.PersonEntities;
 @Component
 class ContactMapperImpl implements ContactMapper {
 
-	private static final double UUID_RANDOM_SCALE = 1e18;
+	
 	
 	private final MessageSource messageSource;
 	
@@ -107,8 +107,8 @@ class ContactMapperImpl implements ContactMapper {
 		
 		ic.addContainerProperty(PersonEditView.CONTACT_TYPE_PROPERTY, String.class, "");
 		
-		ic.addItem(PersonEntities.newPhone()).getItemProperty("type").setValue(messageSource.getMessage("contact_type_phone", null, locale));
-		ic.addItem(PersonEntities.newEMail()).getItemProperty("type").setValue(messageSource.getMessage("contact_type_mail", null, locale));
+		ic.addItem(PersonEntities.ContactType.Phone.type()).getItemProperty("type").setValue(messageSource.getMessage("contact_type_phone", null, locale));
+		ic.addItem(PersonEntities.ContactType.Email.type()).getItemProperty("type").setValue(messageSource.getMessage("contact_type_mail", null, locale));
 		return ic;
 	}
 	

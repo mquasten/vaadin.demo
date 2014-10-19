@@ -1,9 +1,11 @@
 package de.mq.phone.web.person;
 
+import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -100,6 +102,12 @@ public class PersonEditControllerImpl implements PersonEditController {
 	@Override
 	public final void assign(final  PersonEditModel personEditModel, final Entry<UUID, Contact> contactEntry) {
 		personEditModel.setCurrentContact(contactEntry);
+	}
+	
+
+	@Override
+	public final void assign(final  PersonEditModel personEditModel,  final Class<? extends Contact> clazz){
+		assign( personEditModel ,  new AbstractMap.SimpleEntry<>(new UUID(Math.round(ContactMapper.UUID_RANDOM_SCALE *  Math.random()), Math.round(ContactMapper.UUID_RANDOM_SCALE * Math.random())) , BeanUtils.instantiateClass(clazz, Contact.class)));
 	}
 	
 	@Override

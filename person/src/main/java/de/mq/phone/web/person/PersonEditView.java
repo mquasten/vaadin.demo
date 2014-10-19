@@ -1,13 +1,11 @@
 package de.mq.phone.web.person;
 
-import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
@@ -166,11 +164,7 @@ class PersonEditView extends CustomComponent implements View {
 		
 		Button addButton = new Button();
      
-		// TODO:  ueberarbeiten, Klasse genuegt, keine Instanz
-		addButton.addClickListener(event -> { 		
-			final Contact contact =  BeanUtils.instantiateClass((Class<Contact>)typeComboBox.getValue().getClass(), Contact.class);
-			personEditController.assign(personEditModel, new AbstractMap.SimpleEntry<>(new UUID(Math.round(1e12 * Math.random()), Math.round(1e12 * Math.random())) , contact));
-		});
+		addButton.addClickListener(event -> personEditController.assign(personEditModel, (Class<? extends Contact>) typeComboBox.getValue()));
      
       typeLayout.addComponent(addButton);
       typeLayout.setComponentAlignment(addButton, Alignment.BOTTOM_LEFT);
@@ -224,7 +218,7 @@ class PersonEditView extends CustomComponent implements View {
 			
 		   	typeComboBox.setValue(typeComboBox.getContainerDataSource().getItemIds().iterator().next());
 			}
-		   
+		 
 		   addButton.setCaption(getString("contact_add"));
 
 		}, UserModel.EventType.LocaleChanges);
@@ -249,8 +243,8 @@ class PersonEditView extends CustomComponent implements View {
 		   	item.getItemProperty(CONTACT_DOMAIN_PROPERTY).setValue((personEditModel.getSelectedContact()));		   	
 		   }
 			item.getItemProperty(CONTACT_STRING_PROPERTY).setValue(personEditModel.getSelectedContact().getValue().contact());
-			//((ListSelect) Fields.Contacts.field()).setContainerDataSource(container);
-			 ((ListSelect) Fields.Contacts.field()).setValue(personEditModel.getSelectedContact().getKey());
+			
+			((ListSelect) Fields.Contacts.field()).setValue(personEditModel.getSelectedContact().getKey());
 			
 		}
 		, EventType.ContactTakeOver);

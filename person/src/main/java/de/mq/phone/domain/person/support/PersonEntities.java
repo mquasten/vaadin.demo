@@ -16,6 +16,21 @@ import de.mq.phone.domain.person.PersonStringAware;
 
 public  final class PersonEntities {
 	
+	public enum ContactType {
+		Email(EMailContact.class),
+		Phone(PhoneImpl.class);
+		
+		final Class<? extends Contact> clazz;
+		ContactType(final Class<? extends Contact> clazz) {
+			this.clazz=clazz;
+		}
+		
+		public final Class<? extends Contact> type() {
+			return clazz;
+		}
+		
+	}
+	
 
 	private PersonEntities(){
 		throw new IllegalStateException("Creating instance is forbidden: " + getClass().getName());
@@ -97,12 +112,6 @@ public  final class PersonEntities {
 		};
 	}
 	
-	public static Contact newPhone() {
-		return BeanUtils.instantiateClass(PhoneImpl.class, Contact.class);
-	}
 	
-	public static Contact newEMail() {
-		return BeanUtils.instantiateClass(EMailContact.class, Contact.class);
-	}
 
 }

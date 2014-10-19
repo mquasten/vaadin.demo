@@ -21,4 +21,6 @@ public interface PersonEditController {
 	void assign(PersonEditModel personEditModel,Entry<UUID,Contact> contactEntry);
 	BindingResult validateAndTakeOver(final Map<String,?> map, final PersonEditModel personEditModel );
 
+	void assign(final PersonEditModel personEditModel, final Class<? extends Contact> clazz);
+
 }
