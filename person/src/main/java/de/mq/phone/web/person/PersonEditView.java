@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 
+import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.ObjectProperty;
@@ -165,9 +166,8 @@ class PersonEditView extends CustomComponent implements View {
 		
 		Button addButton = new Button();
      
-		addButton.addClickListener(event -> { 
-			System.out.println(typeComboBox.getValue());
-		
+		// TODO:  ueberarbeiten, Klasse genuegt, keine Instanz
+		addButton.addClickListener(event -> { 		
 			final Contact contact =  BeanUtils.instantiateClass((Class<Contact>)typeComboBox.getValue().getClass(), Contact.class);
 			personEditController.assign(personEditModel, new AbstractMap.SimpleEntry<>(new UUID(Math.round(1e12 * Math.random()), Math.round(1e12 * Math.random())) , contact));
 		});
@@ -241,13 +241,18 @@ class PersonEditView extends CustomComponent implements View {
 		
 		
 		personEditModel.register(event ->  {
-			final Item item = ((ListSelect) Fields.Contacts.field()).getItem(personEditModel.getSelectedContact().getKey());
+			// TODO: in maapper auslagern 
+			final Container container = ((ListSelect)  Fields.Contacts.field()).getContainerDataSource();
+			Item item =container.getItem(personEditModel.getSelectedContact().getKey());
 		   if( item == null){
-		   	System.out.println("map new Contact) into container");;
-		   	return;
+		   	item= ((ListSelect) Fields.Contacts.field()).getContainerDataSource().addItem(personEditModel.getSelectedContact().getKey());
+		   	item.getItemProperty(CONTACT_DOMAIN_PROPERTY).setValue((personEditModel.getSelectedContact()));		   	
 		   }
+			item.getItemProperty(CONTACT_STRING_PROPERTY).setValue(personEditModel.getSelectedContact().getValue().contact());
+			//((ListSelect) Fields.Contacts.field()).setContainerDataSource(container);
+			 ((ListSelect) Fields.Contacts.field()).setValue(personEditModel.getSelectedContact().getKey());
 			
-			item.getItemProperty(CONTACT_STRING_PROPERTY).setValue(personEditModel.getSelectedContact().getValue().contact());}
+		}
 		, EventType.ContactTakeOver);
 	}
 

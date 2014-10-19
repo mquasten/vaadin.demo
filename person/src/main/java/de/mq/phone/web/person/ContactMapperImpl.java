@@ -68,13 +68,24 @@ class ContactMapperImpl implements ContactMapper {
 		if(entry == null){
 			return results;
 		}
-		ReflectionUtils.doWithFields(entry.getValue().getClass(), field -> { field.setAccessible(true); results.put(field.getName(), field.get(entry.getValue()));}, field -> {
+		ReflectionUtils.doWithFields(entry.getValue().getClass(), field -> { 
+			field.setAccessible(true); 
+			Object value =  field.get(entry.getValue()  );
+			if( value == null){
+				value="";
+			}
+			results.put(field.getName(),   value);
+		}, field -> {
 			return field.getType().equals(String.class);
 			});
 		
 		if( ! PersonEntities.isMailContact(entry.getValue()) ) {
 			results.remove(PersonEditView.CONTACT_DOMAIN_PROPERTY);
 		}
+		
+		
+		
+		
 		return results;
 	}
 
