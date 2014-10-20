@@ -46,8 +46,8 @@ class BindingResultsToFieldGroupMapperImpl implements BindingResultsToFieldGroup
 	 */
 	
 	@Override
-	public Map<String, ?> convert(final FieldGroup group) {
-		final Map<String,String> results = new HashMap<>();
+	public Map<String,Object> convert(final FieldGroup group) {
+		final Map<String,Object> results = new HashMap<>();
 		group.getFields().forEach(field -> results.put((String) group.getPropertyId(field) , (String) field.getValue()) );
 		return results;
 	} 

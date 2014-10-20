@@ -2,11 +2,13 @@ package de.mq.phone.web.person;
 
 import java.util.AbstractMap;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -54,6 +56,17 @@ class ContactMapperImpl implements ContactMapper {
 			
 		});
 		return ic;
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public final Collection<Contact> convert(final  Container container) {
+		return Collections.unmodifiableSet(container.getItemIds().stream().map(id -> {
+			return ((Entry<?, Contact>) container.getItem(id).getItemProperty(PersonEditView.CONTACT_DOMAIN_PROPERTY).getValue()).getValue();
+		}
+		).collect(Collectors.toSet()));
+		
 	}
 	
 	

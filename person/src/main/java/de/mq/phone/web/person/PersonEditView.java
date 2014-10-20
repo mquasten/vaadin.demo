@@ -1,6 +1,7 @@
 package de.mq.phone.web.person;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
@@ -195,7 +196,11 @@ class PersonEditView extends CustomComponent implements View {
 		buttonLayout.addComponent(saveButton);
 
 		saveButton.addClickListener(event -> {
-			final BindingResult  bindingResult = personEditController.validateAndSave(bindingResultMapper.convert(binder), personEditModel);
+			
+			final Container contactContainer = ((ListSelect) Fields.Contacts.field()).getContainerDataSource();
+			final Map<String,Object>   personAsMap = bindingResultMapper.convert(binder);
+			personAsMap.put(Fields.Contacts.property(),  contactMapper.convert(contactContainer) );
+			final BindingResult  bindingResult = personEditController.validateAndSave(personAsMap, personEditModel);
 			
 			bindingResultMapper.mapInto(bindingResult, binder);
 			if( bindingResult.hasGlobalErrors() ) {

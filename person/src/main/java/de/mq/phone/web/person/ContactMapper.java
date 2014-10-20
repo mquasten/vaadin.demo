@@ -24,4 +24,6 @@ public interface ContactMapper extends Converter<Collection<Contact>,Container> 
 	
 	static final double UUID_RANDOM_SCALE = 1e18;
 
+	Collection<Contact> convert(final Container container);
+
 }
