@@ -268,7 +268,7 @@ public class PersonSearchViewTest {
 		contacts.add("skype:kinkyKylie");
 		contacts.add("kylie.minoge@fver.net");
 		Mockito.when(property.getValue()).thenReturn(contacts);
-		final ListSelect listSelect = personSearchView.contactColumnGenerator(table, itemId);
+		final ListSelect listSelect = (ListSelect) personSearchView.contactColumnGenerator(table, itemId);
 		Assert.assertEquals(contacts, listSelect.getItemIds());
 		Assert.assertEquals(3, listSelect.getRows());
 	}

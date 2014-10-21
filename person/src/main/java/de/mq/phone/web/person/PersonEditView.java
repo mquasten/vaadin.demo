@@ -16,7 +16,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 
 import com.vaadin.data.Container;
-import com.vaadin.data.Item;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
@@ -46,24 +45,21 @@ import de.mq.vaadin.util.ViewNav;
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS, value = "session")
 class PersonEditView extends CustomComponent implements View {
 
-	
+	private static final String I18N_CONTACT_ADD = "contact_add";
 	private static final String I18N_CONTACT_TYPE = "contact_type";
 	private static final String I18N_EDIT_PERSON_PREFIX = "edit_person_";
 	private static final String I18N_EDIT_PERSON_SAVE = "edit_person_save";
 	private static final String I18N_EDIT_PERSON_CANCEL = "edit_person_cancel";
 	private static final String I18N_EDIT_PERSON_HEADLINE = "edit_person_headline";
 
-
 	enum Fields {
 		Name(0, 0, new TextField()), Firstname(0, 1, new TextField()), Alias(0, 2, new TextField()),
 
-		Street(1, 0,new TextField()), HouseNumber(1, 1,new TextField()), ZipCode(1, 2,new TextField()), City(1, 3,new TextField()),
+		Street(1, 0, new TextField()), HouseNumber(1, 1, new TextField()), ZipCode(1, 2, new TextField()), City(1, 3, new TextField()),
 
-		IBan(2, 0,new TextField()), BankIdentifierCode(2, 1,new TextField()),
-		
-		Contacts(3,0, new ListSelect());
-		
-		
+		IBan(2, 0, new TextField()), BankIdentifierCode(2, 1, new TextField()),
+
+		Contacts(3, 0, new ListSelect());
 
 		private final int row;
 		private final int col;
@@ -72,24 +68,24 @@ class PersonEditView extends CustomComponent implements View {
 		Fields(int row, int col, AbstractField<?> field) {
 			this.col = col;
 			this.row = row;
-			this.field=field;
+			this.field = field;
 		}
 
 		String property() {
 			return StringUtils.uncapitalize(name());
 		}
-		
-		AbstractField<?> field(){
+
+		AbstractField<?> field() {
 			if (field instanceof AbstractTextField) {
-				 ((AbstractTextField) field).setNullRepresentation("");
+				((AbstractTextField) field).setNullRepresentation("");
 			}
-			
+
 			if (field instanceof ListSelect) {
 				((ListSelect) field).setNullSelectionAllowed(false);
 				((ListSelect) field).setItemCaptionPropertyId(CONTACT_STRING_PROPERTY);
 				field.setImmediate(true);
 			}
-			
+
 			return this.field;
 		}
 
@@ -98,9 +94,9 @@ class PersonEditView extends CustomComponent implements View {
 	private static final long serialVersionUID = 1L;
 	static final String CONTACT_DOMAIN_PROPERTY = "contact";
 	static final String CONTACT_STRING_PROPERTY = "contactAsString";
-	
-	static final String CONTACT_TYPE_PROPERTY="type";
-	
+
+	static final String CONTACT_TYPE_PROPERTY = "type";
+
 	private final PersonEditController personEditController;
 	private final ViewNav viewNav;
 	private final BindingResultsToFieldGroupMapper bindingResultMapper;
@@ -110,21 +106,19 @@ class PersonEditView extends CustomComponent implements View {
 	private final MessageSource messageSource;
 	private final ContactMapper contactMapper;
 	private final ContactEditorView contactEditor;
-	
+
 	@Autowired
 	PersonEditView(final PersonEditController personEditController, final PersonEditModel personEditModel, final UserModel userModel, final ViewNav viewNav, final BindingResultsToFieldGroupMapper bindingResultMapper, final MessageSource messageSource, final ContactMapper contactMapper, final ContactEditorView contactEditor) {
 		this.viewNav = viewNav;
 		this.bindingResultMapper = bindingResultMapper;
 		this.userModel = userModel;
 		this.messageSource = messageSource;
-		this.personEditController=personEditController;
-		this.personEditModel=personEditModel;
-		this.contactMapper=contactMapper;
-		this.contactEditor=contactEditor;
+		this.personEditController = personEditController;
+		this.personEditModel = personEditModel;
+		this.contactMapper = contactMapper;
+		this.contactEditor = contactEditor;
 	}
 
-	
-	
 	@SuppressWarnings("unchecked")
 	@PostConstruct
 	public final void init() {
@@ -137,7 +131,7 @@ class PersonEditView extends CustomComponent implements View {
 		final PropertysetItem personItem = new PropertysetItem();
 		final FieldGroup binder = new FieldGroup(personItem);
 		binder.setBuffered(true);
-		
+
 		Arrays.stream(Fields.values()).forEach(field -> {
 			final AbstractField<?> inputField = addInputField(editFormLayout, field);
 			personItem.addItemProperty(field.property(), new ObjectProperty<String>(""));
@@ -145,44 +139,35 @@ class PersonEditView extends CustomComponent implements View {
 				binder.bind(inputField, field.property());
 				personItem.addItemProperty(field.property(), new ObjectProperty<String>(""));
 			}
-			
+
 		});
-		
-		final VerticalLayout typeLayout= new VerticalLayout();
+
+		final VerticalLayout typeLayout = new VerticalLayout();
 		typeLayout.setMargin(true);
-		
-		
+
 		final ComboBox typeComboBox = new ComboBox();
 		typeComboBox.setNullSelectionAllowed(false);
-	   typeComboBox.setNewItemsAllowed(false);
+		typeComboBox.setNewItemsAllowed(false);
 		typeComboBox.setItemCaptionPropertyId(CONTACT_TYPE_PROPERTY);
-	
-		
-		
-		
+
 		typeLayout.addComponent(typeComboBox);
-		
-		
-		Button addButton = new Button();
-     
-		addButton.addClickListener(event -> personEditController.assign(personEditModel, (Class<? extends Contact>) typeComboBox.getValue()));
-     
-      typeLayout.addComponent(addButton);
-      typeLayout.setComponentAlignment(addButton, Alignment.BOTTOM_LEFT);
-     
-		
-		
+
+		final Button addButton = new Button();
+
+		addButton.addClickListener(event -> personEditController.assign(personEditModel, (Class<Contact>) typeComboBox.getValue()));
+
+		typeLayout.addComponent(addButton);
+		typeLayout.setComponentAlignment(addButton, Alignment.BOTTOM_LEFT);
+
 		editFormLayout.addComponent(typeLayout, 2, 3);
-		
-		
-		
+
 		addConatctChangeListener();
-		 
+
 		final HorizontalLayout fieldLayout = new HorizontalLayout();
-	
+
 		fieldLayout.addComponent(contactEditor);
 		editFormLayout.addComponent(fieldLayout, 1, 3);
-		
+
 		final Panel buttonPanel = new Panel();
 
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
@@ -196,69 +181,58 @@ class PersonEditView extends CustomComponent implements View {
 		buttonLayout.addComponent(saveButton);
 
 		saveButton.addClickListener(event -> {
-			
+
 			final Container contactContainer = ((ListSelect) Fields.Contacts.field()).getContainerDataSource();
-			final Map<String,Object>   personAsMap = bindingResultMapper.convert(binder);
-			personAsMap.put(Fields.Contacts.property(),  contactMapper.convert(contactContainer) );
-			final BindingResult  bindingResult = personEditController.validateAndSave(personAsMap, personEditModel);
-			
+			final Map<String, Object> personAsMap = bindingResultMapper.convert(binder);
+			personAsMap.put(Fields.Contacts.property(), contactMapper.convert(contactContainer));
+			final BindingResult bindingResult = personEditController.validateAndSave(personAsMap, personEditModel);
+
 			bindingResultMapper.mapInto(bindingResult, binder);
-			if( bindingResult.hasGlobalErrors() ) {
-				Notification.show(getString(bindingResult.getGlobalError().getCode() , bindingResult.getGlobalError().getArguments()), Type.ERROR_MESSAGE);
+			if (bindingResult.hasGlobalErrors()) {
+				Notification.show(getString(bindingResult.getGlobalError().getCode(), bindingResult.getGlobalError().getArguments()), Type.ERROR_MESSAGE);
 			}
 
 		});
 
-		userModel.register( event -> {
+		userModel.register(event -> {
 			setLocale(userModel.getLocale());
-			binder.getFields().forEach(field -> field.setCaption(getString((I18N_EDIT_PERSON_PREFIX + binder.getPropertyId(field)).toLowerCase())) );
+			binder.getFields().forEach(field -> field.setCaption(getString((I18N_EDIT_PERSON_PREFIX + binder.getPropertyId(field)).toLowerCase())));
 			Fields.Contacts.field().setCaption(getString((I18N_EDIT_PERSON_PREFIX + Fields.Contacts.property().toLowerCase())));
 			panel.setCaption(getString(I18N_EDIT_PERSON_HEADLINE));
 			cancelButton.setCaption(getString(I18N_EDIT_PERSON_CANCEL));
 			saveButton.setCaption(getString(I18N_EDIT_PERSON_SAVE));
-			typeComboBox.setContainerDataSource( contactMapper.convert(getLocale()));
-		   typeComboBox.setCaption(getString(I18N_CONTACT_TYPE));
-		   
-		   if( ! typeComboBox.getContainerDataSource().getItemIds().isEmpty() ) {
-			
-		   	typeComboBox.setValue(typeComboBox.getContainerDataSource().getItemIds().iterator().next());
+			typeComboBox.setContainerDataSource(contactMapper.convert(getLocale()));
+			typeComboBox.setCaption(getString(I18N_CONTACT_TYPE));
+
+			if (!typeComboBox.getContainerDataSource().getItemIds().isEmpty()) {
+
+				typeComboBox.setValue(typeComboBox.getContainerDataSource().getItemIds().iterator().next());
 			}
-		 
-		   addButton.setCaption(getString("contact_add"));
+
+			addButton.setCaption(getString(I18N_CONTACT_ADD));
 
 		}, UserModel.EventType.LocaleChanges);
 		panel.setContent(editFormLayout);
 		mainLayoout.addComponent(panel);
 		mainLayoout.addComponent(buttonPanel);
 		setCompositionRoot(mainLayoout);
-		
-		personEditModel.register( event -> { 
+
+		personEditModel.register(event -> {
 			bindingResultMapper.mapInto(personEditController.person(personEditModel), binder);
 			((ListSelect) Fields.Contacts.field()).setContainerDataSource(contactMapper.convert(personEditModel.getPerson().contacts()));
-			
-		}, EventType.PersonChanged);
-		
-		
-		personEditModel.register(event ->  {
-			// TODO: in maapper auslagern 
-			final Container container = ((ListSelect)  Fields.Contacts.field()).getContainerDataSource();
-			Item item =container.getItem(personEditModel.getSelectedContact().getKey());
-		   if( item == null){
-		   	item= ((ListSelect) Fields.Contacts.field()).getContainerDataSource().addItem(personEditModel.getSelectedContact().getKey());
-		   	item.getItemProperty(CONTACT_DOMAIN_PROPERTY).setValue((personEditModel.getSelectedContact()));		   	
-		   }
-			item.getItemProperty(CONTACT_STRING_PROPERTY).setValue(personEditModel.getSelectedContact().getValue().contact());
-			
-			((ListSelect) Fields.Contacts.field()).setValue(personEditModel.getSelectedContact().getKey());
-			
-		}
-		, EventType.ContactTakeOver);
-	}
 
+		}, EventType.PersonChanged);
+
+		personEditModel.register(event -> {
+			contactMapper.mapInto(personEditModel.getSelectedContact(), ((ListSelect) Fields.Contacts.field()).getContainerDataSource());
+			((ListSelect) Fields.Contacts.field()).setValue(personEditModel.getSelectedContact().getKey());
+
+		}, EventType.ContactTakeOver);
+	}
 
 	@SuppressWarnings("unchecked")
 	private void addConatctChangeListener() {
-		Fields.Contacts.field.addValueChangeListener(event -> personEditController.assign(personEditModel, (Entry<UUID,Contact>)bindingResultMapper.convert(((ListSelect)Fields.Contacts.field()).getItem( event.getProperty().getValue())).get(CONTACT_DOMAIN_PROPERTY)));
+		Fields.Contacts.field.addValueChangeListener(event -> personEditController.assign(personEditModel, (Entry<UUID, Contact>) bindingResultMapper.convert(((ListSelect) Fields.Contacts.field()).getItem(event.getProperty().getValue())).get(CONTACT_DOMAIN_PROPERTY)));
 	}
 
 	private AbstractField<?> addInputField(final GridLayout editFormLayout, final Fields fieldDesc) {
@@ -267,7 +241,7 @@ class PersonEditView extends CustomComponent implements View {
 
 		editFormLayout.addComponent(fieldLayout, fieldDesc.col, fieldDesc.row);
 		final AbstractField<?> field = fieldDesc.field();
-		
+
 		field.setWidth("15em");
 		fieldLayout.addComponent(field);
 		field.setId(fieldDesc.property());
@@ -277,7 +251,7 @@ class PersonEditView extends CustomComponent implements View {
 
 	@Override
 	public void enter(final ViewChangeEvent event) {
-		if(! StringUtils.hasText(event.getParameters())) {
+		if (!StringUtils.hasText(event.getParameters())) {
 			personEditController.assign(personEditModel);
 		} else {
 			personEditController.assign(personEditModel, event.getParameters());
@@ -287,10 +261,9 @@ class PersonEditView extends CustomComponent implements View {
 	private String getString(final String key) {
 		return messageSource.getMessage(key, null, getLocale());
 	}
+
 	private String getString(final String key, Object[] args) {
 		return messageSource.getMessage(key, args, getLocale());
 	}
-	
-	
 
 }

@@ -26,4 +26,6 @@ public interface ContactMapper extends Converter<Collection<Contact>,Container> 
 
 	Collection<Contact> convert(final Container container);
 
+	Container mapInto(final Entry<UUID, Contact> model, final Container container);
+
 }

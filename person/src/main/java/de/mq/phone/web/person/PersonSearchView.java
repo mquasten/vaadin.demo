@@ -25,6 +25,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -253,13 +254,28 @@ class PersonSearchView extends CustomComponent implements View  {
 		}
 	}
 
-	ListSelect contactColumnGenerator(final Table table, final Object itemId) {
+	Field<?> contactColumnGenerator(final Table table, final Object itemId) {
 		final Collection<?> contacts = (Collection<?>) table.getContainerDataSource().getItem(itemId).getItemProperty(CONTACTS).getValue();
+		
+		if( contacts.size() == 0 ) {
+			return  null;
+		}
+		if( contacts.size() ==  1){
+		  final TextField field =   new TextField();	
+		  field.setSizeFull();
+		  field.setValue(contacts.iterator().next().toString());
+		  field.setReadOnly(true);
+		  return field;
+		}
+		
 		final ListSelect listSelect = new ListSelect();
 		contacts.forEach(contact -> listSelect.addItem(contact) );
 		
-		listSelect.setNullSelectionAllowed(false);
+		
 		listSelect.setSizeFull();
+		listSelect.setNullSelectionAllowed(false);
+
+		listSelect.setNewItemsAllowed(false);
 		listSelect.setRows(contacts.size());
 
 		if (contacts.size() > 3) {
