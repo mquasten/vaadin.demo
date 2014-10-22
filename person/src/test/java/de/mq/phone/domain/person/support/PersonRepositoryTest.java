@@ -24,6 +24,7 @@ import de.mq.phone.domain.person.Person;
 
 public class PersonRepositoryTest {
 	
+	private static final String ID = "19680528";
 	private static final String BANKING_ACCOUNT = "DE21 3012 0400 0000 0152 28";
 	private static final String HOUSE_NUMBER = "27";
 	private static final String STREET = "Wrights Lane";
@@ -157,6 +158,14 @@ public class PersonRepositoryTest {
 		
 		final Map<String, Criteria> results = (Map<String, Criteria>) ReflectionTestUtils.getField(queryCaptor.getValue(), "criteria");
 		Assert.assertTrue(results.isEmpty());
+	}
+	
+	@Test
+	public final void forId() {
+		final PersonRepository personRepository = new PersonMongoRepositoryImpl(mongoOperations);
+		final Person result = Mockito.mock(Person.class);
+		Mockito.when(personRepository.forId(ID)).thenReturn(result);
+		Assert.assertEquals(result, personRepository.forId(ID));
 	}
 
 }

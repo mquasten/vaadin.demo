@@ -14,7 +14,7 @@ import de.mq.phone.domain.person.PersonStringAware;
 
 
 
-public  final class PersonEntities {
+public  final  class PersonEntities {
 	
 	public enum ContactType {
 		Email(EMailContact.class),
@@ -31,7 +31,7 @@ public  final class PersonEntities {
 		
 	}
 	
-
+	
 	private PersonEntities(){
 		throw new IllegalStateException("Creating instance is forbidden: " + getClass().getName());
 	}

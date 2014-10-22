@@ -7,6 +7,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.BeanUtils;
+
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.StringUtils;
 
@@ -14,6 +15,7 @@ import de.mq.phone.domain.person.AddressStringAware;
 import de.mq.phone.domain.person.Contact;
 import de.mq.phone.domain.person.Person;
 import de.mq.phone.domain.person.PersonStringAware;
+import de.mq.phone.domain.person.support.PersonEntities.ContactType;
 
 public class PersonEntitiesTest {
 	
@@ -59,14 +61,42 @@ public class PersonEntitiesTest {
 	}
 	
 	@Test
-	public final void newAddress() {
+	public final void newAddressStringAware() {
 		AddressStringAware address = PersonEntities.newAddressStringAware(ADDRESS);
 		Assert.assertEquals(ADDRESS, address.address());
 	}
+	@Test
+	public final void newAddress() {
+		Assert.assertTrue(PersonEntities.newAddress() instanceof AddressImpl);
+		
+	}
+
 	
-	@Test(expected=BeanInstantiationException.class)
+	@Test(expected =BeanInstantiationException.class)
 	public final void create() {
-		 Assert.assertNull(BeanUtils.instantiateClass(PersonEntities.class, PersonEntities.class));
+		 Assert.assertNotNull(BeanUtils.instantiateClass(PersonEntities.class, PersonEntities.class));
+	}
+	
+	@Test
+	public final void isPhone() {
+		 Assert.assertTrue(PersonEntities.isPhoneContact(BeanUtils.instantiateClass(PhoneImpl.class)));
+		 Assert.assertFalse(PersonEntities.isPhoneContact(BeanUtils.instantiateClass(EMailContact.class)));
+	}
+	
+	@Test
+	public final void isMail() {
+		 Assert.assertFalse(PersonEntities.isMailContact(BeanUtils.instantiateClass(PhoneImpl.class)));
+		 Assert.assertTrue(PersonEntities.isMailContact(BeanUtils.instantiateClass(EMailContact.class)));
+	}
+	
+	@Test
+	public final  void contactType() {
+		Assert.assertEquals(EMailContact.class, ContactType.Email.type());
+		Assert.assertEquals(PhoneImpl.class, ContactType.Phone.type());
+		
+		 for( final ContactType type : ContactType.values()) {
+			 Assert.assertEquals(type, ContactType.valueOf(type.name()));
+		 }
 	}
 	
 

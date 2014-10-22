@@ -15,6 +15,7 @@ import de.mq.phone.domain.person.PersonService;
 
 public class PersonServiceTest {
 	
+	private static final String ID = "19680528";
 	private final PersonRepository personRepository = Mockito.mock(PersonRepository.class);
 	
 	@Test
@@ -35,6 +36,14 @@ public class PersonServiceTest {
 		final Person person = Mockito.mock(Person.class);
 		personService.save(person);
 		Mockito.verify(personRepository).save(person);
+	}
+	
+	@Test
+	public final void byId() {
+		final PersonService personService = new PersonServiceImpl(personRepository);
+		final Person person = Mockito.mock(Person.class);
+		Mockito.when(personRepository.forId(ID)).thenReturn(person);
+		Assert.assertEquals(person, personService.person(ID));
 	}
 
 }
