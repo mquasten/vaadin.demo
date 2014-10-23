@@ -28,12 +28,16 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 
 
+
+
+
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.ListenerMethod;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -52,16 +56,18 @@ import de.mq.phone.domain.person.Person;
 import de.mq.phone.domain.person.PersonStringAware;
 import de.mq.phone.domain.person.support.BankingAccount;
 import de.mq.vaadin.util.Observer;
+import de.mq.vaadin.util.ViewNav;
 
 public class PersonSearchViewTest {
 
+	private static final String ID = "19680528";
 	private static final String MAIL = "kinky.kylie@minogue.uk";
 	private static final String SEARCH_FIELD_PERSON_CAPTION = "Person";
 	private static final String SEARCH_PANEL_CAPTION = "suchenPanel";
 	private static final String SEARCH_FIELD_CONTACT_CAPTION = "Kontakt";
 	private static final String SEARCH_FIELD_ADDRESS_CAPTION = "Addresse";
 	private static final String SEARCH_BUTTON_CAPTION = "suchenButton";
-	private static final String NEW_BUTTON_CAPTION = "new";
+	private static final String NEW_BUTTON_CAPTION = PersonSearchView.I18N_NEW_BUTTON_CAPTION;
 	private static final String CHANGE_BUTTON_CAPTION = "aendern";
 	private static final String DELETE_BUTTON_CAPTION = "loeschen";
 	private static final String LANGUAGE_BOX_CAPTION = "Sprache";
@@ -76,7 +82,8 @@ public class PersonSearchViewTest {
 	private final PersonSearchController personSearchController = Mockito.mock(PersonSearchController.class);
 	private final UserModel userModel = Mockito.mock(UserModel.class);
 
-	private final PersonSearchView personSearchView = new PersonSearchView(personSearchModel, personSearchController, messages, userModel, personListContainerConverter, itemToPersonSearchSetConverter, null);
+	private final ViewNav viewNav = Mockito.mock(ViewNav.class);
+	private final PersonSearchView personSearchView = new PersonSearchView(personSearchModel, personSearchController, messages, userModel, personListContainerConverter, itemToPersonSearchSetConverter, viewNav);
 
 	@SuppressWarnings("rawtypes")
 	private final ArgumentCaptor<Observer> localeObserverCaptor = ArgumentCaptor.forClass(Observer.class);
@@ -104,6 +111,7 @@ public class PersonSearchViewTest {
 		Mockito.when(messages.getMessage(PersonSearchView.I18N_CONTACT_TABLE_CAPTION, null, Locale.GERMAN)).thenReturn(CONTACT_TABLE_CAPTION);
 		Mockito.when(messages.getMessage(PersonSearchView.I18N_CONTACT_TABLE_PANEL_CAPTION, null, Locale.GERMAN)).thenReturn(CONTACT_TABLE_PANEL_CAPTION);
 
+	
 		Mockito.when(userModel.getLocale()).thenReturn(Locale.GERMAN);
 		Collection<Locale> locales = new ArrayList<>();
 		locales.add(Locale.GERMAN);
@@ -165,7 +173,7 @@ public class PersonSearchViewTest {
 
 		final List<Person> persons = new ArrayList<>();
 		final Person searchResult = Mockito.mock(Person.class);
-		Mockito.when(searchResult.id()).thenReturn("19680528");
+		Mockito.when(searchResult.id()).thenReturn(ID);
 		Mockito.when(searchResult.person()).thenReturn("Kylie Minogue");
 		final Address address = Mockito.mock(Address.class);
 		Mockito.when(address.address()).thenReturn("London");
@@ -245,6 +253,30 @@ public class PersonSearchViewTest {
 			throw ex.getCause();
 		}
 	}
+	@Test
+	public final void neu() {
+		final Button button = (Button) components.get(PersonSearchView.I18N_NEW_BUTTON_CAPTION);
+		final ClickListener listener = (ClickListener) button.getListeners(ClickEvent.class).iterator().next();
+	
+		listener.buttonClick(Mockito.mock(ClickEvent.class));
+		Mockito.verify(viewNav, Mockito.times(1)).navigateTo(PersonEditView.class);
+	}
+	
+	@Test
+	public final void update() {
+		final Button button = (Button) components.get(CHANGE_BUTTON_CAPTION);
+		final Table table = (Table) components.get(CONTACT_TABLE_CAPTION);
+		table.addItem(ID);
+		table.setValue(ID);
+		
+		final ClickListener listener = (ClickListener) button.getListeners(ClickEvent.class).iterator().next();
+		listener.buttonClick(Mockito.mock(ClickEvent.class));
+		Mockito.verify(viewNav, Mockito.times(1)).navigateTo(PersonEditView.class, ID);
+		table.setValue(null);
+	   listener.buttonClick(Mockito.mock(ClickEvent.class));
+	   
+	   Mockito.verifyNoMoreInteractions(viewNav);
+	}
 	
 	@Test
 	public final void defaultConructor()  {
@@ -253,7 +285,7 @@ public class PersonSearchViewTest {
 	
 	@Test
 	public final void columnGenerator() {
-		final String itemId = "19680528";
+		final String itemId = ID;
 		final Table table = Mockito.mock(Table.class);
 		final Container container = Mockito.mock(Container.class);
 		final Item item = Mockito.mock(Item.class);
@@ -268,9 +300,29 @@ public class PersonSearchViewTest {
 		contacts.add("skype:kinkyKylie");
 		contacts.add("kylie.minogue@fever.net");
 		Mockito.when(property.getValue()).thenReturn(contacts);
-		final ListSelect listSelect = (ListSelect) personSearchView.contactColumnGenerator(table, itemId);
+		ListSelect listSelect = (ListSelect) personSearchView.contactColumnGenerator(table, itemId);
 		Assert.assertEquals(contacts, listSelect.getItemIds());
 		Assert.assertEquals(3, listSelect.getRows());
+		
+		
+		contacts.remove(MAIL);
+		contacts.remove("12345");
+		listSelect = (ListSelect) personSearchView.contactColumnGenerator(table, itemId);
+		Assert.assertEquals(contacts, listSelect.getItemIds());
+		Assert.assertEquals(contacts.size(), listSelect.getRows());
+		
+		contacts.remove("skype:kinkyKylie");
+		TextField  field = (TextField) personSearchView.contactColumnGenerator(table, itemId);
+		Assert.assertEquals("kylie.minogue@fever.net", field.getValue());
+		Assert.assertTrue(field.isReadOnly());
+		
+		contacts.clear();
+		Assert.assertNull(personSearchView.contactColumnGenerator(table, itemId));
+	}
+	@Test
+	public final void enterView() {
+		final ViewChangeEvent event = Mockito.mock(ViewChangeEvent.class);
+		personSearchView.enter(event);
 	}
 
 }

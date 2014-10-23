@@ -196,6 +196,7 @@ class PersonSearchView extends CustomComponent implements View  {
 		table.setEditable(false);
 		
 		updateButton.addClickListener(event -> {
+			
 			final String personId = (String) table.getValue();
 			if(personId==null){
 				return;
@@ -297,7 +298,7 @@ class PersonSearchView extends CustomComponent implements View  {
 	}
 
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void enter(final ViewChangeEvent event) {
 		// TODO Auto-generated method stub
 		
 	}
