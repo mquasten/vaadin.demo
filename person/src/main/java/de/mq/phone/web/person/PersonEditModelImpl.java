@@ -27,7 +27,7 @@ class PersonEditModelImpl extends SubjectImpl<PersonEditModel, PersonEditModel.E
 		notifyObservers(EventType.ContactChanged);
 	}
 	@Override
-	public final Entry<UUID,Contact> getSelectedContact(){
+	public final Entry<UUID,Contact> getCurrentContact(){
 		return this.currentContact;
 	}
 

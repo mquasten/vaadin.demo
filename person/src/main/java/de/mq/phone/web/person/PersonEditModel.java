@@ -22,7 +22,7 @@ interface PersonEditModel extends  Subject<PersonEditModel, PersonEditModel.Even
 	
 	void setCurrentContact(Contact contact);
 
-	Entry<UUID, Contact> getSelectedContact();
+	Entry<UUID, Contact> getCurrentContact();
 
 	boolean isMailContact();
 

@@ -109,7 +109,7 @@ class ContactEditorView extends CustomComponent {
 		
 		
 		personEditModel.register(event -> {
-			bindingResultMapper.mapInto(contactMapper.contactToMap(personEditModel.getSelectedContact()), binder); 
+			bindingResultMapper.mapInto(contactMapper.contactToMap(personEditModel.getCurrentContact()), binder); 
 		   binder.getFields().forEach(field ->  field.setVisible(false));
 		   setVisible(false);
 		 

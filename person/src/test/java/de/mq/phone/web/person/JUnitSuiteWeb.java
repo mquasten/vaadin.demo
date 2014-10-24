@@ -9,7 +9,9 @@ import org.junit.runners.Suite.SuiteClasses;
 		ItemToPersonSearchEntitySetConverterTest.class,
 		PersonListToItemContainerConverterTest.class,
 		PersonSearchControllerTest.class, PersonSearchModelTest.class,
-		StartViewTest.class,UserModelTest.class, PersonSearchViewTest.class })
+		StartViewTest.class,UserModelTest.class, PersonSearchViewTest.class,
+		PersonEditModelTest.class		
+})
 public class JUnitSuiteWeb {
 
 }

@@ -224,8 +224,8 @@ class PersonEditView extends CustomComponent implements View {
 		}, EventType.PersonChanged);
 
 		personEditModel.register(event -> {
-			contactMapper.mapInto(personEditModel.getSelectedContact(), ((ListSelect) Fields.Contacts.field()).getContainerDataSource());
-			((ListSelect) Fields.Contacts.field()).setValue(personEditModel.getSelectedContact().getKey());
+			contactMapper.mapInto(personEditModel.getCurrentContact(), ((ListSelect) Fields.Contacts.field()).getContainerDataSource());
+			((ListSelect) Fields.Contacts.field()).setValue(personEditModel.getCurrentContact().getKey());
 
 		}, EventType.ContactTakeOver);
 	}

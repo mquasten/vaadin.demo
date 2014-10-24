@@ -64,7 +64,7 @@ public class PersonEditControllerImpl implements PersonEditController {
 	public final BindingResult validateAndTakeOver(final Map<String,?> map, final PersonEditModel personEditModel ) {
 		final MapBindingResult bindingResult = new MapBindingResult(map, "contact");
 		
-		if(  personEditModel.getSelectedContact() == null){
+		if(  personEditModel.getCurrentContact() == null){
 			return bindingResult;
 		}
 		
@@ -84,7 +84,7 @@ public class PersonEditControllerImpl implements PersonEditController {
 			return bindingResult;
 		}
 		
-		personEditModel.setCurrentContact(contactMapper.mapInto(map, personEditModel.getSelectedContact().getValue()));
+		personEditModel.setCurrentContact(contactMapper.mapInto(map, personEditModel.getCurrentContact().getValue()));
 		
 		return bindingResult;
 		
