@@ -21,6 +21,7 @@ import de.mq.phone.web.person.ValidatorQualifier.Type;
 
 @Controller
 public class PersonEditControllerImpl implements PersonEditController {
+	static final String PERSON_SAVE_ERROR_CODE = "person_save_error";
 	static final String PERSON_BINDING_NAME = "person";
 	private final Validator personItemSetValidator;
 	private final Validator mailValidator;
@@ -53,8 +54,7 @@ public class PersonEditControllerImpl implements PersonEditController {
 		try {
 			personService.save(map2Person.mapInto(map, personEditModel.getPerson()));
 		} catch ( final Exception ex) {
-			bindingResult.addError(new ObjectError(PERSON_BINDING_NAME, new String[] { "person_save_error"}, new String[] {ex.getMessage()} , null ));
-		   ex.printStackTrace();
+			bindingResult.addError(new ObjectError(PERSON_BINDING_NAME, new String[] { PERSON_SAVE_ERROR_CODE}, new String[] {ex.getMessage()} , null ));
 		}
 		
 		return bindingResult;

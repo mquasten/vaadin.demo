@@ -16,7 +16,7 @@ import de.mq.phone.web.person.ValidatorQualifier.Type;
 @ValidatorQualifier(Type.Person)
 public class PersonFieldSetValidator implements Validator{
 
-	private static final String FIELD_MANDATORY = "person_field_mandatory";
+	static final String FIELD_MANDATORY = "person_field_mandatory";
 	private static final String[] BANKING_ACCOUNT_FIELDS = new String[] {Fields.IBan.property() , Fields.BankIdentifierCode.property()};
 	static final String[] ADDRESS_FIELDS = new String[] { Fields.City.property(), Fields.ZipCode.property(), Fields.Street.property(), Fields.HouseNumber.property()};
 
