@@ -14,14 +14,14 @@ import de.mq.phone.web.person.ValidatorQualifier.Type;
 @ValidatorQualifier(Type.Phone)
 public class PhoneValidator implements Validator{
 	
-	private static final String FIELD_MANDATORY = "person_field_mandatory";
+	static final String FIELD_MANDATORY = "person_field_mandatory";
 	
 	private static final String CC_PATTERN = "[1-9][0-9]{0,3}";
 	private static final String NDC_PATTERN = "[1-9][0-9]{1,3}";
 	private static final String SN_PATTERN = "[1-9][0-9]{2,10}";
 	
-	private static final String FIELD_CC_INVALID = "phone_cc_invalid";
-	private static final String FIELD_NDC_INVALID = "phone_ndc_invalid";
+	static final String FIELD_CC_INVALID = "phone_cc_invalid";
+	static final String FIELD_NDC_INVALID = "phone_ndc_invalid";
 	static final String FIELD_SN_INVALID = "phone_sn_invalid";
 
 
