@@ -22,7 +22,7 @@ public class PhoneValidator implements Validator{
 	
 	private static final String FIELD_CC_INVALID = "phone_cc_invalid";
 	private static final String FIELD_NDC_INVALID = "phone_ndc_invalid";
-	private static final String FIELD_SN_INVALID = "phone_sn_invalid";
+	static final String FIELD_SN_INVALID = "phone_sn_invalid";
 
 
 	

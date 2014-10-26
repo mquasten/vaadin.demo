@@ -68,10 +68,6 @@ public class PersonEditControllerImpl implements PersonEditController {
 			return bindingResult;
 		}
 		
-		if( bindingResult.hasErrors()) {
-			return bindingResult;
-		}
-		
 		if( personEditModel.isMailContact() ) {
 			ValidationUtils.invokeValidator(mailValidator, map, bindingResult);
 		}
