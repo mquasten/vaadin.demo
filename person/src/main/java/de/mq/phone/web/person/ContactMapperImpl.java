@@ -1,5 +1,6 @@
 package de.mq.phone.web.person;
 
+import java.lang.reflect.Modifier;
 import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,6 +26,9 @@ import de.mq.phone.domain.person.support.PersonEntities;
 @Component
 class ContactMapperImpl implements ContactMapper {
 
+	static final String TYPE_PROPERTY = "type";
+	static final String I18N_TYPE_MAIL = "contact_type_mail";
+	static final String I18N_TYPE_PHONE = "contact_type_phone";
 	private final MessageSource messageSource;
 
 	@Autowired
@@ -97,19 +101,20 @@ class ContactMapperImpl implements ContactMapper {
 		ReflectionUtils.doWithFields(contact.getClass(), field -> {
 			field.setAccessible(true);
 			field.set(contact, map.get(field.getName()));
-		});
+		}, field -> {
+			return ! Modifier.isStatic(field.getModifiers()); } );
 		return contact;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Container convert(Locale locale) {
+	public Container convert(final Locale locale) {
 		final Container ic = new IndexedContainer();
 
 		ic.addContainerProperty(PersonEditView.CONTACT_TYPE_PROPERTY, String.class, "");
 
-		ic.addItem(PersonEntities.ContactType.Phone.type()).getItemProperty("type").setValue(messageSource.getMessage("contact_type_phone", null, locale));
-		ic.addItem(PersonEntities.ContactType.Email.type()).getItemProperty("type").setValue(messageSource.getMessage("contact_type_mail", null, locale));
+		ic.addItem(PersonEntities.ContactType.Phone.type()).getItemProperty(TYPE_PROPERTY).setValue(messageSource.getMessage(I18N_TYPE_PHONE, null, locale));
+		ic.addItem(PersonEntities.ContactType.Email.type()).getItemProperty(TYPE_PROPERTY).setValue(messageSource.getMessage(I18N_TYPE_MAIL, null, locale));
 		return ic;
 	}
 
