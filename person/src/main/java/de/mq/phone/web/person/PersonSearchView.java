@@ -1,9 +1,14 @@
 package de.mq.phone.web.person;
 
+
 import java.util.Collection;
 import java.util.Locale;
 
+
 import javax.annotation.PostConstruct;
+
+
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -88,8 +93,12 @@ class PersonSearchView extends CustomComponent implements View  {
 	private static final long serialVersionUID = 1L;
 
 	@PostConstruct()
-	final void init() {
+	final void init()  {
 
+		
+	
+      
+      
 		final VerticalLayout mainLayoout = new VerticalLayout();
 
 		final Panel panel = new Panel();
