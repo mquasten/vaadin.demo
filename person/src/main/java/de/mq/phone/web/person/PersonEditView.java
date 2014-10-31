@@ -61,8 +61,8 @@ class PersonEditView extends CustomComponent implements View {
 
 		Contacts(3, 0, new ListSelect());
 
-		private final int row;
-		private final int col;
+		final int row;
+		final int col;
 		private AbstractField<?> field;
 
 		Fields(int row, int col, AbstractField<?> field) {
