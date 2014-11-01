@@ -30,9 +30,9 @@ import de.mq.vaadin.util.BindingResultsToFieldGroupMapper;
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS, value = "session")
 class ContactEditorView extends CustomComponent {
 
-	private static final String I18N_EDIT_CONTACT_HEADLINE = "edit_contact_headline";
+	static final String I18N_EDIT_CONTACT_HEADLINE = "edit_contact_headline";
 
-	private static final String I18N_EDIT_CONTACT_BUTTON = "edit_contact_change_button";
+	static final String I18N_EDIT_CONTACT_BUTTON = "edit_contact_change_button";
 
 	enum Fields {
 		Contact(new TextField()), CountryCode(new TextField()), NationalDestinationCode(new TextField()), SubscriberNumber(new TextField());
@@ -63,7 +63,7 @@ class ContactEditorView extends CustomComponent {
 	private final UserModel userModel;
 	private final MessageSource messageSource;
 	private final PersonEditController personEditController; 
-	private final String I18N_EDIT_CONTACT_PREFIX="edit_contact_"; 
+	final static String I18N_EDIT_CONTACT_PREFIX="edit_contact_"; 
 	
 	@Autowired
 	ContactEditorView(final PersonEditModel personEditModel, final PersonEditController personEditController,final BindingResultsToFieldGroupMapper bindingResultMapper, final ContactMapper contactMapper, final UserModel userModel, final MessageSource messageSource) {
@@ -134,7 +134,7 @@ class ContactEditorView extends CustomComponent {
 			setLocale(userModel.getLocale());
 			changeButton.setCaption(getString(I18N_EDIT_CONTACT_BUTTON));
 			formLayout.setCaption(getString(I18N_EDIT_CONTACT_HEADLINE));
-			binder.getFields().forEach(field -> field.setCaption(getString((I18N_EDIT_CONTACT_PREFIX + binder.getPropertyId(field)).toLowerCase())) );
+			binder.getFields().forEach(field -> field.setCaption(getString((I18N_EDIT_CONTACT_PREFIX + binder.getPropertyId(field)).toLowerCase())));
 		}, UserModel.EventType.LocaleChanges);
 		
 		
@@ -142,6 +142,7 @@ class ContactEditorView extends CustomComponent {
 	}
 	
 	private String getString(final String key) {
+		
 		return messageSource.getMessage(key, null, getLocale());
 	}
 
