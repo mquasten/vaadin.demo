@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.MapBindingResult;
 
 import com.vaadin.data.fieldgroup.FieldGroup;
@@ -100,26 +99,22 @@ class ContactEditorView extends CustomComponent {
 		buttonLayout.addComponent(changeButton);
 		mainLayoout.addComponent(changeButton);
 		
-		changeButton.addClickListener(event -> { 
-			final BindingResult bindingResult = personEditController.validateAndTakeOver(bindingResultMapper.convert(binder), personEditModel);
-			
-			
-			bindingResultMapper.mapInto(bindingResult, binder);
-		});
-		
+		changeButton.addClickListener(event -> bindingResultMapper.mapInto(personEditController.validateAndTakeOver(bindingResultMapper.convert(binder), personEditModel), binder));
 		
 		personEditModel.register(event -> {
+
 			bindingResultMapper.mapInto(contactMapper.contactToMap(personEditModel.getCurrentContact()), binder); 
 		   binder.getFields().forEach(field ->  field.setVisible(false));
 		   setVisible(false);
 		 
 		   bindingResultMapper.mapInto(new MapBindingResult(new HashMap<>(),"contact"), binder);
-		   
+		  
 		   if( personEditModel.isMailContact() ) {
 		   	Fields.Contact.field().setVisible(true);
 		   	setVisible(true);
 		   	return;
 		   }
+		 
 		   if( personEditModel.isPhoneContact()) {
 		   	Arrays.stream( Fields.values()).filter(field -> field != Fields.Contact ).forEach(field -> field.field().setVisible(true));
 		   	setVisible(true); 

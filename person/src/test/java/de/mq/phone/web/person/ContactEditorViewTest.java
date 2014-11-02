@@ -11,10 +11,15 @@ import java.util.UUID;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.context.MessageSource;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
 
 import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HasComponents;
 import com.vaadin.ui.TextField;
@@ -34,7 +39,7 @@ public class ContactEditorViewTest {
 	private final ContactMapper contactMapper =  Mockito.mock(ContactMapper.class);
 	private final UserModel userModel = Mockito.mock(UserModel.class);
 	private final MessageSource messageSource = Mockito.mock(MessageSource.class);
-	
+
 	private final ContactEditorView contactEditorView = new ContactEditorView(personEditModel, personEditController, bindingResultMapper, contactMapper, userModel,messageSource  );
 
 	private final Map<String, Component> components = new HashMap<>();
@@ -85,36 +90,80 @@ public class ContactEditorViewTest {
 		Assert.assertFalse(contactEditorView.isVisible());
 	}
 	
-	@SuppressWarnings("unchecked")
+
 	@Test
 	public final void initPhone() {
+		final Map<String,Object> entryAsMap = new HashMap<>();
+		Arrays.stream(Fields.values()).filter( field -> Fields.Contact != field).forEach(field -> entryAsMap.put(field.property(), field.name()));
+		prepare(entryAsMap);
+	
+		contactChangedObserver.process(EventType.PersonChanged);
+		Arrays.stream(Fields.values()).filter(field -> field != Fields.Contact).forEach(field -> Assert.assertTrue(components.get(field.property()).isVisible()));
+		Assert.assertFalse(components.get(Fields.Contact.property()).isVisible());
+	
+		Arrays.stream(Fields.values()).filter( field -> Fields.Contact != field).forEach(field -> Assert.assertEquals(field.name(), ((TextField)components.get(field.property())).getValue()));
+	}
+	
+	@Test
+	public final void initMail() {
+		final Map<String,Object> entryAsMap = new HashMap<>();
+		entryAsMap.put(Fields.Contact.property(), Fields.Contact.name());
+		prepare(entryAsMap);
+		contactChangedObserver.process(EventType.PersonChanged);
+		Arrays.stream(Fields.values()).filter(field -> field != Fields.Contact).forEach(field -> Assert.assertFalse(components.get(field.property()).isVisible()));
+		Assert.assertTrue(components.get(Fields.Contact.property()).isVisible());
+	   Assert.assertEquals(Fields.Contact.name(), (((TextField)components.get(Fields.Contact.property())).getValue()));
+	}
+	
+	@Test
+	public final void initNothing() {
+		final Map<String,Object> entryAsMap = new HashMap<>();
+		prepare(entryAsMap);
+		Mockito.when(personEditModel.isPhoneContact()).thenReturn(false);
+		Mockito.when(personEditModel.isMailContact()).thenReturn(false);
 		
-		Entry<UUID, Contact> entry = Mockito.mock(Entry.class);
+		contactChangedObserver.process(EventType.PersonChanged);
+		Arrays.stream(Fields.values()).forEach(field -> Assert.assertFalse(components.get(field.property()).isVisible()));
+		Arrays.stream(Fields.values()).forEach(field ->  Assert.assertFalse(StringUtils.hasText(((TextField)components.get(field.property())).getValue())));
+	}
+
+	@SuppressWarnings("unchecked")
+	private void prepare(Map<String,Object> entryAsMap) {
+		final Entry<UUID, Contact> entry = Mockito.mock(Entry.class);
 		Mockito.when(personEditModel.getCurrentContact()).thenReturn(entry);
 		final Contact contact = Mockito.mock(Contact.class);
 		Mockito.when(entry.getValue()).thenReturn(contact);
-		Mockito.when(personEditModel.isPhoneContact()).thenReturn(true);
-		final Map<String,Object> entryAsMap = new HashMap<>();
-		Arrays.stream(Fields.values()).filter( field -> Fields.Contact != field).forEach(field -> entryAsMap.put(field.property(), field.name()));
+		
+		if( entryAsMap.containsKey(Fields.Contact.property())) {
+			Mockito.when(personEditModel.isMailContact()).thenReturn(true);
+		} else {
+			Mockito.when(personEditModel.isPhoneContact()).thenReturn(true);
+		}
 		
 		Mockito.when(contactMapper.contactToMap(entry)).thenReturn(entryAsMap);
 		Mockito.doAnswer(invocation -> {
+			
 			Assert.assertEquals(entryAsMap, invocation.getArguments()[0]);
 			((Map<String,?>)invocation.getArguments()[0]).keySet().forEach(fieldName -> ((TextField) ((FieldGroup) invocation.getArguments()[1]).getField(fieldName)).setValue((String) entryAsMap.get(fieldName)));
 			
 			return null;
 		}).when(bindingResultMapper).mapInto(Mockito.anyMap(), Mockito.any(FieldGroup.class));
-	
-		contactChangedObserver.process(EventType.PersonChanged);
-		Arrays.stream(Fields.values()).filter(field -> field != Fields.Contact).forEach(field -> Assert.assertTrue(components.get(field.property()).isVisible()));
-		Assert.assertFalse(components.get(Fields.Contact.property()).isVisible());
-		
-		
-		Arrays.stream(Fields.values()).filter( field -> Fields.Contact != field).forEach(field -> Assert.assertEquals(field.name(), ((TextField)components.get(field.property())).getValue()));
-	
-		
 	}
 	
+	@Test
+	public final void change() {
+		final Button button = (Button) components.get(ContactEditorView.I18N_EDIT_CONTACT_BUTTON);
+		com.vaadin.ui.Button.ClickListener listener =   (com.vaadin.ui.Button.ClickListener) button.getListeners(ClickEvent.class).iterator().next();
+		final ClickEvent event = Mockito.mock(ClickEvent.class);
+		final Map<String,Object> asMap = new HashMap<>();
+		ArgumentCaptor<FieldGroup> fieldGroupArgumentCaptor = ArgumentCaptor.forClass(FieldGroup.class);
+		Mockito.when(bindingResultMapper.convert(fieldGroupArgumentCaptor.capture())).thenReturn(asMap);
+		final BindingResult bindingResult = Mockito.mock(BindingResult.class);
+		Mockito.when( personEditController.validateAndTakeOver(asMap, personEditModel)).thenReturn(bindingResult);
+		listener.buttonClick(event);
+		
+		Mockito.verify(bindingResultMapper, Mockito.times(1)).mapInto(bindingResult, fieldGroupArgumentCaptor.getValue());
+	}
 	
 	void components(final Component component, final Map<String, Component> components) {
 
