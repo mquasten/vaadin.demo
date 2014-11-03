@@ -45,12 +45,12 @@ import de.mq.vaadin.util.ViewNav;
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS, value = "session")
 class PersonEditView extends CustomComponent implements View {
 
-	private static final String I18N_CONTACT_ADD = "contact_add";
-	private static final String I18N_CONTACT_TYPE = "contact_type";
-	private static final String I18N_EDIT_PERSON_PREFIX = "edit_person_";
-	private static final String I18N_EDIT_PERSON_SAVE = "edit_person_save";
-	private static final String I18N_EDIT_PERSON_CANCEL = "edit_person_cancel";
-	private static final String I18N_EDIT_PERSON_HEADLINE = "edit_person_headline";
+	static final String I18N_CONTACT_ADD = "contact_add";
+	static final String I18N_CONTACT_TYPE = "contact_type";
+	static final String I18N_EDIT_PERSON_PREFIX = "edit_person_";
+	static final String I18N_EDIT_PERSON_SAVE = "edit_person_save";
+	static final String I18N_EDIT_PERSON_CANCEL = "edit_person_cancel";
+	static final String I18N_EDIT_PERSON_HEADLINE = "edit_person_headline";
 
 	enum Fields {
 		Name(0, 0, new TextField()), Firstname(0, 1, new TextField()), Alias(0, 2, new TextField()),
@@ -62,10 +62,10 @@ class PersonEditView extends CustomComponent implements View {
 		Contacts(3, 0, new ListSelect());
 
 		final int row;
-		final int col;
+		private final int col;
 		private AbstractField<?> field;
 
-		Fields(int row, int col, AbstractField<?> field) {
+		Fields(final int row, final int col, final AbstractField<?> field) {
 			this.col = col;
 			this.row = row;
 			this.field = field;

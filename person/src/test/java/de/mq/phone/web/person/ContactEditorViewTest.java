@@ -2,7 +2,6 @@ package de.mq.phone.web.person;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,7 +20,6 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.HasComponents;
 import com.vaadin.ui.TextField;
 
 import de.mq.phone.domain.person.Contact;
@@ -71,7 +69,7 @@ public class ContactEditorViewTest {
 		localeChangedObserver.process(UserModel.EventType.LocaleChanges);
 		
 		components.clear();
-		components( contactEditorView, components);
+		ComponentTestHelper.components( contactEditorView, components);
 	}
 	
 	
@@ -165,25 +163,7 @@ public class ContactEditorViewTest {
 		Mockito.verify(bindingResultMapper, Mockito.times(1)).mapInto(bindingResult, fieldGroupArgumentCaptor.getValue());
 	}
 	
-	void components(final Component component, final Map<String, Component> components) {
-
 	
-		if (component.getCaption() != null) {
-			
-			components.put(component.getCaption(), component);
-		}
 
-		if (!(component instanceof HasComponents)) {
-			return;
-		}
-		final Iterator<Component> it = ((HasComponents) component).iterator();
-
-		while (it.hasNext()) {
-			final Component child = it.next();
-			
-			components(child, components);
-		}
-
-	}
 	
 }

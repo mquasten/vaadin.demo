@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -20,17 +19,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.test.util.ReflectionTestUtils;
 
-
-
-
-
-
-
-
-
-
-
-
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -43,7 +31,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.HasComponents;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
@@ -125,7 +112,7 @@ public class PersonSearchViewTest {
 		@SuppressWarnings("rawtypes")
 		final Observer observer = localeObserverCaptor.getValue();
 		observer.process(UserModel.EventType.LocaleChanges);
-		components(personSearchView, components);
+		ComponentTestHelper.components(personSearchView, components);
 		Assert.assertFalse(components.isEmpty());
 	}
 
@@ -213,23 +200,7 @@ public class PersonSearchViewTest {
 
 	}
 
-	void components(final Component component, final Map<String, Component> components) {
-
-		if (component.getCaption() != null) {
-			components.put(component.getCaption(), component);
-		}
-
-		if (!(component instanceof HasComponents)) {
-			return;
-		}
-		final Iterator<Component> it = ((HasComponents) component).iterator();
-
-		while (it.hasNext()) {
-			final Component child = it.next();
-			components(child, components);
-		}
-
-	}
+	
 	
 	@SuppressWarnings("unchecked")
 	@Test
