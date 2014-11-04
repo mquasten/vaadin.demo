@@ -87,7 +87,7 @@ class PersonEditView extends CustomComponent implements View {
 			}
 
 			return this.field;
-		}
+		} 
 
 	}
 
@@ -219,11 +219,14 @@ class PersonEditView extends CustomComponent implements View {
 
 		personEditModel.register(event -> {
 			bindingResultMapper.mapInto(personEditController.person(personEditModel), binder);
+			
 			((ListSelect) Fields.Contacts.field()).setContainerDataSource(contactMapper.convert(personEditModel.getPerson().contacts()));
 
 		}, EventType.PersonChanged);
 
 		personEditModel.register(event -> {
+			System.out.println( ((ListSelect) Fields.Contacts.field()).getContainerDataSource());
+			System.out.println(contactMapper);
 			contactMapper.mapInto(personEditModel.getCurrentContact(), ((ListSelect) Fields.Contacts.field()).getContainerDataSource());
 			((ListSelect) Fields.Contacts.field()).setValue(personEditModel.getCurrentContact().getKey());
 
