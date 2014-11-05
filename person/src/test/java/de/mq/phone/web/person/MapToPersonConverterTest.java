@@ -27,7 +27,7 @@ public class MapToPersonConverterTest {
 		
 		final Map<String,Object> map = new HashMap<>();
 	
-		Arrays.stream(PersonEditView.Fields.values()).filter(value -> value != Fields.Contacts  ).forEach(value ->  map.put(value.property(), value.name()) );
+		Arrays.stream(PersonEditView.Fields.values()).forEach(value ->  map.put(value.property(), value.name()) );
 		final Person person = PersonEntities.newPerson();
 		mapToPersonMapper.mapInto(map, person);
 		
@@ -79,7 +79,7 @@ public class MapToPersonConverterTest {
 		
 		final Map<String,Object> personAsMap = mapToPersonMapper.convert(person);
 		
-		Arrays.stream(Fields.values()).filter(field ->  field.row != 3 ).forEach(field -> Assert.assertEquals(field.name(), personAsMap.get(field.property())));;
+		Arrays.stream(Fields.values()).forEach(field -> Assert.assertEquals(field.name(), personAsMap.get(field.property())));;
 		
 	}
 	
