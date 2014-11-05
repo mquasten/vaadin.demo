@@ -7,13 +7,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import junit.framework.Assert;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.BeanUtils;
@@ -22,6 +21,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -41,6 +41,8 @@ import de.mq.vaadin.util.ViewNav;
 
 public class PersonEditViewTest {
 
+	private static final String ID = "19680528";
+	private static final String CHANGED_CONTACT = "girlGoneWild@mdna.tv";
 	private static final String CONTACT_AS_STRING = "madonna@mdna.tv";
 	private final PersonEditController personEditController = Mockito.mock(PersonEditController.class);
 	private final PersonEditModel personEditModel = Mockito.mock(PersonEditModel.class);
@@ -163,28 +165,52 @@ public class PersonEditViewTest {
 	}
 	
 
-	@Test
-	@Ignore
-	// Der test ist falsch
-	public final void takeOver() {
 	
+	@Test
+	public final void takeOver() {
+		
+		personChanged();
 		
 		final ListSelect listSelect = (ListSelect) components.get(PersonEditView.I18N_CONTACTS_CAPTION);
-		System.out.println(listSelect.getItemIds());
-		System.out.println(listSelect.hashCode());
-		ReflectionTestUtils.setField(personEditView, "contactMapper", new ContactMapperImpl(messageSource));
+		Assert.assertEquals(1, listSelect.getItemIds().size());
 		@SuppressWarnings("unchecked")
-		final Entry<UUID, Contact> entry = Mockito.mock(Entry.class);
-		final UUID uuid = UUID.randomUUID();
+		final Entry<UUID,Contact> entry = Mockito.mock(Entry.class);
+		Contact changedContact =  BeanUtils.instantiateClass(PersonEntities.ContactType.Email.type());
+		ReflectionTestUtils.setField(changedContact, "contact", CHANGED_CONTACT);
+		Mockito.when(entry.getValue()).thenReturn(changedContact);
+		final UUID uuid = (UUID) listSelect.getItemIds().iterator().next();
 		Mockito.when(entry.getKey()).thenReturn(uuid);
-		Contact contact =BeanUtils.instantiateClass(PersonEntities.ContactType.Email.type(), Contact.class);
-		ReflectionTestUtils.setField(contact, "contact",  CONTACT_AS_STRING);
-		Mockito.when(entry.getValue()).thenReturn(contact);
 		Mockito.when(personEditModel.getCurrentContact()).thenReturn(entry);
-		observers.get(PersonEditModel.EventType.ContactTakeOver).process(PersonEditModel.EventType.ContactTakeOver);
-		System.out.println(uuid);
+
+		ReflectionTestUtils.setField(personEditView, "contactMapper", new ContactMapperImpl(messageSource));
 		
+		Assert.assertNull(listSelect.getValue());
+		
+		observers.get(PersonEditModel.EventType.ContactTakeOver).process(PersonEditModel.EventType.ContactTakeOver);
+		
+		
+		Assert.assertEquals(uuid, listSelect.getValue());
+		Assert.assertEquals(CHANGED_CONTACT, listSelect.getItemCaption(uuid));
+	}
 	
+	@Test
+	public final void enterNew() {
+		final ViewChangeEvent  viewEvent = Mockito.mock(ViewChangeEvent.class);
+		personEditView.enter(viewEvent);
+		
+		Mockito.verify(personEditController, Mockito.times(1)).assign(personEditModel);
+	}
+	
+	@Test
+	public final void enterModify() {
+		final ViewChangeEvent  viewEvent = Mockito.mock(ViewChangeEvent.class);
+		Mockito.when(viewEvent.getParameters()).thenReturn(ID);
+		personEditView.enter(viewEvent);
+		Mockito.verify(personEditController).assign(personEditModel, ID);
+	}
+	
+	@Test
+	public final void valueChangeListener() {
 		
 	}
 

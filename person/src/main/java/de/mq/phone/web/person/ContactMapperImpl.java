@@ -127,7 +127,6 @@ class ContactMapperImpl implements ContactMapper {
 			item.getItemProperty(PersonEditView.CONTACT_DOMAIN_PROPERTY).setValue(model);
 		}
 		item.getItemProperty(PersonEditView.CONTACT_STRING_PROPERTY).setValue(model.getValue().contact());
-
 		return container;
 
 	}

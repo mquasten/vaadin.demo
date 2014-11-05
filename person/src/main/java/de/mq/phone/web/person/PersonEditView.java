@@ -169,7 +169,7 @@ class PersonEditView extends CustomComponent implements View {
 
 		editFormLayout.addComponent(typeLayout, 2, 3);
 
-		contactList.addValueChangeListener(event1 -> personEditController.assign(personEditModel, (Entry<UUID, Contact>) bindingResultMapper.convert(contactList.getItem(event1.getProperty().getValue())).get(CONTACT_DOMAIN_PROPERTY)));
+		contactList.addValueChangeListener(event -> personEditController.assign(personEditModel, (Entry<UUID, Contact>) bindingResultMapper.convert(contactList.getItem(event.getProperty().getValue())).get(CONTACT_DOMAIN_PROPERTY)));
 
 		final HorizontalLayout fieldLayout = new HorizontalLayout();
 

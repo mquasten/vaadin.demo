@@ -18,6 +18,7 @@ import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
@@ -34,22 +35,21 @@ class ContactEditorView extends CustomComponent {
 	static final String I18N_EDIT_CONTACT_BUTTON = "edit_contact_change_button";
 
 	enum Fields {
-		Contact(new TextField()), CountryCode(new TextField()), NationalDestinationCode(new TextField()), SubscriberNumber(new TextField());
+		Contact, CountryCode, NationalDestinationCode, SubscriberNumber;
 
 		
-		private final TextField field; 
-		Fields(TextField  field ) {
-			field.setColumns(15);
-			field.setNullRepresentation("");
-			this.field=field;
-		}
+	
+		
 		
 		String property() {
 			return StringUtils.uncapitalize(name());
 		}
 
-		TextField field() {
-			 field.setVisible(false);
+		TextField newField() {
+			final TextField field = new TextField();
+			field.setColumns(15);
+			field.setNullRepresentation(""); 
+			field.setVisible(false);
 			return field;
 		}
 	}
@@ -88,9 +88,10 @@ class ContactEditorView extends CustomComponent {
 		binder.setBuffered(true);
 		
 		Arrays.stream(Fields.values()).forEach(field -> { 
-			formLayout.addComponent(field.field());
+			final Field<?> textField = field.newField();
+			formLayout.addComponent(textField);
 			contactItem.addItemProperty(field.property(), new ObjectProperty<String>(""));
-			binder.bind(field.field(), field.property());
+			binder.bind(textField, field.property());
 			
 		});
 
@@ -110,13 +111,14 @@ class ContactEditorView extends CustomComponent {
 		   bindingResultMapper.mapInto(new MapBindingResult(new HashMap<>(),"contact"), binder);
 		  
 		   if( personEditModel.isMailContact() ) {
-		   	Fields.Contact.field().setVisible(true);
+		   	
+		   	binder.getField(Fields.Contact.property()).setVisible(true);
 		   	setVisible(true);
 		   	return;
 		   }
 		 
 		   if( personEditModel.isPhoneContact()) {
-		   	Arrays.stream( Fields.values()).filter(field -> field != Fields.Contact ).forEach(field -> field.field().setVisible(true));
+		   	Arrays.stream( Fields.values()).filter(field -> field != Fields.Contact ).map(field -> binder.getField(field.property())).forEach(field -> field.setVisible(true));
 		   	setVisible(true); 
 		   }
 		   
