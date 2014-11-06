@@ -14,6 +14,7 @@ import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.MessageSource;
@@ -33,10 +34,12 @@ import com.vaadin.ui.TextField;
 
 import de.mq.phone.domain.person.Contact;
 import de.mq.phone.domain.person.Person;
+
 import de.mq.phone.domain.person.support.PersonEntities;
 import de.mq.phone.web.person.UserModel.EventType;
 import de.mq.vaadin.util.BindingResultsToFieldGroupMapper;
 import de.mq.vaadin.util.Observer;
+import de.mq.vaadin.util.TestConstants;
 import de.mq.vaadin.util.ViewNav;
 
 public class PersonEditViewTest {
@@ -166,6 +169,8 @@ public class PersonEditViewTest {
 	
 
 	
+	
+	@SuppressWarnings("unchecked")
 	@Test
 	public final void takeOver() {
 		
@@ -173,7 +178,7 @@ public class PersonEditViewTest {
 		
 		final ListSelect listSelect = (ListSelect) components.get(PersonEditView.I18N_CONTACTS_CAPTION);
 		Assert.assertEquals(1, listSelect.getItemIds().size());
-		@SuppressWarnings("unchecked")
+	
 		final Entry<UUID,Contact> entry = Mockito.mock(Entry.class);
 		Contact changedContact =  BeanUtils.instantiateClass(PersonEntities.ContactType.Email.type());
 		ReflectionTestUtils.setField(changedContact, "contact", CHANGED_CONTACT);
@@ -183,6 +188,7 @@ public class PersonEditViewTest {
 		Mockito.when(personEditModel.getCurrentContact()).thenReturn(entry);
 
 		ReflectionTestUtils.setField(personEditView, "contactMapper", new ContactMapperImpl(messageSource));
+		ReflectionTestUtils.setField(personEditView, "bindingResultMapper", TestConstants.newBindingResultsToFieldGroupMapper(messageSource));
 		
 		Assert.assertNull(listSelect.getValue());
 		
@@ -191,6 +197,15 @@ public class PersonEditViewTest {
 		
 		Assert.assertEquals(uuid, listSelect.getValue());
 		Assert.assertEquals(CHANGED_CONTACT, listSelect.getItemCaption(uuid));
+		
+		ArgumentCaptor<PersonEditModel> personEditModelArgumentCaptor = ArgumentCaptor.forClass(PersonEditModel.class);
+		
+		@SuppressWarnings("rawtypes")
+		ArgumentCaptor<Entry> entryArgumentCaptor =  ArgumentCaptor.forClass(Entry.class);
+		Mockito.verify(personEditController, Mockito.times(1)).assign(personEditModelArgumentCaptor.capture(),  entryArgumentCaptor.capture());
+		
+		Assert.assertEquals(CHANGED_CONTACT , entry.getValue().contact());
+		Assert.assertEquals(uuid, entry.getKey());
 	}
 	
 	@Test
@@ -209,9 +224,6 @@ public class PersonEditViewTest {
 		Mockito.verify(personEditController).assign(personEditModel, ID);
 	}
 	
-	@Test
-	public final void valueChangeListener() {
-		
-	}
+	
 
 }
