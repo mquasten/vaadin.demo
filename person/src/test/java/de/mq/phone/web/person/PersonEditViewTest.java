@@ -19,6 +19,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.fieldgroup.FieldGroup;
@@ -34,12 +36,12 @@ import com.vaadin.ui.TextField;
 
 import de.mq.phone.domain.person.Contact;
 import de.mq.phone.domain.person.Person;
-
 import de.mq.phone.domain.person.support.PersonEntities;
 import de.mq.phone.web.person.UserModel.EventType;
 import de.mq.vaadin.util.BindingResultsToFieldGroupMapper;
 import de.mq.vaadin.util.Observer;
 import de.mq.vaadin.util.TestConstants;
+import de.mq.vaadin.util.VaadinOperations;
 import de.mq.vaadin.util.ViewNav;
 
 public class PersonEditViewTest {
@@ -56,9 +58,9 @@ public class PersonEditViewTest {
 	private ContactMapper contactMapper = Mockito.mock(ContactMapper.class); ;
 	private final ContactEditorView contactEditor = Mockito.mock(ContactEditorView.class);
 	private final ClickEvent clickEvent = Mockito.mock(ClickEvent.class);
-
+	private VaadinOperations vaadinOperations = Mockito.mock(VaadinOperations.class);
 	
-	private  PersonEditView personEditView = new PersonEditView(personEditController, personEditModel, userModel, viewNav, bindingResultMapper, messageSource, contactMapper, contactEditor);; 
+	private  PersonEditView personEditView = new PersonEditView(personEditController, personEditModel, userModel, viewNav, bindingResultMapper, messageSource, contactMapper, contactEditor, vaadinOperations);; 
 
 	private final Map<String, Component> components = new HashMap<>();
 	private Observer<UserModel.EventType> localeObserver;
@@ -87,6 +89,7 @@ public class PersonEditViewTest {
 		Mockito.when(messageSource.getMessage(ContactMapperImpl.I18N_TYPE_PHONE, null, Locale.GERMAN)).thenReturn(ContactMapperImpl.I18N_TYPE_PHONE);
 		Mockito.when(messageSource.getMessage(ContactMapperImpl.I18N_TYPE_MAIL, null, Locale.GERMAN)).thenReturn(ContactMapperImpl.I18N_TYPE_MAIL);
 		Mockito.when(messageSource.getMessage(PersonEditView.I18N_CONTACTS_CAPTION, null, Locale.GERMAN)).thenReturn(PersonEditView.I18N_CONTACTS_CAPTION);
+	
 		final Container container =  new ContactMapperImpl(messageSource).convert(Locale.GERMAN);
 		Mockito.when(contactMapper.convert(Locale.GERMAN)).thenReturn(container);
 		ReflectionTestUtils.setField(personEditView, "contactMapper",contactMapper);
@@ -224,6 +227,45 @@ public class PersonEditViewTest {
 		Mockito.verify(personEditController).assign(personEditModel, ID);
 	}
 	
+	@Test
+	public final void save() {
+		final Map<String, Object> personAsMap = new HashMap<>();
+		Arrays.stream(PersonEditView.Fields.values()).forEach(field -> personAsMap.put(field.property(), field.name()));
+		final ArgumentCaptor<FieldGroup> fieldGroup = ArgumentCaptor.forClass(FieldGroup.class);
+		Mockito.when(bindingResultMapper.convert(fieldGroup.capture())).thenReturn(personAsMap);
+		final BindingResult bindingResult = Mockito.mock(BindingResult.class);
+		Mockito.when(personEditController.validateAndSave(personAsMap, personEditModel)).thenReturn(bindingResult);
+		((ClickListener) ((Button) components.get(PersonEditView.I18N_EDIT_PERSON_SAVE)).getListeners(ClickEvent.class).iterator().next()).buttonClick(clickEvent);
+		
+		Mockito.verify(bindingResultMapper, Mockito.times(1)).mapInto(bindingResult, fieldGroup.getValue());
+	}
 	
+	@Test
+	public final void saveWithErrors() {
+		Button saveButton = (Button) components.get(PersonEditView.I18N_EDIT_PERSON_SAVE);
+		final ClickListener listener = (ClickListener) saveButton.getListeners(ClickEvent.class).iterator().next();
+		final Map<String, Object> personAsMap = new HashMap<>();
+		
+		final ArgumentCaptor<FieldGroup> fieldGroup = ArgumentCaptor.forClass(FieldGroup.class);
+		Mockito.when(bindingResultMapper.convert(fieldGroup.capture())).thenReturn(personAsMap);
+		final BindingResult bindingResult = Mockito.mock(BindingResult.class);
+		ObjectError error = Mockito.mock(ObjectError.class);
+		Mockito.when(bindingResult.getGlobalError()).thenReturn(error);
+		Mockito.when(error.getCode()).thenReturn(PersonEditControllerImpl.PERSON_SAVE_ERROR_CODE);
+		final String[] messageArgs = new String[]{ "save sucks"};
+		Mockito.when(error.getArguments()).thenReturn(messageArgs);
+		Mockito.when(bindingResult.hasGlobalErrors()).thenReturn(true);
+		Mockito.when(personEditController.validateAndSave(personAsMap, personEditModel)).thenReturn(bindingResult);
+
+		Mockito.when(messageSource.getMessage(PersonEditControllerImpl.PERSON_SAVE_ERROR_CODE, messageArgs, Locale.GERMAN)).thenReturn(messageArgs[0]);
+				
+	   listener.buttonClick(clickEvent);
+		Mockito.verify(vaadinOperations).showErrror(messageArgs[0]);
+	}
+	
+	@Test
+	public final void fieldsEnumCoverageOnly() {
+		Arrays.stream(PersonEditView.Fields.values()).map(field -> field.name()).forEach(name -> Assert.assertEquals(name, PersonEditView.Fields.valueOf(name).name()));
+	}
 
 }

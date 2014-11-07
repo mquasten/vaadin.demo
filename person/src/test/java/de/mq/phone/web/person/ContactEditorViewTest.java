@@ -163,7 +163,9 @@ public class ContactEditorViewTest {
 		Mockito.verify(bindingResultMapper, Mockito.times(1)).mapInto(bindingResult, fieldGroupArgumentCaptor.getValue());
 	}
 	
-	
-
+	@Test
+	public final void enumForCoverageOnly() {
+		Arrays.stream(ContactEditorView.Fields.values()).map(field -> field.name() ).forEach(name -> Assert.assertEquals(name, ContactEditorView.Fields.valueOf(name).name()));
+	}
 	
 }

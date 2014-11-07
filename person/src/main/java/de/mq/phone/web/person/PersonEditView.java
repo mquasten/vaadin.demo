@@ -29,8 +29,6 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.ListSelect;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -38,6 +36,7 @@ import com.vaadin.ui.VerticalLayout;
 import de.mq.phone.domain.person.Contact;
 import de.mq.phone.web.person.PersonEditModel.EventType;
 import de.mq.vaadin.util.BindingResultsToFieldGroupMapper;
+import de.mq.vaadin.util.VaadinOperations;
 import de.mq.vaadin.util.ViewNav;
 
 @Component
@@ -99,9 +98,10 @@ class PersonEditView extends CustomComponent implements View {
 	private final MessageSource messageSource;
 	private final ContactMapper contactMapper;
 	private final ContactEditorView contactEditor;
+	private final VaadinOperations vaadinOperations;
 
 	@Autowired
-	PersonEditView(final PersonEditController personEditController, final PersonEditModel personEditModel, final UserModel userModel, final ViewNav viewNav, final BindingResultsToFieldGroupMapper bindingResultMapper, final MessageSource messageSource, final ContactMapper contactMapper, final ContactEditorView contactEditor) {
+	PersonEditView(final PersonEditController personEditController, final PersonEditModel personEditModel, final UserModel userModel, final ViewNav viewNav, final BindingResultsToFieldGroupMapper bindingResultMapper, final MessageSource messageSource, final ContactMapper contactMapper, final ContactEditorView contactEditor, final VaadinOperations vaadinOperations) {
 		this.viewNav = viewNav;
 		this.bindingResultMapper = bindingResultMapper;
 		this.userModel = userModel;
@@ -110,6 +110,7 @@ class PersonEditView extends CustomComponent implements View {
 		this.personEditModel = personEditModel;
 		this.contactMapper = contactMapper;
 		this.contactEditor = contactEditor;
+		this.vaadinOperations=vaadinOperations;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -194,10 +195,9 @@ class PersonEditView extends CustomComponent implements View {
 			final Map<String, Object> personAsMap = bindingResultMapper.convert(binder);
 			personAsMap.put(CONTACTS_PROPERTY, contactMapper.convert(contactContainer));
 			final BindingResult bindingResult = personEditController.validateAndSave(personAsMap, personEditModel);
-
 			bindingResultMapper.mapInto(bindingResult, binder);
 			if (bindingResult.hasGlobalErrors()) {
-				Notification.show(getString(bindingResult.getGlobalError().getCode(), bindingResult.getGlobalError().getArguments()), Type.ERROR_MESSAGE);
+				vaadinOperations.showErrror(getString(bindingResult.getGlobalError().getCode(), bindingResult.getGlobalError().getArguments()));
 			}
 
 		});
@@ -240,8 +240,6 @@ class PersonEditView extends CustomComponent implements View {
 
 		}, EventType.ContactTakeOver);
 	}
-
-
 
 	private AbstractField<?> addInputField(final GridLayout editFormLayout, final Fields fieldDesc) {
 		final HorizontalLayout fieldLayout = new HorizontalLayout();
