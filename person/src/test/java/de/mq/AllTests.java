@@ -11,5 +11,8 @@ import de.mq.vaadin.util.JUnitSuiteUtil;
 @RunWith(Suite.class)
 @SuiteClasses({JUnitSuiteWeb.class, JUnitSuiteUtil.class, JUnitSuiteDomain.class})
 public class AllTests {
+	
+	
+	
 
 }

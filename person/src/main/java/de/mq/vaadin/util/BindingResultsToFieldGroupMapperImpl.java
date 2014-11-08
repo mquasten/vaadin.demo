@@ -36,6 +36,7 @@ class BindingResultsToFieldGroupMapperImpl implements BindingResultsToFieldGroup
 		}
 		bindingResults.getFieldErrors().forEach(error -> {
 			final AbstractComponent field = (AbstractComponent) group.getField(error.getField());
+			
 			field.setComponentError(new UserError(getString(error.getCode(), field.getLocale())));
 		});
 		return group;
