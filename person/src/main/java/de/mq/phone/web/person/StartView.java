@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.navigator.View;
 
 import de.mq.vaadin.util.AbstractUIBeanInjector;
+import de.mq.vaadin.util.VaadinOperations;
 import de.mq.vaadin.util.ViewNav;
 
 
@@ -22,6 +23,8 @@ public class StartView extends AbstractUIBeanInjector{
 	private Collection<View> views ; 
 	@Autowired
 	private ViewNav viewNav;
+	@Autowired
+	private VaadinOperations vaadinOperations;
 	
 	@Override
 	protected void init()  {
@@ -29,7 +32,7 @@ public class StartView extends AbstractUIBeanInjector{
 		
 		
 		
-		viewNav.create(personSearchView, views);
+		viewNav.create(personSearchView, views, vaadinOperations);
 		
 		if( userModel.getLocale() == null){
 			userModel.setLocale(locale());

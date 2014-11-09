@@ -1,7 +1,11 @@
 package de.mq.vaadin.util;
 
+import com.vaadin.navigator.Navigator;
+
 public interface VaadinOperations {
 
-	public abstract void showErrror(String message);
+	void showErrror(String message);
+
+	Navigator newNavigator();
 
 }

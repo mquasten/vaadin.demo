@@ -13,6 +13,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.vaadin.navigator.View;
 
+import de.mq.vaadin.util.VaadinOperations;
 import de.mq.vaadin.util.ViewNav;
 
 public class StartViewTest {
@@ -22,6 +23,7 @@ public class StartViewTest {
 	final UserModel userModel = Mockito.mock(UserModel.class);
 	final ViewNav viewNav = Mockito.mock(ViewNav.class);
 	final Collection<View> views = new ArrayList<>();
+	final VaadinOperations vaadinOperations = Mockito.mock(VaadinOperations.class);
 	
 	@Before
 	public final void setup() {
@@ -30,6 +32,7 @@ public class StartViewTest {
 		ReflectionTestUtils.setField(startView, "locale", Locale.GERMAN);
 		ReflectionTestUtils.setField(startView, "viewNav", viewNav);
 		ReflectionTestUtils.setField(startView, "views", views);
+		ReflectionTestUtils.setField(startView, "vaadinOperations", vaadinOperations);
 	}
 	
 	@Test
@@ -42,7 +45,7 @@ public class StartViewTest {
 		startView.init();
 		Assert.assertEquals(personSearchView, startView.getContent());
 		Mockito.verify(userModel, Mockito.times(1)).setLocale(Locale.GERMAN);
-		Mockito.verify(viewNav,  Mockito.times(1)).create(personSearchView, views);
+		Mockito.verify(viewNav,  Mockito.times(1)).create(personSearchView, views, vaadinOperations);
 		
 	}
 	@Test
@@ -54,7 +57,7 @@ public class StartViewTest {
 		startView.init();
 		
 		Mockito.verify(userModel, Mockito.times(0)).setLocale(Matchers.any(Locale.class));
-		Mockito.verify(viewNav,  Mockito.times(1)).create(personSearchView, views);
+		Mockito.verify(viewNav,  Mockito.times(1)).create(personSearchView, views, vaadinOperations);
 		
 	}
 

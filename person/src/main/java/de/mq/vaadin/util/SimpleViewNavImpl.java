@@ -4,6 +4,7 @@ import java.util.Collection;
 
 
 
+
 import org.springframework.aop.support.AopUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -13,7 +14,6 @@ import org.springframework.util.StringUtils;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
-import com.vaadin.ui.UI;
 
 
 @Component
@@ -26,11 +26,11 @@ public class SimpleViewNavImpl implements ViewNav {
 	 * @see de.mq.vaadin.util.ViewNav#create(com.vaadin.navigator.View, java.util.Collection)
 	 */
 	@Override
-	public final void create(final View root, final Collection<View> views) {
-		navigator = newNavigator();
+	public final void create(final View root, final Collection<View> views, final VaadinOperations vaadinOperations) {
+		navigator = vaadinOperations.newNavigator();
 		navigator.addView("", root);
 		for (final View view : views) {
-			view.toString();
+			//view.toString();
 			navigator.addView(viewNameFor(view), view);
 		}
 	}
@@ -48,21 +48,17 @@ public class SimpleViewNavImpl implements ViewNav {
 			parameter += StringUtils.arrayToDelimitedString(params, "/");
 		}
 		
-		
 		navigator.navigateTo(StringUtils.uncapitalize(clazz.getSimpleName() ) + parameter );
 		
 	}
 
 	private String viewNameFor(final View view) {
-
 		if (AopUtils.isCglibProxy(view)) {
+		
 			return StringUtils.uncapitalize(AopUtils.getTargetClass(view).getSimpleName());
 		}
 		return StringUtils.uncapitalize(view.getClass().getSimpleName());
 	}
 
-	private Navigator newNavigator() {
-		return new Navigator(UI.getCurrent(), UI.getCurrent());
-	}
-
+	
 }
