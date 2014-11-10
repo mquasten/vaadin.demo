@@ -30,7 +30,8 @@ public class SimpleViewNavImpl implements ViewNav {
 		navigator = vaadinOperations.newNavigator();
 		navigator.addView("", root);
 		for (final View view : views) {
-			//view.toString();
+			//call @PostConstruct now ...
+			view.toString();
 			navigator.addView(viewNameFor(view), view);
 		}
 	}

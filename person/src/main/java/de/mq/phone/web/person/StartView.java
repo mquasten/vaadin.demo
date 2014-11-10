@@ -30,16 +30,11 @@ public class StartView extends AbstractUIBeanInjector{
 	protected void init()  {
 		setContent(personSearchView);		
 		
-		
-		
 		viewNav.create(personSearchView, views, vaadinOperations);
 		
 		if( userModel.getLocale() == null){
 			userModel.setLocale(locale());
 		}
-		
-		
-		
 		
 	
 	}

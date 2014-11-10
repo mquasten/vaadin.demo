@@ -111,4 +111,11 @@ public class PersonEditControllerImpl implements PersonEditController {
 		return map2Person.convert(personEditModel.getPerson());
 	}
 
+	@Override
+	public void delete(final PersonEditModel personEditModel) {
+		System.out.println("delete: " + personEditModel.getPerson().person());
+		System.out.println("id: " + personEditModel.getPerson().id());
+		
+	}
+
 }

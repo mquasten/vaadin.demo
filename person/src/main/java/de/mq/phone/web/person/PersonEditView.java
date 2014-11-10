@@ -51,6 +51,7 @@ class PersonEditView extends CustomComponent implements View {
 	static final String I18N_EDIT_PERSON_SAVE = "edit_person_save";
 	static final String I18N_EDIT_PERSON_CANCEL = "edit_person_cancel";
 	static final String I18N_EDIT_PERSON_HEADLINE = "edit_person_headline";
+	static final String I18N_DELETE_BUTTON_CAPTION = "delete_button";
 
 	enum Fields {
 		Name(0, 0), Firstname(0, 1), Alias(0, 2),
@@ -188,6 +189,9 @@ class PersonEditView extends CustomComponent implements View {
 		final Button saveButton = new Button();
 		buttonLayout.addComponent(cancelButton);
 		buttonLayout.addComponent(saveButton);
+		final Button deleteButton = new Button();
+		deleteButton.addClickListener(event -> {personEditController.delete(personEditModel); viewNav.navigateTo(PersonSearchView.class); });
+		buttonLayout.addComponent(deleteButton);
 
 		saveButton.addClickListener(event -> {
 
@@ -198,8 +202,10 @@ class PersonEditView extends CustomComponent implements View {
 			bindingResultMapper.mapInto(bindingResult, binder);
 			if (bindingResult.hasGlobalErrors()) {
 				vaadinOperations.showErrror(getString(bindingResult.getGlobalError().getCode(), bindingResult.getGlobalError().getArguments()));
+			} 
+			if( ! bindingResult.hasErrors()) {
+				viewNav.navigateTo(PersonSearchView.class);
 			}
-
 		});
 
 		userModel.register(event -> {
@@ -211,6 +217,7 @@ class PersonEditView extends CustomComponent implements View {
 			saveButton.setCaption(getString(I18N_EDIT_PERSON_SAVE));
 			typeComboBox.setContainerDataSource(contactMapper.convert(getLocale()));
 			typeComboBox.setCaption(getString(I18N_CONTACT_TYPE));
+			deleteButton.setCaption(getString(I18N_DELETE_BUTTON_CAPTION));
 
 			if (!typeComboBox.getContainerDataSource().getItemIds().isEmpty()) {
 
@@ -229,6 +236,9 @@ class PersonEditView extends CustomComponent implements View {
 			bindingResultMapper.mapInto(personEditController.person(personEditModel), binder);
 			
 			contactList.setContainerDataSource(contactMapper.convert(personEditModel.getPerson().contacts()));
+			
+			deleteButton.setVisible( personEditModel.isIdAware());
+			
 
 		}, EventType.PersonChanged);
 

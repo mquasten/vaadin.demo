@@ -17,7 +17,7 @@ class PersonListToItemContainerConverter  implements Converter<Collection<Person
 
 	
 
-    @SuppressWarnings("unchecked")
+   @SuppressWarnings("unchecked")
 	@Override
 	public Container convert(final Collection<Person> persons) {
         final Container ic = new IndexedContainer();

@@ -27,5 +27,7 @@ interface PersonEditModel extends  Subject<PersonEditModel, PersonEditModel.Even
 	boolean isMailContact();
 
 	boolean isPhoneContact();
+	
+	boolean isIdAware(); 
 
 }

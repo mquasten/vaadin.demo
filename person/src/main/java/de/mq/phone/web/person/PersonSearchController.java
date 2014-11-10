@@ -4,4 +4,5 @@ interface PersonSearchController {
 
 	void assignPersons(PersonSearchModel model);
 
+
 }

@@ -70,4 +70,8 @@ class PersonEditModelImpl extends SubjectImpl<PersonEditModel, PersonEditModel.E
 		notifyObservers(EventType.ContactTakeOver);
 		
 	}
+	@Override
+	public boolean isIdAware() {
+		return   getPerson().id() != null ;
+	}
 }

@@ -56,7 +56,7 @@ public class PersonSearchViewTest {
 	private static final String SEARCH_BUTTON_CAPTION = "suchenButton";
 	private static final String NEW_BUTTON_CAPTION = PersonSearchView.I18N_NEW_BUTTON_CAPTION;
 	private static final String CHANGE_BUTTON_CAPTION = "aendern";
-	private static final String DELETE_BUTTON_CAPTION = "loeschen";
+	
 	private static final String LANGUAGE_BOX_CAPTION = "Sprache";
 	private static final String CONTACT_TABLE_PANEL_CAPTION = "Kontaktdaten";
 	private static final String CONTACT_TABLE_CAPTION = "Suchergebnisse";
@@ -70,7 +70,7 @@ public class PersonSearchViewTest {
 	private final UserModel userModel = Mockito.mock(UserModel.class);
 
 	private final ViewNav viewNav = Mockito.mock(ViewNav.class);
-	private final PersonSearchView personSearchView = new PersonSearchView(personSearchModel, personSearchController, messages, userModel, personListContainerConverter, itemToPersonSearchSetConverter, viewNav);
+	private final PersonSearchView personSearchView = new PersonSearchView(personSearchModel, personSearchController, messages, userModel, personListContainerConverter, itemToPersonSearchSetConverter,Mockito.mock(Converter.class), viewNav);
 
 	@SuppressWarnings("rawtypes")
 	private final ArgumentCaptor<Observer> localeObserverCaptor = ArgumentCaptor.forClass(Observer.class);
@@ -93,7 +93,7 @@ public class PersonSearchViewTest {
 		Mockito.when(messages.getMessage(PersonSearchView.I18N_SEARCH_BUTTON_CAPTION, null, Locale.GERMAN)).thenReturn(SEARCH_BUTTON_CAPTION);
 		Mockito.when(messages.getMessage(PersonSearchView.I18N_NEW_BUTTON_CAPTION, null, Locale.GERMAN)).thenReturn(NEW_BUTTON_CAPTION);
 		Mockito.when(messages.getMessage(PersonSearchView.I18N_CHANGE_BUTTON_CAPTION, null, Locale.GERMAN)).thenReturn(CHANGE_BUTTON_CAPTION);
-		Mockito.when(messages.getMessage(PersonSearchView.I18N_DELETE_BUTTON_CAPTION, null, Locale.GERMAN)).thenReturn(DELETE_BUTTON_CAPTION);
+	
 		Mockito.when(messages.getMessage(PersonSearchView.I18N_LANGUAGE_COMBOBOX_CAPTION, null, Locale.GERMAN)).thenReturn(LANGUAGE_BOX_CAPTION);
 		Mockito.when(messages.getMessage(PersonSearchView.I18N_CONTACT_TABLE_CAPTION, null, Locale.GERMAN)).thenReturn(CONTACT_TABLE_CAPTION);
 		Mockito.when(messages.getMessage(PersonSearchView.I18N_CONTACT_TABLE_PANEL_CAPTION, null, Locale.GERMAN)).thenReturn(CONTACT_TABLE_PANEL_CAPTION);
@@ -119,11 +119,11 @@ public class PersonSearchViewTest {
 	@Test
 	public void init() {
 
-		Assert.assertEquals(11, components.size());
+		Assert.assertEquals(10, components.size());
 		Assert.assertEquals(Panel.class, components.get(SEARCH_PANEL_CAPTION).getClass());
 
 		Assert.assertEquals(Button.class, components.get(SEARCH_BUTTON_CAPTION).getClass());
-		Assert.assertEquals(Button.class, components.get(DELETE_BUTTON_CAPTION).getClass());
+	
 		Assert.assertEquals(Button.class, components.get(CHANGE_BUTTON_CAPTION).getClass());
 		Assert.assertEquals(Button.class, components.get(NEW_BUTTON_CAPTION).getClass());
 
