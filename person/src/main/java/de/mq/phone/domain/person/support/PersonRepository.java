@@ -15,5 +15,7 @@ public interface PersonRepository {
 
 	Person forId(final String id);
 
+	void delete(final String id);
+
 	
 }

@@ -9,6 +9,8 @@ public interface PersonService {
 	void save(final Person person);
 
 	Person person(final String id);
+
+	void deletePerson(final String id);
 	
 
 }

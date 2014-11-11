@@ -18,8 +18,6 @@ public class UserModelImpl  extends SubjectImpl<UserModel, UserModel.EventType> 
 	private final Collection<Locale> supportedLocales = new ArrayList<>();
 	
 	private Locale locale ; 
-	
-	
 
 
 	@PostConstruct
@@ -45,13 +43,6 @@ public class UserModelImpl  extends SubjectImpl<UserModel, UserModel.EventType> 
 		return supportedLocales;
 		
 	}
-	@Override     
-	public final String getTheme() {
-		return "runo";
-	}
 	
-	public final void setTheme(String  theme) {
-		
-	}
 
 }

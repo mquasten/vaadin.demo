@@ -70,7 +70,7 @@ public class PersonSearchViewTest {
 	private final UserModel userModel = Mockito.mock(UserModel.class);
 
 	private final ViewNav viewNav = Mockito.mock(ViewNav.class);
-	private final PersonSearchView personSearchView = new PersonSearchView(personSearchModel, personSearchController, messages, userModel, personListContainerConverter, itemToPersonSearchSetConverter,Mockito.mock(Converter.class), viewNav);
+	private final PersonSearchView personSearchView = new PersonSearchView(personSearchModel, personSearchController, messages, userModel, personListContainerConverter, itemToPersonSearchSetConverter, viewNav);
 
 	@SuppressWarnings("rawtypes")
 	private final ArgumentCaptor<Observer> localeObserverCaptor = ArgumentCaptor.forClass(Observer.class);

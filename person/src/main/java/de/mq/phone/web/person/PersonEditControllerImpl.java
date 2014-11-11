@@ -113,9 +113,9 @@ public class PersonEditControllerImpl implements PersonEditController {
 
 	@Override
 	public void delete(final PersonEditModel personEditModel) {
-		System.out.println("delete: " + personEditModel.getPerson().person());
-		System.out.println("id: " + personEditModel.getPerson().id());
-		
+		if ( personEditModel.isIdAware()){
+			personService.deletePerson(personEditModel.getPerson().id());
+		}
 	}
 
 }

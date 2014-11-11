@@ -39,5 +39,9 @@ class PersonServiceImpl implements PersonService {
 	public final Person person(final String id) {
 		return personRepository.forId(id);
 	}
-
+	
+	@Override
+	public final void deletePerson(final String id) {
+		personRepository.delete(id);
+	}
 }

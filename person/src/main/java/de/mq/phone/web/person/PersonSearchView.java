@@ -2,10 +2,13 @@ package de.mq.phone.web.person;
 
 
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Locale;
-
 import javax.annotation.PostConstruct;
+
+
+
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +40,6 @@ import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import de.mq.phone.domain.person.Person;
@@ -49,7 +51,7 @@ class PersonSearchView extends CustomComponent implements View  {
 
 	static final String I18N_CONTACT_TABLE_CAPTION = "table";
 	static final String I18N_LANGUAGE_COMBOBOX_CAPTION = "language";
-	static final String I18N_THEME_COMBOBOX_CAPTION = "theme";
+	
 
 	static final String I18N_CHANGE_BUTTON_CAPTION = "change_button";
 	static final String I18N_NEW_BUTTON_CAPTION = "new_button";
@@ -75,24 +77,24 @@ class PersonSearchView extends CustomComponent implements View  {
 	private final PersonSearchController personSearchController;
 	private final MessageSource messages;
 	private final ViewNav viewNav;
-	private final Converter<String[], Container> themesConverter;
+
 	
  
 
 	@Autowired
-	PersonSearchView(final PersonSearchModel model, final PersonSearchController personSearchController, final MessageSource messages, final UserModel userModel, @ConverterQualifier(ConverterQualifier.Type.PersonList2Container) final Converter<Collection<Person>, Container> personListContainerConverter, @ConverterQualifier(ConverterQualifier.Type.Item2PersonSearchSet) final Converter<Item, Collection<Object>> itemToPersonSearchSetConverter,  @ConverterQualifier(ConverterQualifier.Type.Theme2Container) final Converter<String[], Container> themesConverter, final ViewNav viewNav) {
+	PersonSearchView(final PersonSearchModel model, final PersonSearchController personSearchController, final MessageSource messages, final UserModel userModel, @ConverterQualifier(ConverterQualifier.Type.PersonList2Container) final Converter<Collection<Person>, Container> personListContainerConverter, @ConverterQualifier(ConverterQualifier.Type.Item2PersonSearchSet) final Converter<Item, Collection<Object>> itemToPersonSearchSetConverter, final ViewNav viewNav) {
 		this.model = model;
 		this.personSearchController = personSearchController;
 		this.messages = messages;
 		this.userModel = userModel;
 		this.personListContainerConverter = personListContainerConverter;
 		this.itemToPersonSearchSetConverter = itemToPersonSearchSetConverter;
-		this.themesConverter=themesConverter;
+		
 		this.viewNav=viewNav;
 	}
 
 	PersonSearchView() {
-		this(null, null, null, null, null, null, null, null);
+		this(null, null, null, null, null, null, null);
 	}
 
 	private static final long serialVersionUID = 1L;
@@ -201,23 +203,17 @@ class PersonSearchView extends CustomComponent implements View  {
 		languageBox.setContainerDataSource(new BeanItemContainer<Locale>(Locale.class, userModel.getSupportedLocales()));
 
 		languageBox.setImmediate(true);
-		final FormLayout themeLaylout = new FormLayout();
-		final ComboBox themeBox = new ComboBox();
-		themeLaylout.addComponent(themeBox);
-		themeBox.setImmediate(true);
-		themeBox.setNullSelectionAllowed(false);
-
-		themeBox.setNewItemsAllowed(false);
-		themeBox.setContainerDataSource(themesConverter.convert(UserModel.THEMES));
 		
-		themeBox.addValueChangeListener(event -> UI.getCurrent().setTheme((String) event.getProperty().getValue()));
+		
+		
+		
 
 		boxLayout.addComponent( languageLaylout);
-		boxLayout.addComponent(themeLaylout);
+		
 		gridLayout.addComponent(boxLayout);
 
 		languageBinder.bind(languageBox, "locale");
-		languageBinder.bind(themeBox, "theme");
+		
 
 		languageBox.addValueChangeListener(event -> commitBinder(languageBinder));
 
@@ -243,6 +239,8 @@ class PersonSearchView extends CustomComponent implements View  {
 			
 			viewNav.navigateTo(PersonEditView.class, personId);
 		});
+		
+	
 
 		setCompositionRoot(mainLayoout);
 		getCompositionRoot().setSizeFull();
@@ -272,7 +270,7 @@ class PersonSearchView extends CustomComponent implements View  {
 			mainLayoout.addComponent(panel);
 			mainLayoout.addComponent(tablePanel);
 			
-			themeBox.setCaption(getString(I18N_THEME_COMBOBOX_CAPTION));
+		
 
 		}, UserModel.EventType.LocaleChanges);
 
@@ -291,9 +289,9 @@ class PersonSearchView extends CustomComponent implements View  {
 
 		table.setVisibleColumns(new Object[] { PERSON, CONTACTS, ADDRESS, BANKING_ACCOUNT });
 	
-		for (final Object itemId : table.getVisibleColumns()) {
-			table.setColumnExpandRatio(itemId, 1f);
-		}
+		Arrays.stream(table.getVisibleColumns()).forEach(col -> table.setColumnExpandRatio(col, 1f) );
+		
+		
 	}
 
 	Field<?> contactColumnGenerator(final Table table, final Object itemId) {
@@ -340,7 +338,7 @@ class PersonSearchView extends CustomComponent implements View  {
 
 	@Override
 	public void enter(final ViewChangeEvent event) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 

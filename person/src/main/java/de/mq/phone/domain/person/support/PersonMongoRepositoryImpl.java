@@ -125,5 +125,11 @@ public class PersonMongoRepositoryImpl implements PersonRepository {
 	public final Person forId(final String id) {
 		return mongoOperations.findById(id, PersonImpl.class);
 	}
+	
+	@Override
+	public final void delete( final String id) {
+		final Person person = forId(id);
+		mongoOperations.remove(person);
+	}
 
 }
