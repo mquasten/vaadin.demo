@@ -11,6 +11,7 @@ interface PersonEditModel extends  Subject<PersonEditModel, PersonEditModel.Even
 	enum EventType {
 		PersonChanged,
 		ContactChanged,
+		ContactDeleted,
 		ContactTakeOver;
 		}
 	

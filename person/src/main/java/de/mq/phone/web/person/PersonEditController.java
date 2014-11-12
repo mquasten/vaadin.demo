@@ -24,5 +24,6 @@ public interface PersonEditController {
 	void assign(final PersonEditModel personEditModel, final Class<? extends Contact> clazz);
 
 	void delete(PersonEditModel personEditModel);
+	
 
 }

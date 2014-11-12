@@ -164,8 +164,18 @@ class PersonEditView extends CustomComponent implements View {
 
 		final Button addButton = new Button();
 
-		addButton.addClickListener(event -> personEditController.assign(personEditModel, (Class<Contact>) typeComboBox.getValue()));
+		addButton.addClickListener(event -> { 
+			if( personEditModel.getCurrentContact() != null){
+				contactList.unselect(personEditModel.getCurrentContact().getKey());
+			}
+			personEditController.assign(personEditModel, (Class<Contact>) typeComboBox.getValue());
+		});
 
+		
+	   personEditModel.register(event -> { 
+	   	contactList.removeItem(personEditModel.getCurrentContact().getKey());
+	   	
+	   }, PersonEditModel.EventType.ContactDeleted);	
 		typeLayout.addComponent(addButton);
 		typeLayout.setComponentAlignment(addButton, Alignment.BOTTOM_LEFT);
 
@@ -182,7 +192,7 @@ class PersonEditView extends CustomComponent implements View {
 
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonPanel.setContent(buttonLayout);
-		buttonLayout.setMargin(true);
+		
 		final Button cancelButton = new Button();
 
 		cancelButton.addClickListener(event -> viewNav.navigateTo(PersonSearchView.class));
