@@ -1,15 +1,9 @@
 package de.mq.phone.web.person;
 
-
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Locale;
 import javax.annotation.PostConstruct;
-
-
-
-
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -47,11 +41,10 @@ import de.mq.vaadin.util.ViewNav;
 
 @Component()
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS, value = "session")
-class PersonSearchView extends CustomComponent implements View  {
+class PersonSearchView extends CustomComponent implements View {
 
 	static final String I18N_CONTACT_TABLE_CAPTION = "table";
 	static final String I18N_LANGUAGE_COMBOBOX_CAPTION = "language";
-	
 
 	static final String I18N_CHANGE_BUTTON_CAPTION = "change_button";
 	static final String I18N_NEW_BUTTON_CAPTION = "new_button";
@@ -64,11 +57,11 @@ class PersonSearchView extends CustomComponent implements View  {
 	static final String ADDRESS_SEARCH_PROPERTY = "address";
 	static final String PERSON_SEARCH_PROPERTY = "person";
 	static final String CONTACT_SEARCH_PROPERTY = "contact";
-	
+
 	static final String CONTACTS = "contacts";
 	static final String ADDRESS = "address";
 	static final String PERSON = "person";
-	static final String BANKING_ACCOUNT= "bank";
+	static final String BANKING_ACCOUNT = "bank";
 
 	private final Converter<Collection<Person>, Container> personListContainerConverter;
 	private final Converter<Item, Collection<Object>> itemToPersonSearchSetConverter;
@@ -78,9 +71,6 @@ class PersonSearchView extends CustomComponent implements View  {
 	private final MessageSource messages;
 	private final ViewNav viewNav;
 
-	
- 
-
 	@Autowired
 	PersonSearchView(final PersonSearchModel model, final PersonSearchController personSearchController, final MessageSource messages, final UserModel userModel, @ConverterQualifier(ConverterQualifier.Type.PersonList2Container) final Converter<Collection<Person>, Container> personListContainerConverter, @ConverterQualifier(ConverterQualifier.Type.Item2PersonSearchSet) final Converter<Item, Collection<Object>> itemToPersonSearchSetConverter, final ViewNav viewNav) {
 		this.model = model;
@@ -89,8 +79,8 @@ class PersonSearchView extends CustomComponent implements View  {
 		this.userModel = userModel;
 		this.personListContainerConverter = personListContainerConverter;
 		this.itemToPersonSearchSetConverter = itemToPersonSearchSetConverter;
-		
-		this.viewNav=viewNav;
+
+		this.viewNav = viewNav;
 	}
 
 	PersonSearchView() {
@@ -99,14 +89,9 @@ class PersonSearchView extends CustomComponent implements View  {
 
 	private static final long serialVersionUID = 1L;
 
-
 	@PostConstruct()
-	final void init()  {
+	final void init() {
 
-		
-	
-      
-      
 		final VerticalLayout mainLayoout = new VerticalLayout();
 
 		final Panel panel = new Panel();
@@ -152,45 +137,38 @@ class PersonSearchView extends CustomComponent implements View  {
 
 		col5Layout.addComponent(searchButton);
 
-		
-		
 		mainLayoout.addComponent(panel);
 
 		final Panel tablePanel = new Panel();
 
 		final VerticalLayout tableLayout = new VerticalLayout();
-	
+
 		tablePanel.setContent(tableLayout);
 		final HorizontalLayout gridLayout = new HorizontalLayout();
-		
 
-		GridLayout buttonLayout = new GridLayout(2,1);
+		GridLayout buttonLayout = new GridLayout(2, 1);
 		buttonLayout.setSpacing(true);
 		buttonLayout.setMargin(true);
-		
+
 		final Button newButton = new Button();
 		final Button updateButton = new Button();
-	
+
 		newButton.addClickListener(event -> {
 			viewNav.navigateTo(PersonEditView.class);
 		});
-		
-	
-		
+
 		buttonLayout.addComponent(newButton);
 		buttonLayout.addComponent(updateButton);
-		
-		
-	
+
 		gridLayout.addComponent(buttonLayout);
 		gridLayout.setComponentAlignment(buttonLayout, Alignment.MIDDLE_LEFT);
 
 		final BeanFieldGroup<UserModel> languageBinder = new BeanFieldGroup<>(UserModel.class);
-	   languageBinder.setBuffered(true);
+		languageBinder.setBuffered(true);
 		languageBinder.setItemDataSource(userModel);
 
 		final HorizontalLayout boxLayout = new HorizontalLayout();
-	    boxLayout.setMargin(true);
+		boxLayout.setMargin(true);
 		boxLayout.setSpacing(true);
 		tableLayout.setSpacing(true);
 		final FormLayout languageLaylout = new FormLayout();
@@ -203,24 +181,19 @@ class PersonSearchView extends CustomComponent implements View  {
 		languageBox.setContainerDataSource(new BeanItemContainer<Locale>(Locale.class, userModel.getSupportedLocales()));
 
 		languageBox.setImmediate(true);
-		
-		
-		
-		
 
-		boxLayout.addComponent( languageLaylout);
-		
+		boxLayout.addComponent(languageLaylout);
+
 		gridLayout.addComponent(boxLayout);
 
 		languageBinder.bind(languageBox, "locale");
-		
 
 		languageBox.addValueChangeListener(event -> commitBinder(languageBinder));
 
 		tableLayout.addComponent(gridLayout);
 
 		mainLayoout.addComponent(tablePanel);
-	   mainLayoout.setMargin(true);
+		mainLayoout.setMargin(true);
 		mainLayoout.setSpacing(true);
 
 		final Table table = new Table();
@@ -229,25 +202,23 @@ class PersonSearchView extends CustomComponent implements View  {
 		tableLayout.addComponent(table);
 		table.setSizeFull();
 		table.setEditable(false);
-		
+
 		updateButton.addClickListener(event -> {
-			
+
 			final String personId = (String) table.getValue();
-			if(personId==null){
+			if (personId == null) {
 				return;
 			}
-			
+
 			viewNav.navigateTo(PersonEditView.class, personId);
 		});
-		
-	
 
 		setCompositionRoot(mainLayoout);
 		getCompositionRoot().setSizeFull();
 
 		model.register(event -> personChangeObserver(table), PersonSearchModel.EventType.PersonsChanges);
 
-		userModel.register( event -> {
+		userModel.register(event -> {
 			setLocale(userModel.getLocale());
 			panel.setCaption(getString(I18N_SEARCH_PANEL_CAPTION));
 			nameField.setCaption(getString(I18N_SEARCH_PERSON_FIELD_CAPTION));
@@ -257,7 +228,7 @@ class PersonSearchView extends CustomComponent implements View  {
 			tablePanel.setCaption(getString(I18N_CONTACT_TABLE_PANEL_CAPTION));
 			newButton.setCaption(getString(I18N_NEW_BUTTON_CAPTION));
 			updateButton.setCaption(getString(I18N_CHANGE_BUTTON_CAPTION));
-		
+
 			languageBox.setCaption(getString(I18N_LANGUAGE_COMBOBOX_CAPTION));
 			table.setCaption(getString(I18N_CONTACT_TABLE_CAPTION));
 			table.setColumnHeader(PERSON, getString("table_person"));
@@ -265,12 +236,10 @@ class PersonSearchView extends CustomComponent implements View  {
 			table.setColumnHeader(BANKING_ACCOUNT, getString("table_bank"));
 			table.setColumnHeader(CONTACTS, getString("table_contacts"));
 			languageBox.getItemIds().forEach(itemId -> languageBox.setItemCaption(itemId, ((Locale) itemId).getDisplayLanguage(userModel.getLocale())));
-			
+
 			mainLayoout.removeAllComponents();
 			mainLayoout.addComponent(panel);
 			mainLayoout.addComponent(tablePanel);
-			
-		
 
 		}, UserModel.EventType.LocaleChanges);
 
@@ -288,30 +257,28 @@ class PersonSearchView extends CustomComponent implements View  {
 		table.addGeneratedColumn(CONTACTS, (source, itemId, ColumnId) -> contactColumnGenerator(table, itemId));
 
 		table.setVisibleColumns(new Object[] { PERSON, CONTACTS, ADDRESS, BANKING_ACCOUNT });
-	
-		Arrays.stream(table.getVisibleColumns()).forEach(col -> table.setColumnExpandRatio(col, 1f) );
-		
-		
+
+		Arrays.stream(table.getVisibleColumns()).forEach(col -> table.setColumnExpandRatio(col, 1f));
+
 	}
 
 	Field<?> contactColumnGenerator(final Table table, final Object itemId) {
 		final Collection<?> contacts = (Collection<?>) table.getContainerDataSource().getItem(itemId).getItemProperty(CONTACTS).getValue();
-		
-		if( contacts.size() == 0 ) {
-			return  null;
+
+		if (contacts.size() == 0) {
+			return null;
 		}
-		if( contacts.size() ==  1){
-		  final TextField field =   new TextField();	
-		  field.setSizeFull();
-		  field.setValue(contacts.iterator().next().toString());
-		  field.setReadOnly(true);
-		  return field;
+		if (contacts.size() == 1) {
+			final TextField field = new TextField();
+			field.setSizeFull();
+			field.setValue(contacts.iterator().next().toString());
+			field.setReadOnly(true);
+			return field;
 		}
-		
+
 		final ListSelect listSelect = new ListSelect();
-		contacts.forEach(contact -> listSelect.addItem(contact) );
-		
-		
+		contacts.forEach(contact -> listSelect.addItem(contact));
+
 		listSelect.setSizeFull();
 		listSelect.setNullSelectionAllowed(false);
 
@@ -338,8 +305,7 @@ class PersonSearchView extends CustomComponent implements View  {
 
 	@Override
 	public void enter(final ViewChangeEvent event) {
-		
-		
+		personSearchController.assignPersons(model);
 	}
 
 }
