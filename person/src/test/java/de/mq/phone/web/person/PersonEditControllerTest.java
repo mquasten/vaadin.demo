@@ -167,5 +167,21 @@ public class PersonEditControllerTest {
 		Mockito.when(mapToPersonMapper.convert(person)).thenReturn(objectAsMap);
 		Assert.assertEquals(objectAsMap, personEditController.person(personEditModel));
 	}
+	@Test
+	public final void delete() {
+		Mockito.when(personEditModel.isIdAware()).thenReturn(true);
+		
+		Mockito.when(personEditModel.getPerson()).thenReturn(person);
+		Mockito.when(person.id()).thenReturn(PERSON_ID);
+		
+		personEditController.delete(personEditModel);
+		Mockito.verify(personService, Mockito.times(1)).deletePerson(PERSON_ID);
+	}
+	
+	@Test
+	public final void deleteNotPersistent() {
+		personEditController.delete(personEditModel);
+	   Mockito.verifyZeroInteractions(personService);
+	}
 
 }

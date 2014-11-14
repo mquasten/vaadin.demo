@@ -19,6 +19,7 @@ import org.springframework.validation.BindingResult;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TextField;
 
@@ -50,7 +51,7 @@ public class ContactEditorViewTest {
 		Mockito.when(userModel.getLocale()).thenReturn(Locale.GERMAN);
 		Mockito.when(messageSource.getMessage(ContactEditorView.I18N_EDIT_CONTACT_BUTTON, null, Locale.GERMAN)).thenReturn(ContactEditorView.I18N_EDIT_CONTACT_BUTTON);
 		Mockito.when(messageSource.getMessage(ContactEditorView.I18N_EDIT_CONTACT_HEADLINE, null, Locale.GERMAN)).thenReturn(ContactEditorView.I18N_EDIT_CONTACT_HEADLINE);
-	
+		Mockito.when(messageSource.getMessage(ContactEditorView.I18N_DELETE_CONTACT_BUTTON, null, Locale.GERMAN)).thenReturn(ContactEditorView.I18N_DELETE_CONTACT_BUTTON);
 		Arrays.stream(Fields.values()).forEach(field -> Mockito.when(messageSource.getMessage( (ContactEditorView.I18N_EDIT_CONTACT_PREFIX + field.property()).toLowerCase(), null, Locale.GERMAN)).thenReturn(field.property()));
 		
 		Mockito.doAnswer( invocation -> {
@@ -83,7 +84,7 @@ public class ContactEditorViewTest {
 		
 		Assert.assertTrue(components.containsKey(ContactEditorView.I18N_EDIT_CONTACT_BUTTON));
 		Assert.assertTrue(components.containsKey(ContactEditorView.I18N_EDIT_CONTACT_HEADLINE));
-		Assert.assertEquals(2 + Fields.values().length, components.size());
+		Assert.assertEquals(3 + Fields.values().length, components.size());
 		
 		Assert.assertFalse(contactEditorView.isVisible());
 	}
@@ -166,6 +167,15 @@ public class ContactEditorViewTest {
 	@Test
 	public final void enumForCoverageOnly() {
 		Arrays.stream(ContactEditorView.Fields.values()).map(field -> field.name() ).forEach(name -> Assert.assertEquals(name, ContactEditorView.Fields.valueOf(name).name()));
+	}
+	
+	@Test
+	public final void deleteContact() {
+		final Button button = (Button) components.get(ContactEditorView.I18N_DELETE_CONTACT_BUTTON);
+		final ClickListener listener = (ClickListener) button.getListeners(ClickEvent.class).iterator().next();
+		final ClickEvent event = Mockito.mock(ClickEvent.class);
+		listener.buttonClick(event);
+		Mockito.verify(personEditModel).notifyObservers(PersonEditModel.EventType.ContactDeleted);
 	}
 	
 }

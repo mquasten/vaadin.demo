@@ -89,7 +89,8 @@ public class PersonEditViewTest {
 		Mockito.when(messageSource.getMessage(ContactMapperImpl.I18N_TYPE_PHONE, null, Locale.GERMAN)).thenReturn(ContactMapperImpl.I18N_TYPE_PHONE);
 		Mockito.when(messageSource.getMessage(ContactMapperImpl.I18N_TYPE_MAIL, null, Locale.GERMAN)).thenReturn(ContactMapperImpl.I18N_TYPE_MAIL);
 		Mockito.when(messageSource.getMessage(PersonEditView.I18N_CONTACTS_CAPTION, null, Locale.GERMAN)).thenReturn(PersonEditView.I18N_CONTACTS_CAPTION);
-	
+		Mockito.when(messageSource.getMessage(PersonEditView.I18N_DELETE_BUTTON_CAPTION, null, Locale.GERMAN)).thenReturn(PersonEditView.I18N_DELETE_BUTTON_CAPTION);
+		
 		final Container container =  new ContactMapperImpl(messageSource).convert(Locale.GERMAN);
 		Mockito.when(contactMapper.convert(Locale.GERMAN)).thenReturn(container);
 		ReflectionTestUtils.setField(personEditView, "contactMapper",contactMapper);
@@ -103,7 +104,7 @@ public class PersonEditViewTest {
 
 	@Test
 	public final void init() {
-		Assert.assertEquals(15, components.size());
+		Assert.assertEquals(16, components.size());
 
 		Arrays.stream(PersonEditView.Fields.values()).map(field -> PersonEditView.I18N_EDIT_PERSON_PREFIX + field.property().toLowerCase()).forEach(i18n -> Assert.assertEquals(i18n, components.get(i18n).getCaption()));
 
@@ -135,13 +136,33 @@ public class PersonEditViewTest {
 	
 	@Test
 	public final void addContact() {
+		final UUID uuid = UUID.randomUUID();
+		final Button addButton = (Button) components.get(PersonEditView.I18N_CONTACT_ADD);
+		final ListSelect listSelect = (ListSelect) components.get(PersonEditView.I18N_CONTACTS_CAPTION);
+		listSelect.addItem(uuid);
+		listSelect.select(uuid);
+		Assert.assertEquals(uuid, listSelect.getValue());
+		final ClickListener listener = (ClickListener) addButton.getListeners(ClickEvent.class).iterator().next();
+		@SuppressWarnings("unchecked")
+		final Entry<UUID, Contact> entry = Mockito.mock(Entry.class);
+		Mockito.when(entry.getKey()).thenReturn(uuid);
+		Mockito.when(personEditModel.getCurrentContact()).thenReturn(entry);
+
+		listener.buttonClick(clickEvent);
+
+		Assert.assertNull(listSelect.getValue());
+		Mockito.verify(personEditController, Mockito.times(1)).assign(personEditModel, PersonEntities.ContactType.Phone.type());
+	}
+	
+	@Test
+	public final void addContactNothingSelected() {
 		final Button addButton = (Button) components.get(PersonEditView.I18N_CONTACT_ADD);
 		final ClickListener listener = (ClickListener) addButton.getListeners(ClickEvent.class).iterator().next();
 		
 		listener.buttonClick(clickEvent);
 		Mockito.verify(personEditController, Mockito.times(1)).assign(personEditModel, PersonEntities.ContactType.Phone.type());
 	}
-	
+
 	@Test
 	public final void cancel() {
 		final Button cancelButton = (Button) components.get(PersonEditView.I18N_EDIT_PERSON_CANCEL);
@@ -266,6 +287,37 @@ public class PersonEditViewTest {
 	@Test
 	public final void fieldsEnumCoverageOnly() {
 		Arrays.stream(PersonEditView.Fields.values()).map(field -> field.name()).forEach(name -> Assert.assertEquals(name, PersonEditView.Fields.valueOf(name).name()));
+	}
+	
+	
+	@Test
+	public final void deleteContact() {
+		final UUID uuid =  UUID.randomUUID();
+		ListSelect listSelect = (ListSelect) components.get(PersonEditView.I18N_CONTACTS_CAPTION);
+		listSelect.addItem(uuid);
+		
+		Assert.assertTrue(listSelect.getItemIds().contains(uuid));
+		
+		@SuppressWarnings("unchecked")
+		final Entry<UUID,Contact> entry = Mockito.mock(Entry.class);
+		
+		Mockito.when(entry.getKey()).thenReturn(uuid);
+		Mockito.when(personEditModel.getCurrentContact()).thenReturn(entry);
+	
+		
+		observers.get(PersonEditModel.EventType.ContactDeleted).process(PersonEditModel.EventType.ContactDeleted);
+		
+		Assert.assertFalse(listSelect.getItemIds().contains(uuid));
+	}
+	
+	@Test
+	public final void delete() {
+		final Button deleteButton = (Button) components.get(PersonEditView.I18N_DELETE_BUTTON_CAPTION);
+		final ClickListener listener = (ClickListener) deleteButton.getListeners(ClickEvent.class).iterator().next();
+		listener.buttonClick(clickEvent);
+		
+		Mockito.verify(personEditController).delete(personEditModel);
+		Mockito.verify(viewNav).navigateTo(PersonSearchView.class);
 	}
 
 }

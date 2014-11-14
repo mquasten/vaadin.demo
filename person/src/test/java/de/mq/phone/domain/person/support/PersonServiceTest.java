@@ -45,5 +45,13 @@ public class PersonServiceTest {
 		Mockito.when(personRepository.forId(ID)).thenReturn(person);
 		Assert.assertEquals(person, personService.person(ID));
 	}
+	
+	@Test
+	public final void delete() {
+		final PersonService personService = new PersonServiceImpl(personRepository);
+		personService.deletePerson(ID);
+		Mockito.verify(personRepository).delete(ID);
+		
+	}
 
 }

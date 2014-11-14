@@ -117,6 +117,7 @@ public class PersonEditControllerImpl implements PersonEditController {
 			personService.deletePerson(personEditModel.getPerson().id());
 		}
 	}
+	
 
 	
 

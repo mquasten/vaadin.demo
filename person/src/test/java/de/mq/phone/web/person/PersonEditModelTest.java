@@ -90,4 +90,15 @@ public class PersonEditModelTest {
 		}
 	}
 	
+	@Test
+	public final void isIdAware() {
+		final Person person = Mockito.mock(Person.class);
+		Mockito.when(person.id()).thenReturn("19680528");
+		personEditModel.setPerson(person);
+		Assert.assertTrue(personEditModel.isIdAware());
+		
+		Mockito.when(person.id()).thenReturn(null);
+		Assert.assertFalse(personEditModel.isIdAware());
+	}
+	
 }

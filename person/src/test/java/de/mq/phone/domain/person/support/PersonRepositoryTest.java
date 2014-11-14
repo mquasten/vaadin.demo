@@ -167,5 +167,14 @@ public class PersonRepositoryTest {
 		Mockito.when(personRepository.forId(ID)).thenReturn(result);
 		Assert.assertEquals(result, personRepository.forId(ID));
 	}
+	
+	@Test
+	public final void delete() {
+		final PersonRepository personRepository = new PersonMongoRepositoryImpl(mongoOperations);
+		final Person person = Mockito.mock(Person.class);
+		Mockito.when(personRepository.forId(ID)).thenReturn(person);
+		personRepository.delete(ID);
+		Mockito.verify(mongoOperations).remove(person);
+	}
 
 }
