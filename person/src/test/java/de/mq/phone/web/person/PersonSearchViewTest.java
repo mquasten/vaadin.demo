@@ -31,7 +31,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.ListSelect;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
@@ -57,7 +57,7 @@ public class PersonSearchViewTest {
 	private static final String SEARCH_BUTTON_CAPTION = "suchenButton";
 	private static final String NEW_BUTTON_CAPTION = PersonSearchView.I18N_NEW_BUTTON_CAPTION;
 	private static final String CHANGE_BUTTON_CAPTION = "aendern";
-	
+
 	private static final String LANGUAGE_BOX_CAPTION = "Sprache";
 	private static final String CONTACT_TABLE_PANEL_CAPTION = "Kontaktdaten";
 	private static final String CONTACT_TABLE_CAPTION = "table";
@@ -71,7 +71,7 @@ public class PersonSearchViewTest {
 	private final UserModel userModel = Mockito.mock(UserModel.class);
 
 	private final ViewNav viewNav = Mockito.mock(ViewNav.class);
-	private final PersonSearchView personSearchView = new PersonSearchView(personSearchModel, personSearchController, messages, userModel, personListContainerConverter, itemToPersonSearchSetConverter, viewNav);
+	private final PersonSearchView personSearchView = new PersonSearchView(personSearchModel, personSearchController, messages, userModel, personListContainerConverter, itemToPersonSearchSetConverter, new StringCollectionToContainerConverter(), viewNav);
 
 	@SuppressWarnings("rawtypes")
 	private final ArgumentCaptor<Observer> localeObserverCaptor = ArgumentCaptor.forClass(Observer.class);
@@ -94,12 +94,11 @@ public class PersonSearchViewTest {
 		Mockito.when(messages.getMessage(PersonSearchView.I18N_SEARCH_BUTTON_CAPTION, null, Locale.GERMAN)).thenReturn(SEARCH_BUTTON_CAPTION);
 		Mockito.when(messages.getMessage(PersonSearchView.I18N_NEW_BUTTON_CAPTION, null, Locale.GERMAN)).thenReturn(NEW_BUTTON_CAPTION);
 		Mockito.when(messages.getMessage(PersonSearchView.I18N_CHANGE_BUTTON_CAPTION, null, Locale.GERMAN)).thenReturn(CHANGE_BUTTON_CAPTION);
-	
+
 		Mockito.when(messages.getMessage(PersonSearchView.I18N_LANGUAGE_COMBOBOX_CAPTION, null, Locale.GERMAN)).thenReturn(LANGUAGE_BOX_CAPTION);
 		Mockito.when(messages.getMessage(PersonSearchView.I18N_CONTACT_TABLE_CAPTION, null, Locale.GERMAN)).thenReturn(CONTACT_TABLE_CAPTION);
 		Mockito.when(messages.getMessage(PersonSearchView.I18N_CONTACT_TABLE_PANEL_CAPTION, null, Locale.GERMAN)).thenReturn(CONTACT_TABLE_PANEL_CAPTION);
 
-	
 		Mockito.when(userModel.getLocale()).thenReturn(Locale.GERMAN);
 		Collection<Locale> locales = new ArrayList<>();
 		locales.add(Locale.GERMAN);
@@ -124,7 +123,7 @@ public class PersonSearchViewTest {
 		Assert.assertEquals(Panel.class, components.get(SEARCH_PANEL_CAPTION).getClass());
 
 		Assert.assertEquals(Button.class, components.get(SEARCH_BUTTON_CAPTION).getClass());
-	
+
 		Assert.assertEquals(Button.class, components.get(CHANGE_BUTTON_CAPTION).getClass());
 		Assert.assertEquals(Button.class, components.get(NEW_BUTTON_CAPTION).getClass());
 
@@ -201,60 +200,60 @@ public class PersonSearchViewTest {
 
 	}
 
-	
-	
 	@SuppressWarnings("unchecked")
 	@Test
 	public final void commitBinder() {
 		final ValueChangeEvent valueChangeEvent = Mockito.mock(ValueChangeEvent.class);
 		final ComboBox comboBox = (ComboBox) components.get(LANGUAGE_BOX_CAPTION);
-		
-		for( final ValueChangeListener listener  : (Collection<ValueChangeListener>) comboBox.getListeners(ValueChangeEvent.class)) {
+
+		for (final ValueChangeListener listener : (Collection<ValueChangeListener>) comboBox.getListeners(ValueChangeEvent.class)) {
 			listener.valueChange(valueChangeEvent);
 		}
-		
+
 		Mockito.verify(userModel, Mockito.times(1)).setLocale(Locale.GERMAN);
 	}
-	@Test(expected=IllegalStateException.class)
+
+	@Test(expected = IllegalStateException.class)
 	public final void commitBinderSucks() throws Throwable {
 		final ComboBox comboBox = (ComboBox) components.get(LANGUAGE_BOX_CAPTION);
 		Mockito.doThrow(new IllegalStateException()).when(userModel).setLocale(Matchers.any(Locale.class));
 		try {
 			comboBox.setValue(Locale.ENGLISH);
-		} catch ( ListenerMethod.MethodException ex){
+		} catch (ListenerMethod.MethodException ex) {
 			throw ex.getCause();
 		}
 	}
+
 	@Test
 	public final void neu() {
 		final Button button = (Button) components.get(PersonSearchView.I18N_NEW_BUTTON_CAPTION);
 		final ClickListener listener = (ClickListener) button.getListeners(ClickEvent.class).iterator().next();
-	
+
 		listener.buttonClick(Mockito.mock(ClickEvent.class));
 		Mockito.verify(viewNav, Mockito.times(1)).navigateTo(PersonEditView.class);
 	}
-	
+
 	@Test
 	public final void update() {
 		final Button button = (Button) components.get(CHANGE_BUTTON_CAPTION);
 		final Table table = (Table) components.get(CONTACT_TABLE_CAPTION);
 		table.addItem(ID);
 		table.setValue(ID);
-		
+
 		final ClickListener listener = (ClickListener) button.getListeners(ClickEvent.class).iterator().next();
 		listener.buttonClick(Mockito.mock(ClickEvent.class));
 		Mockito.verify(viewNav, Mockito.times(1)).navigateTo(PersonEditView.class, ID);
 		table.setValue(null);
-	   listener.buttonClick(Mockito.mock(ClickEvent.class));
-	   
-	   Mockito.verifyNoMoreInteractions(viewNav);
+		listener.buttonClick(Mockito.mock(ClickEvent.class));
+
+		Mockito.verifyNoMoreInteractions(viewNav);
 	}
-	
+
 	@Test
-	public final void defaultConructor()  {
+	public final void defaultConructor() {
 		Assert.assertNotNull(new PersonSearchView());
 	}
-	
+
 	@Test
 	public final void columnGenerator() {
 		final String itemId = ID;
@@ -272,30 +271,30 @@ public class PersonSearchViewTest {
 		contacts.add("skype:kinkyKylie");
 		contacts.add("kylie.minogue@fever.net");
 		Mockito.when(property.getValue()).thenReturn(contacts);
-		ListSelect listSelect = (ListSelect) personSearchView.contactColumnGenerator(table, itemId);
-		Assert.assertEquals(contacts, listSelect.getItemIds());
-		Assert.assertEquals(3, listSelect.getRows());
-		
-		
+		checkSubTable((Table) personSearchView.contactColumnGenerator(table, itemId), contacts);
+
 		contacts.remove(MAIL);
 		contacts.remove("12345");
-		listSelect = (ListSelect) personSearchView.contactColumnGenerator(table, itemId);
-		Assert.assertEquals(contacts, listSelect.getItemIds());
-		Assert.assertEquals(contacts.size(), listSelect.getRows());
-		
+
 		contacts.remove("skype:kinkyKylie");
-		TextField  field = (TextField) personSearchView.contactColumnGenerator(table, itemId);
+		final Label field = (Label) personSearchView.contactColumnGenerator(table, itemId);
 		Assert.assertEquals("kylie.minogue@fever.net", field.getValue());
-		Assert.assertTrue(field.isReadOnly());
-		
+
 		contacts.clear();
 		Assert.assertNull(personSearchView.contactColumnGenerator(table, itemId));
 	}
-	
+
+	private void checkSubTable(final Table subtable, final Collection<String> contacts) {
+
+		Assert.assertEquals(contacts.size(), subtable.getItemIds().size());
+		subtable.getItemIds().forEach(id -> Assert.assertTrue(contacts.contains(subtable.getItem(id).getItemProperty(PersonSearchView.CONTACTS).getValue())));
+		Assert.assertEquals(2, subtable.getPageLength());
+	}
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public final void executeColumnGenerator() {
-		
+
 		final Table table = (Table) components.get(PersonSearchView.I18N_CONTACT_TABLE_CAPTION);
 		final List<Person> persons = new ArrayList<>();
 		Mockito.when(personSearchModel.getPersons()).thenReturn(persons);
@@ -305,16 +304,14 @@ public class PersonSearchViewTest {
 		persons.add(person);
 		final Container container = converter.convert(persons);
 		Mockito.when(personListContainerConverter.convert(persons)).thenReturn(container);
-		
+
 		modelChangeObserverCaptor.getValue().process(PersonSearchModel.EventType.PersonsChanges);
 		final ColumnGenerator generator = table.getColumnGenerator(PersonSearchView.CONTACTS);
 		Assert.assertNotNull(generator);
 		Assert.assertNull(generator.generateCell(table, ID, null));
-		
+
 	}
 
-	
-	
 	@Test
 	public final void enterView() {
 		final ViewChangeEvent event = Mockito.mock(ViewChangeEvent.class);

@@ -1,8 +1,10 @@
 package de.mq.phone.web.person;
 
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Locale;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,23 +20,26 @@ import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.util.BeanItemContainer;
+
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.ListSelect;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.ColumnHeaderMode;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Reindeer;
 
 import de.mq.phone.domain.person.Person;
 import de.mq.vaadin.util.ViewNav;
@@ -65,6 +70,7 @@ class PersonSearchView extends CustomComponent implements View {
 
 	private final Converter<Collection<Person>, Container> personListContainerConverter;
 	private final Converter<Item, Collection<Object>> itemToPersonSearchSetConverter;
+	private final Converter<Collection<String>, Container> stringCollection2ContainerConverter;
 	private final PersonSearchModel model;
 	private final UserModel userModel;
 	private final PersonSearchController personSearchController;
@@ -72,19 +78,19 @@ class PersonSearchView extends CustomComponent implements View {
 	private final ViewNav viewNav;
 
 	@Autowired
-	PersonSearchView(final PersonSearchModel model, final PersonSearchController personSearchController, final MessageSource messages, final UserModel userModel, @ConverterQualifier(ConverterQualifier.Type.PersonList2Container) final Converter<Collection<Person>, Container> personListContainerConverter, @ConverterQualifier(ConverterQualifier.Type.Item2PersonSearchSet) final Converter<Item, Collection<Object>> itemToPersonSearchSetConverter, final ViewNav viewNav) {
+	PersonSearchView(final PersonSearchModel model, final PersonSearchController personSearchController, final MessageSource messages, final UserModel userModel, @ConverterQualifier(ConverterQualifier.Type.PersonList2Container) final Converter<Collection<Person>, Container> personListContainerConverter, @ConverterQualifier(ConverterQualifier.Type.Item2PersonSearchSet) final Converter<Item, Collection<Object>> itemToPersonSearchSetConverter, @ConverterQualifier(ConverterQualifier.Type.StringList2Container) final Converter<Collection<String>, Container> stringCollection2ContainerConverter, final ViewNav viewNav) {
 		this.model = model;
 		this.personSearchController = personSearchController;
 		this.messages = messages;
 		this.userModel = userModel;
 		this.personListContainerConverter = personListContainerConverter;
 		this.itemToPersonSearchSetConverter = itemToPersonSearchSetConverter;
-
+		this.stringCollection2ContainerConverter=stringCollection2ContainerConverter;
 		this.viewNav = viewNav;
 	}
 
 	PersonSearchView() {
-		this(null, null, null, null, null, null, null);
+		this(null, null, null, null, null, null, null, null);
 	}
 
 	private static final long serialVersionUID = 1L;
@@ -261,36 +267,37 @@ class PersonSearchView extends CustomComponent implements View {
 		Arrays.stream(table.getVisibleColumns()).forEach(col -> table.setColumnExpandRatio(col, 1f));
 
 	}
-
-	Field<?> contactColumnGenerator(final Table table, final Object itemId) {
-		final Collection<?> contacts = (Collection<?>) table.getContainerDataSource().getItem(itemId).getItemProperty(CONTACTS).getValue();
-
-		if (contacts.size() == 0) {
+	
+	@SuppressWarnings("unchecked")
+	AbstractComponent contactColumnGenerator(final Table table, final Object itemId) {
+		final Collection<String> contacts = (Collection<String>) table.getContainerDataSource().getItem(itemId).getItemProperty(CONTACTS).getValue();
+		
+		if( contacts.size() == 0){
 			return null;
 		}
-		if (contacts.size() == 1) {
-			final TextField field = new TextField();
-			field.setSizeFull();
-			field.setValue(contacts.iterator().next().toString());
-			field.setReadOnly(true);
-			return field;
+		
+		if( contacts.size()==1){
+			return new Label(contacts.iterator().next());
 		}
-
-		final ListSelect listSelect = new ListSelect();
-		contacts.forEach(contact -> listSelect.addItem(contact));
-
-		listSelect.setSizeFull();
-		listSelect.setNullSelectionAllowed(false);
-
-		listSelect.setNewItemsAllowed(false);
-		listSelect.setRows(contacts.size());
-
-		if (contacts.size() > 3) {
-			listSelect.setRows(3);
-		}
-		return listSelect;
+		
+			
+		final  Table subTable = new  Table();
+		subTable.setContainerDataSource(stringCollection2ContainerConverter.convert(contacts));
+		
+		subTable.setColumnHeaderMode(ColumnHeaderMode.HIDDEN);
+		
+		subTable.setPageLength(2);
+	
+		
+	
+		subTable.setStyleName(Reindeer.LAYOUT_WHITE);
+		subTable.setSizeFull();
+	
+		return subTable;
+	
 	}
-
+	
+	
 	private String getString(final String key) {
 		return messages.getMessage(key, null, getLocale());
 	}
