@@ -256,9 +256,21 @@ public class PersonEditViewTest {
 		Mockito.when(bindingResultMapper.convert(fieldGroup.capture())).thenReturn(personAsMap);
 		final BindingResult bindingResult = Mockito.mock(BindingResult.class);
 		Mockito.when(personEditController.validateAndSave(personAsMap, personEditModel)).thenReturn(bindingResult);
-		((ClickListener) ((Button) components.get(PersonEditView.I18N_EDIT_PERSON_SAVE)).getListeners(ClickEvent.class).iterator().next()).buttonClick(clickEvent);
+		final ClickListener clickListener = (ClickListener) ((Button) components.get(PersonEditView.I18N_EDIT_PERSON_SAVE)).getListeners(ClickEvent.class).iterator().next();
+		clickListener.buttonClick(clickEvent);
 		
 		Mockito.verify(bindingResultMapper, Mockito.times(1)).mapInto(bindingResult, fieldGroup.getValue());
+		Mockito.verify(viewNav).navigateTo(PersonSearchView.class);
+		
+		Mockito.reset(viewNav);
+		Mockito.when(bindingResult.hasErrors()).thenReturn(true);
+	
+		
+		clickListener.buttonClick(clickEvent);
+		
+		Mockito.verify(viewNav, Mockito.times(0)).navigateTo(PersonSearchView.class);
+	
+		
 	}
 	
 	@Test

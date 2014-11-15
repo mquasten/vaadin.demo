@@ -34,6 +34,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.TextField;
 
 import de.mq.phone.domain.person.Address;
@@ -59,7 +60,7 @@ public class PersonSearchViewTest {
 	
 	private static final String LANGUAGE_BOX_CAPTION = "Sprache";
 	private static final String CONTACT_TABLE_PANEL_CAPTION = "Kontaktdaten";
-	private static final String CONTACT_TABLE_CAPTION = "Suchergebnisse";
+	private static final String CONTACT_TABLE_CAPTION = "table";
 	@SuppressWarnings("unchecked")
 	private final Converter<Item, Collection<Object>> itemToPersonSearchSetConverter = Mockito.mock(Converter.class);;
 	@SuppressWarnings("unchecked")
@@ -290,6 +291,30 @@ public class PersonSearchViewTest {
 		contacts.clear();
 		Assert.assertNull(personSearchView.contactColumnGenerator(table, itemId));
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public final void executeColumnGenerator() {
+		
+		final Table table = (Table) components.get(PersonSearchView.I18N_CONTACT_TABLE_CAPTION);
+		final List<Person> persons = new ArrayList<>();
+		Mockito.when(personSearchModel.getPersons()).thenReturn(persons);
+		Converter<Collection<Person>, Container> converter = new PersonListToItemContainerConverter();
+		final Person person = Mockito.mock(Person.class);
+		Mockito.when(person.id()).thenReturn(ID);
+		persons.add(person);
+		final Container container = converter.convert(persons);
+		Mockito.when(personListContainerConverter.convert(persons)).thenReturn(container);
+		
+		modelChangeObserverCaptor.getValue().process(PersonSearchModel.EventType.PersonsChanges);
+		final ColumnGenerator generator = table.getColumnGenerator(PersonSearchView.CONTACTS);
+		Assert.assertNotNull(generator);
+		Assert.assertNull(generator.generateCell(table, ID, null));
+		
+	}
+
+	
+	
 	@Test
 	public final void enterView() {
 		final ViewChangeEvent event = Mockito.mock(ViewChangeEvent.class);
