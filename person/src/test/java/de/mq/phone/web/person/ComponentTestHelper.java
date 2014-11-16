@@ -18,7 +18,9 @@ public class ComponentTestHelper {
 			return;
 		}
 		final Iterator<Component> it = ((HasComponents) component).iterator();
-
+		if( it == null){
+			return;
+		}
 		while (it.hasNext()) {
 			final Component child = it.next();
 			

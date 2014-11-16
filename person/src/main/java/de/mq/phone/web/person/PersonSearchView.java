@@ -20,7 +20,6 @@ import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.util.BeanItemContainer;
-
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.navigator.View;
@@ -76,9 +75,10 @@ class PersonSearchView extends CustomComponent implements View {
 	private final PersonSearchController personSearchController;
 	private final MessageSource messages;
 	private final ViewNav viewNav;
+	private final MainMenuBarView mainMenuBarView;
 
 	@Autowired
-	PersonSearchView(final PersonSearchModel model, final PersonSearchController personSearchController, final MessageSource messages, final UserModel userModel, @ConverterQualifier(ConverterQualifier.Type.PersonList2Container) final Converter<Collection<Person>, Container> personListContainerConverter, @ConverterQualifier(ConverterQualifier.Type.Item2PersonSearchSet) final Converter<Item, Collection<Object>> itemToPersonSearchSetConverter, @ConverterQualifier(ConverterQualifier.Type.StringList2Container) final Converter<Collection<String>, Container> stringCollection2ContainerConverter, final ViewNav viewNav) {
+	PersonSearchView(final PersonSearchModel model, final PersonSearchController personSearchController, final MessageSource messages, final UserModel userModel, @ConverterQualifier(ConverterQualifier.Type.PersonList2Container) final Converter<Collection<Person>, Container> personListContainerConverter, @ConverterQualifier(ConverterQualifier.Type.Item2PersonSearchSet) final Converter<Item, Collection<Object>> itemToPersonSearchSetConverter, @ConverterQualifier(ConverterQualifier.Type.StringList2Container) final Converter<Collection<String>, Container> stringCollection2ContainerConverter, final ViewNav viewNav, final MainMenuBarView mainMenuBarView) {
 		this.model = model;
 		this.personSearchController = personSearchController;
 		this.messages = messages;
@@ -87,10 +87,11 @@ class PersonSearchView extends CustomComponent implements View {
 		this.itemToPersonSearchSetConverter = itemToPersonSearchSetConverter;
 		this.stringCollection2ContainerConverter=stringCollection2ContainerConverter;
 		this.viewNav = viewNav;
+		this.mainMenuBarView=mainMenuBarView;
 	}
 
 	PersonSearchView() {
-		this(null, null, null, null, null, null, null, null);
+		this(null, null, null, null, null, null, null, null, null);
 	}
 
 	private static final long serialVersionUID = 1L;
@@ -98,13 +99,18 @@ class PersonSearchView extends CustomComponent implements View {
 	@PostConstruct()
 	final void init() {
 
+		final VerticalLayout screen = new VerticalLayout();
 		final VerticalLayout mainLayoout = new VerticalLayout();
-
+	
+		screen.addComponent(mainMenuBarView);
+		screen.addComponent(mainLayoout);
+		
 		final Panel panel = new Panel();
 
 		final HorizontalLayout searchFormLayout = new HorizontalLayout();
 		panel.setContent(searchFormLayout);
 
+		//searchFormLayout.addComponent(menubar);
 		searchFormLayout.setMargin(true);
 		searchFormLayout.setSpacing(true);
 		final FormLayout col1Layout = new FormLayout();
@@ -221,7 +227,7 @@ class PersonSearchView extends CustomComponent implements View {
 		
 		table.addValueChangeListener(event -> updateButton.setEnabled( event.getProperty().getValue() != null));
 
-		setCompositionRoot(mainLayoout);
+		setCompositionRoot(screen);
 		getCompositionRoot().setSizeFull();
 
 		model.register(event -> personChangeObserver(table), PersonSearchModel.EventType.PersonsChanges);
@@ -250,7 +256,8 @@ class PersonSearchView extends CustomComponent implements View {
 			mainLayoout.addComponent(tablePanel);
 
 		}, UserModel.EventType.LocaleChanges);
-
+		
+	
 	}
 
 	private void search(final PropertysetItem personSearchItem, final FieldGroup binder) {
