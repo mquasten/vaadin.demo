@@ -158,7 +158,7 @@ class PersonSearchView extends CustomComponent implements View {
 
 		final Button newButton = new Button();
 		final Button updateButton = new Button();
-
+		updateButton.setEnabled(false);
 		newButton.addClickListener(event -> {
 			viewNav.navigateTo(PersonEditView.class);
 		});
@@ -218,6 +218,8 @@ class PersonSearchView extends CustomComponent implements View {
 
 			viewNav.navigateTo(PersonEditView.class, personId);
 		});
+		
+		table.addValueChangeListener(event -> updateButton.setEnabled( event.getProperty().getValue() != null));
 
 		setCompositionRoot(mainLayoout);
 		getCompositionRoot().setSizeFull();
@@ -283,16 +285,11 @@ class PersonSearchView extends CustomComponent implements View {
 			
 		final  Table subTable = new  Table();
 		subTable.setContainerDataSource(stringCollection2ContainerConverter.convert(contacts));
-		
 		subTable.setColumnHeaderMode(ColumnHeaderMode.HIDDEN);
-		
 		subTable.setPageLength(2);
-	
-		
-	
 		subTable.setStyleName(Reindeer.LAYOUT_WHITE);
 		subTable.setSizeFull();
-	
+		subTable.setSelectable(true);
 		return subTable;
 	
 	}

@@ -317,5 +317,25 @@ public class PersonSearchViewTest {
 		final ViewChangeEvent event = Mockito.mock(ViewChangeEvent.class);
 		personSearchView.enter(event);
 	}
+	
+	@Test
+	public final void rowSelected() { 
+		final Table table = (Table) components.get(CONTACT_TABLE_CAPTION);
+		
+		final Button button = (Button) components.get(CHANGE_BUTTON_CAPTION);
+
+		Assert.assertFalse(button.isEnabled());
+		final ValueChangeListener listener = (ValueChangeListener) table.getListeners(ValueChangeEvent.class).iterator().next();
+		final ValueChangeEvent event = Mockito.mock(ValueChangeEvent.class);
+		@SuppressWarnings("unchecked")
+		final Property<String> property = Mockito.mock(Property.class);
+		Mockito.when(event.getProperty()).thenReturn(property);
+		Mockito.when(property.getValue()).thenReturn(ID);
+		listener.valueChange(event);
+		Assert.assertTrue(button.isEnabled());
+		Mockito.when(property.getValue()).thenReturn(null);
+		listener.valueChange(event);
+		Assert.assertFalse(button.isEnabled());
+	}
 
 }
