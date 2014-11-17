@@ -2,9 +2,6 @@ package de.mq.phone.domain.person.support;
 
 import java.util.List;
 
-
-
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,11 +18,12 @@ import de.mq.phone.domain.person.Person;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"/mongo-test.xml"})
-@Ignore
 public class PersonRepositoryIntegrationTest {
 	
 	@Autowired
 	private PersonMongoRepositoryImpl personMongoRepository;
+	
+	
 	
 	@Test
 	@Ignore
@@ -88,6 +86,8 @@ public class PersonRepositoryIntegrationTest {
 		System.out.println(result.bankingAccount().iBan());
 		}
 	}
+	
+	
 	
 
 }

@@ -22,6 +22,7 @@ import de.mq.vaadin.util.BeforeSave;
 public class PersonMongoRepositoryImpl implements PersonRepository {
 	
 	private final MongoOperations mongoOperations;
+	
 
 	@Autowired
 	public PersonMongoRepositoryImpl(MongoOperations mongoOperations) {
@@ -131,5 +132,7 @@ public class PersonMongoRepositoryImpl implements PersonRepository {
 		final Person person = forId(id);
 		mongoOperations.remove(person);
 	}
+	
+	
 
 }

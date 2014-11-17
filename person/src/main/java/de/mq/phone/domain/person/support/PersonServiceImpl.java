@@ -1,9 +1,13 @@
 package de.mq.phone.domain.person.support;
 
 import java.util.List;
+import java.util.UUID;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.Id;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
 import de.mq.phone.domain.person.AddressStringAware;
 import de.mq.phone.domain.person.Contact;
@@ -14,6 +18,7 @@ import de.mq.phone.domain.person.PersonStringAware;
 @Service
 class PersonServiceImpl implements PersonService {
 	
+	static final UUID DEFAULT_PERSON_ID = new UUID(19680528L, 19680528L);
 	private final  PersonRepository personRepository ; 
 	@Autowired
 	PersonServiceImpl(PersonRepository personRepository) {
@@ -43,5 +48,20 @@ class PersonServiceImpl implements PersonService {
 	@Override
 	public final void deletePerson(final String id) {
 		personRepository.delete(id);
+	}
+	
+	@Override
+	public final Person defaultPerson() {
+		final Person person = personRepository.forId(DEFAULT_PERSON_ID.toString());
+		if( person != null){
+			return person;
+		}
+		final Person newPerson = BeanUtils.instantiateClass(PersonImpl.class);
+		ReflectionUtils.doWithFields(PersonImpl.class, field -> { 
+			field.setAccessible(true);
+			field.set(newPerson, DEFAULT_PERSON_ID.toString());
+		}, field ->  field.isAnnotationPresent(Id.class) );
+		personRepository.save(newPerson);
+		return newPerson;
 	}
 }

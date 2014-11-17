@@ -11,6 +11,8 @@ public interface PersonService {
 	Person person(final String id);
 
 	void deletePerson(final String id);
+
+	Person defaultPerson();
 	
 
 }

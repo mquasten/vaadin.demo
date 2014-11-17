@@ -15,6 +15,7 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import de.mq.phone.domain.person.Contact;
+import de.mq.phone.domain.person.Person;
 import de.mq.phone.domain.person.PersonService;
 import de.mq.phone.domain.person.support.PersonEntities;
 import de.mq.phone.web.person.ValidatorQualifier.Type;
@@ -119,6 +120,10 @@ public class PersonEditControllerImpl implements PersonEditController {
 	}
 	
 
+	@Override
+	public final Person defaultPerson() {
+		return personService.defaultPerson();
+	}
 	
 
 }

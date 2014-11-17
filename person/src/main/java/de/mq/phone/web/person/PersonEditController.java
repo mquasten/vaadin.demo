@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.validation.BindingResult;
 
 import de.mq.phone.domain.person.Contact;
+import de.mq.phone.domain.person.Person;
 
 public interface PersonEditController {
 
@@ -24,6 +25,8 @@ public interface PersonEditController {
 	void assign(final PersonEditModel personEditModel, final Class<? extends Contact> clazz);
 
 	void delete(PersonEditModel personEditModel);
+
+	Person defaultPerson();
 	
 
 }

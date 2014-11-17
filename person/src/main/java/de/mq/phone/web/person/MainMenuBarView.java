@@ -3,6 +3,7 @@ package de.mq.phone.web.person;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -22,10 +23,15 @@ public class MainMenuBarView  extends CustomComponent{
 	
 	private final UserModel userModel;
 	private final ViewNav viewNav;
+	private final PersonEditController personEditController;
+	private final MessageSource messageSource;
+	
 	@Autowired
-	MainMenuBarView(final UserModel userModel, final ViewNav viewNav) {
+	MainMenuBarView(final UserModel userModel, final ViewNav viewNav, final PersonEditController personEditController, final MessageSource messageSource) {
 		this.userModel = userModel;
 		this.viewNav = viewNav;
+		this.personEditController=personEditController;
+		this.messageSource=messageSource;
 	}
 
 	
@@ -35,15 +41,19 @@ public class MainMenuBarView  extends CustomComponent{
 		final MenuBar menubar = new MenuBar();
 		setCompositionRoot(menubar);
 		final Command command = item -> {
-			viewNav.navigateTo(PersonEditView.class);
+			viewNav.navigateTo(PersonEditView.class, personEditController.defaultPerson().id());
 		};
 		userModel.register(event -> { 
 			menubar.removeItems();
 			
-			menubar.addItem("Einstellungen", null).addItem("Addresse",  command);
-			System.out.println("localize");
+			menubar.addItem(getString("menu_settings"), null).addItem(getString("settings_address"),  command);
+			
 			
 		}, UserModel.EventType.LocaleChanges);
+	}
+	
+	private String getString(final String key) {
+		return messageSource.getMessage(key, null, getLocale());
 	}
 
 }
