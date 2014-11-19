@@ -28,5 +28,16 @@
 	</bean>
 
 
+<bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+    <property name="messageConverters">
+        <list>
+            <bean id="jsonConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" >
+                <property name="supportedMediaTypes" value="application/json" />
+            </bean>           
+        </list>
+    </property>
+</bean>
+
+
 	<context:component-scan base-package="de.mq.phone.web,de.mq.phone.domain,de.mq.vaadin.util" />
 </beans>

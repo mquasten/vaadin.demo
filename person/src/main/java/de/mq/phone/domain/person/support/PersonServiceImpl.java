@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 import de.mq.phone.domain.person.AddressStringAware;
 import de.mq.phone.domain.person.Contact;
@@ -20,9 +21,11 @@ class PersonServiceImpl implements PersonService {
 	
 	static final UUID DEFAULT_PERSON_ID = new UUID(19680528L, 19680528L);
 	private final  PersonRepository personRepository ; 
+	final CoordinatesRepository coordinatesRepository;
 	@Autowired
-	PersonServiceImpl(PersonRepository personRepository) {
+	PersonServiceImpl(final PersonRepository personRepository, final CoordinatesRepository coordinatesRepository) {
 		this.personRepository = personRepository;
+		this.coordinatesRepository=coordinatesRepository;
 	}
 	
 	
@@ -37,6 +40,10 @@ class PersonServiceImpl implements PersonService {
 	
 	@Override
 	public final void save(final Person person) {
+		if (( person.address() != null) && StringUtils.hasText(person.address().address())) {
+			person.address().assign(coordinatesRepository.forAddress(person.address()));
+		}
+		
 		personRepository.save(person);
 	}
 

@@ -17,10 +17,11 @@ public class PersonServiceTest {
 	
 	private static final String ID = "19680528";
 	private final PersonRepository personRepository = Mockito.mock(PersonRepository.class);
+	private final CoordinatesRepository coordinatesRepository = Mockito.mock(CoordinatesRepository.class);
 	
 	@Test
 	public final void persons() {
-		final PersonService personService = new PersonServiceImpl(personRepository);
+		final PersonService personService = new PersonServiceImpl(personRepository, coordinatesRepository);
 		final Person person = Mockito.mock(Person.class);
 		final Address address = Mockito.mock(Address.class);
 		final Contact contact = Mockito.mock(Contact.class);
@@ -32,7 +33,7 @@ public class PersonServiceTest {
 	}
 	@Test
 	public final void save() {
-		final PersonService personService = new PersonServiceImpl(personRepository);
+		final PersonService personService = new PersonServiceImpl(personRepository, coordinatesRepository);
 		final Person person = Mockito.mock(Person.class);
 		personService.save(person);
 		Mockito.verify(personRepository).save(person);
@@ -40,7 +41,7 @@ public class PersonServiceTest {
 	
 	@Test
 	public final void byId() {
-		final PersonService personService = new PersonServiceImpl(personRepository);
+		final PersonService personService = new PersonServiceImpl(personRepository, coordinatesRepository);
 		final Person person = Mockito.mock(Person.class);
 		Mockito.when(personRepository.forId(ID)).thenReturn(person);
 		Assert.assertEquals(person, personService.person(ID));
@@ -48,7 +49,7 @@ public class PersonServiceTest {
 	
 	@Test
 	public final void delete() {
-		final PersonService personService = new PersonServiceImpl(personRepository);
+		final PersonService personService = new PersonServiceImpl(personRepository, coordinatesRepository);
 		personService.deletePerson(ID);
 		Mockito.verify(personRepository).delete(ID);
 		

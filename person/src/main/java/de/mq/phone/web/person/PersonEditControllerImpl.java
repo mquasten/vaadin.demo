@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.MapBindingResult;
@@ -23,6 +24,7 @@ import de.mq.phone.web.person.ValidatorQualifier.Type;
 @Controller
 public class PersonEditControllerImpl implements PersonEditController {
 	static final String PERSON_SAVE_ERROR_CODE = "person_save_error";
+	static final String PERSON_GEOCOODING_ERROR_CODE = "person_geocooding_error";
 	static final String PERSON_BINDING_NAME = "person";
 	private final Validator personItemSetValidator;
 	private final Validator mailValidator;
@@ -54,6 +56,8 @@ public class PersonEditControllerImpl implements PersonEditController {
 		
 		try {
 			personService.save(map2Person.mapInto(map, personEditModel.getPerson()));
+		} catch ( final IncorrectResultSizeDataAccessException  mapsEx) {
+			bindingResult.addError(new ObjectError(PERSON_BINDING_NAME, new String[] { PERSON_GEOCOODING_ERROR_CODE}, new String[] { personEditModel.getPerson().address().address()} , null ));
 		} catch ( final Exception ex) {
 			bindingResult.addError(new ObjectError(PERSON_BINDING_NAME, new String[] { PERSON_SAVE_ERROR_CODE}, new String[] {ex.getMessage()} , null ));
 		}

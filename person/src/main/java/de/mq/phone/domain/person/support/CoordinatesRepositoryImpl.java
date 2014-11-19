@@ -6,13 +6,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestOperations;
 
 import de.mq.phone.domain.person.AddressStringAware;
 import de.mq.phone.domain.person.GeoCoordinates;
-
+@Repository
 public class CoordinatesRepositoryImpl implements CoordinatesRepository {
 
 	private static final String LNG_KEY = "lng";
@@ -33,8 +35,9 @@ public class CoordinatesRepositoryImpl implements CoordinatesRepository {
 
 	private final RestOperations restOperations;
 
-	static final String GOOGLE_URL = "http://maps.googleapis.com/maps/api/geocode/json?address={address}&sensor={}";
+	static final String GOOGLE_URL = "http://maps.googleapis.com/maps/api/geocode/json?address={address}&sensor={sensor}&components=country:{country}";
 
+	@Autowired
 	public CoordinatesRepositoryImpl(final RestOperations restOperations) {
 		this.restOperations = restOperations;
 	}
@@ -54,6 +57,7 @@ public class CoordinatesRepositoryImpl implements CoordinatesRepository {
 		final Map<String, Object> params = new HashMap<>();
 		params.put("address", address.address());
 		params.put("sensor", false);
+		params.put("country", "DE");
 
 		final Map<String, Object> result = restOperations.getForObject(GOOGLE_URL, Map.class, params);
 		Assert.notNull(result.get(STATUS_KEY), "StatusCode expected in Response");
