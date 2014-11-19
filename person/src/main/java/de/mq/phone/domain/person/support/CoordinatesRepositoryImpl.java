@@ -1,10 +1,10 @@
 package de.mq.phone.domain.person.support;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
@@ -14,27 +14,20 @@ import org.springframework.web.client.RestOperations;
 
 import de.mq.phone.domain.person.AddressStringAware;
 import de.mq.phone.domain.person.GeoCoordinates;
+
 @Repository
 public class CoordinatesRepositoryImpl implements CoordinatesRepository {
 
+	private static final String STATUS_OK = "OK";
 	private static final String LNG_KEY = "lng";
-
 	private static final String LAT_KEY = "lat";
-
 	private static final String LOCATION_KEY = "location";
-
 	private static final String GEOMETRY_KEY = "geometry";
-
 	private static final String STREET_ADDRESS_TYPE = "street_address";
-
 	private static final String TYPES_KEY = "types";
-
 	private static final String RESULTS_KEY = "results";
-
 	private static final String STATUS_KEY = "status";
-
 	private final RestOperations restOperations;
-
 	static final String GOOGLE_URL = "http://maps.googleapis.com/maps/api/geocode/json?address={address}&sensor={sensor}&components=country:{country}";
 
 	@Autowired
@@ -53,7 +46,6 @@ public class CoordinatesRepositoryImpl implements CoordinatesRepository {
 	@SuppressWarnings("unchecked")
 	public final GeoCoordinates forAddress(final AddressStringAware address) {
 
-		final Collection<GeoCoordinates> results = new ArrayList<>();
 		final Map<String, Object> params = new HashMap<>();
 		params.put("address", address.address());
 		params.put("sensor", false);
@@ -61,22 +53,10 @@ public class CoordinatesRepositoryImpl implements CoordinatesRepository {
 
 		final Map<String, Object> result = restOperations.getForObject(GOOGLE_URL, Map.class, params);
 		Assert.notNull(result.get(STATUS_KEY), "StatusCode expected in Response");
-		Assert.isTrue(result.get(STATUS_KEY).equals("OK"), "Status OK expected");
+		Assert.isTrue(result.get(STATUS_KEY).equals(STATUS_OK), "Status OK expected");
 
-		for (final Map<String, Object> row : ((List<Map<String, Object>>) result.get(RESULTS_KEY))) {
-			final Collection<?> types = (Collection<?>) row.get(TYPES_KEY);
-			if (!types.contains(STREET_ADDRESS_TYPE)) {
-				continue;
-			}
-			final Map<String, Object> geometry = (Map<String, Object>) row.get(GEOMETRY_KEY);
-			Assert.notEmpty(geometry, "Geometry expected");
-			final Map<String, Object> location = (Map<String, Object>) geometry.get(LOCATION_KEY);
-			Assert.notEmpty(geometry, "Location expected");
-			Assert.isInstanceOf(Double.class, location.get(LAT_KEY));
-			Assert.isInstanceOf(Double.class, location.get(LNG_KEY));
-			results.add(new GeoDegreesCoordinatesImpl((Double) location.get(LAT_KEY), (Double) location.get(LNG_KEY)));
-		}
-		return DataAccessUtils.requiredSingleResult(results);
+		return DataAccessUtils.requiredSingleResult(((List<Map<String, Object>>) result.get(RESULTS_KEY)).stream().filter(row -> row.containsKey(TYPES_KEY) && ((Collection<?>) row.get(TYPES_KEY)).contains(STREET_ADDRESS_TYPE)).filter(row -> row.containsKey(GEOMETRY_KEY)).map(row -> (Map<String, Object>) row.get(GEOMETRY_KEY)).filter(row -> row.containsKey(LOCATION_KEY)).map(row -> (Map<String, Object>) row.get(LOCATION_KEY)).filter(row -> row.containsKey(LAT_KEY) && row.containsKey(LNG_KEY))
+				.map(row -> new GeoDegreesCoordinatesImpl((Double) row.get(LAT_KEY), (Double) row.get(LNG_KEY))).collect(Collectors.toList()));
 
 	}
 }
