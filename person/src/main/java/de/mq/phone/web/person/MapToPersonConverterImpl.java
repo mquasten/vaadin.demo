@@ -29,6 +29,8 @@ class MapToPersonConverterImpl implements  MapToPersonMapper{
 		toModel(mapValues, address);
 		if ( StringUtils.hasText(address.address()) ) {
 			person.assign(address);
+		} else {
+			person.assign((Address) null); 
 		}
 		
 		final BankingAccount  bankingAccount = PersonEntities.newBankingAccount();
@@ -36,6 +38,8 @@ class MapToPersonConverterImpl implements  MapToPersonMapper{
 		toModel(mapValues, bankingAccount);
 	   if ( StringUtils.hasText(bankingAccount.iBan()) ) {
 	   	person.assign(bankingAccount);
+	   } else {
+	   	person.assign((BankingAccount) null);
 	   }
 		return person;
 	}
