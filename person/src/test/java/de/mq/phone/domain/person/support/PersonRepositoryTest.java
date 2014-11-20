@@ -116,7 +116,7 @@ public class PersonRepositoryTest {
 		final List<Person> persons = new ArrayList<>();
 		persons.add(Mockito.mock(Person.class));
 		Mockito.when(mongoOperations.find(queryCaptor.capture(), classCaptor.capture(), collectionCaptor.capture())).thenReturn(persons);
-		Assert.assertEquals(persons, personRepository.forCriterias(person, address, contact));
+		Assert.assertEquals(persons, personRepository.forCriterias(person, address, contact, null));
 		
 		Assert.assertEquals(Person.class, classCaptor.getValue());
 		Assert.assertEquals("person", collectionCaptor.getValue());
@@ -154,7 +154,7 @@ public class PersonRepositoryTest {
 		Mockito.when(mongoOperations.find(queryCaptor.capture(), classCaptor.capture(), collectionCaptor.capture())).thenReturn(persons);
 		
 		
-		Assert.assertEquals(persons, personRepository.forCriterias(person, address, contact));
+		Assert.assertEquals(persons, personRepository.forCriterias(person, address, contact, null));
 		
 		final Map<String, Criteria> results = (Map<String, Criteria>) ReflectionTestUtils.getField(queryCaptor.getValue(), "criteria");
 		Assert.assertTrue(results.isEmpty());

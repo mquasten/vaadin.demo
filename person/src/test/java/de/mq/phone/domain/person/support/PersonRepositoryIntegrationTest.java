@@ -5,7 +5,12 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.geo.Circle;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Metrics;
+import org.springframework.data.geo.Point;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -68,12 +73,12 @@ public class PersonRepositoryIntegrationTest {
 	
 	
 	@Test
-	@Ignore
+  @Ignore
 	public final void forCriteria() {
 		final Contact contact = new PhoneImpl("19680528");
 		final Person person = new PersonImpl("Minogue ", "Kylie");
 		final Address address = new AddressImpl(null, "Wegberg" , null , null);
-		List<Person> results = personMongoRepository.forCriterias(person, address, contact);
+		List<Person> results = personMongoRepository.forCriterias(person, address, contact, null);
 		System.out.println(results.size());
 		for( final Person result : results){
 			System.out.println("-------------------------------------------");
@@ -87,6 +92,19 @@ public class PersonRepositoryIntegrationTest {
 		}
 	}
 	
+	@Test
+	public final void forCriteriaGeo() {
+		final Person person = BeanUtils.instantiateClass(PersonImpl.class);
+		ReflectionTestUtils.setField(person, "name", "Nicki");
+		//System.out.println(">>>" + person.person());
+		final Contact contact = BeanUtils.instantiateClass(EMailContact.class);
+		final Address address = BeanUtils.instantiateClass(AddressImpl.class);
+		final Circle  circle = new Circle(new Point(6.2829833d ,  51.166913d), new Distance(67.1d, Metrics.KILOMETERS));
+		final List<Person> results = personMongoRepository.forCriterias(person, address, contact,circle);
+	//	System.out.println(results.iterator().next().address().address());
+		System.out.println(results.size());
+		System.out.println(results.iterator().next().person());
+	}
 	
 	
 

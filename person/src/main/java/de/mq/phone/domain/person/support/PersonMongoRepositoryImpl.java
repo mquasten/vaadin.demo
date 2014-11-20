@@ -4,6 +4,12 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.geo.Circle;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Metric;
+import org.springframework.data.geo.Metrics;
+import org.springframework.data.geo.Point;
+import org.springframework.data.geo.Shape;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -103,7 +109,7 @@ public class PersonMongoRepositoryImpl implements PersonRepository {
 	 * @see de.mq.phone.domain.person.support.PersonPepository#forCriterias(de.mq.phone.domain.person.Person, de.mq.phone.domain.person.Contact)
 	 */
 	@Override
-	public final List<Person>forCriterias(final PersonStringAware person, final AddressStringAware address, final Contact contact) {
+	public final List<Person>forCriterias(final PersonStringAware person, final AddressStringAware address, final Contact contact, final Circle circle) {
 		final Query query = new Query();
 		
 		if( StringUtils.hasText(person.person())){
@@ -116,6 +122,14 @@ public class PersonMongoRepositoryImpl implements PersonRepository {
 		
 		if( StringUtils.hasLength(address.address())){
 			query.addCriteria(new Criteria("address.address").regex(StringUtils.trimWhitespace(address.address())));
+		}
+		
+		if( circle != null) {
+			
+			
+			query.addCriteria( new Criteria("address.geoCoordinates.location").withinSphere(circle));
+			
+			//near(point).maxDistance(0.01))
 		}
 		
 		return Collections.unmodifiableList(mongoOperations.find(query, Person.class, "person"));

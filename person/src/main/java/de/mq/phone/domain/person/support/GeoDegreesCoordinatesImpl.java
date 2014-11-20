@@ -51,7 +51,7 @@ class GeoDegreesCoordinatesImpl implements GeoCoordinates {
 	 
 	 @BeforeSave
 	 void beforeSave() {
-		 this.location=new Double[]{latitude(), longitude()};
+		 this.location=new Double[]{longitude(), latitude()};
 	 }
 	 
 	 

@@ -9,6 +9,9 @@
 		http://www.springframework.org/schema/data/repository http://www.springframework.org/schema/data/repository/spring-repository-1.6.xsd">
 
 
+<import resource="rest-test.xml"/>
+
+
 <mongo:mongo host="127.0.0.1" port="27017" />
 	<mongo:db-factory dbname="person" />
  

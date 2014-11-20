@@ -34,7 +34,7 @@ class PersonServiceImpl implements PersonService {
 	 */
 	@Override
 	public final  List<Person>  persons(final PersonStringAware person, final AddressStringAware address, final Contact contact) {
-		return personRepository.forCriterias(person,address, contact);
+		return personRepository.forCriterias(person,address, contact, null);
 		
 	}
 	

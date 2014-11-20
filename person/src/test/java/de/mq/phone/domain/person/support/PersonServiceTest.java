@@ -27,7 +27,7 @@ public class PersonServiceTest {
 		final Contact contact = Mockito.mock(Contact.class);
 		final List<Person> persons = new ArrayList<>();
 		persons.add(Mockito.mock(Person.class));
-		Mockito.when(personRepository.forCriterias(person, address, contact)).thenReturn(persons);
+		Mockito.when(personRepository.forCriterias(person, address, contact, null)).thenReturn(persons);
 		Assert.assertEquals(persons, personService.persons(person, address, contact));
 		
 	}
