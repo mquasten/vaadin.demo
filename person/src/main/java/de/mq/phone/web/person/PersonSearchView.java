@@ -56,6 +56,7 @@ class PersonSearchView extends CustomComponent implements View {
 	static final String I18N_SEARCH_BUTTON_CAPTION = "search_button";
 	static final String I18N_SEARCH_ADDRESS_FIELD_CAPTION = "search_address";
 	static final String I18N_SEARCH_CONTACT_FIELD_CAPTION = "search_contact";
+	static final String  I18N_SEARCH_DISTANCE_FIELD_CAPTION = "search_distance";
 	static final String I18N_SEARCH_PERSON_FIELD_CAPTION = "search_person";
 	static final String I18N_SEARCH_PANEL_CAPTION = "search_headline";
 	static final String ADDRESS_SEARCH_PROPERTY = "address";
@@ -95,6 +96,7 @@ class PersonSearchView extends CustomComponent implements View {
 	}
 
 	private static final long serialVersionUID = 1L;
+	
 
 	@PostConstruct()
 	final void init() {
@@ -117,11 +119,13 @@ class PersonSearchView extends CustomComponent implements View {
 		final FormLayout col3Layout = new FormLayout();
 		final FormLayout col4Layout = new FormLayout();
 		final FormLayout col5Layout = new FormLayout();
+		final FormLayout col6Layout = new FormLayout();
 
 		searchFormLayout.addComponent(col1Layout);
 		searchFormLayout.addComponent(col3Layout);
 		searchFormLayout.addComponent(col4Layout);
 		searchFormLayout.addComponent(col5Layout);
+		searchFormLayout.addComponent(col6Layout);
 
 		final TextField nameField = new TextField();
 		col1Layout.addComponent(nameField);
@@ -131,6 +135,10 @@ class PersonSearchView extends CustomComponent implements View {
 
 		final TextField addressField = new TextField();
 		col4Layout.addComponent(addressField);
+		
+		final TextField distanceField = new TextField();
+		distanceField.setEnabled(false);
+		col5Layout.addComponent(distanceField);
 
 		final PropertysetItem personSearchItem = new PropertysetItem();
 		personSearchItem.addItemProperty(PERSON_SEARCH_PROPERTY, new ObjectProperty<String>(""));
@@ -147,7 +155,7 @@ class PersonSearchView extends CustomComponent implements View {
 		final Button searchButton = new Button();
 		searchButton.addClickListener(event -> search(personSearchItem, binder));
 
-		col5Layout.addComponent(searchButton);
+		col6Layout.addComponent(searchButton);
 
 		mainLayoout.addComponent(panel);
 
@@ -251,13 +259,16 @@ class PersonSearchView extends CustomComponent implements View {
 			table.setColumnHeader(CONTACTS, getString("table_contacts"));
 			languageBox.getItemIds().forEach(itemId -> languageBox.setItemCaption(itemId, ((Locale) itemId).getDisplayLanguage(userModel.getLocale())));
 
+			distanceField.setCaption(getString(I18N_SEARCH_DISTANCE_FIELD_CAPTION));
 			mainLayoout.removeAllComponents();
 			mainLayoout.addComponent(panel);
 			mainLayoout.addComponent(tablePanel);
 
+			
 		}, UserModel.EventType.LocaleChanges);
 		
 	
+		model.register(event -> distanceField.setEnabled(model.hasGeoCoordinates()), PersonSearchModel.EventType.HomeLocationChanges);
 	}
 
 	private void search(final PropertysetItem personSearchItem, final FieldGroup binder) {
@@ -317,6 +328,7 @@ class PersonSearchView extends CustomComponent implements View {
 	@Override
 	public void enter(final ViewChangeEvent event) {
 		personSearchController.assignPersons(model);
+		personSearchController.assignGeoKoordinates(model);
 	}
 
 }

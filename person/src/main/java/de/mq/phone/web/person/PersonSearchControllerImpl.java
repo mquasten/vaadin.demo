@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 
 import de.mq.phone.domain.person.AddressStringAware;
 import de.mq.phone.domain.person.Contact;
+import de.mq.phone.domain.person.Person;
 import de.mq.phone.domain.person.PersonService;
 import de.mq.phone.domain.person.PersonStringAware;
 
@@ -31,6 +32,15 @@ private final PersonService personService;
 		model.setPersons(personService.persons(person,address, contact));
 	}
 	
+	@Override
+	public final void assignGeoKoordinates(final PersonSearchModel model) {
+		final Person person = personService.defaultPerson();
+		if( ! person.hasGeoCoordinates() ) {
+			model.setGeoCoordinates(null);
+			return;
+		} 
+		model.setGeoCoordinates(person.address().coordinates());
 	
-
+		
+	}
 }

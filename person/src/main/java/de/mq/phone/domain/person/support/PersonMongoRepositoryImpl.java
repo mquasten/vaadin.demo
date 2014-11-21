@@ -5,11 +5,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.Circle;
-import org.springframework.data.geo.Distance;
-import org.springframework.data.geo.Metric;
-import org.springframework.data.geo.Metrics;
-import org.springframework.data.geo.Point;
-import org.springframework.data.geo.Shape;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -125,11 +120,7 @@ public class PersonMongoRepositoryImpl implements PersonRepository {
 		}
 		
 		if( circle != null) {
-			
-			
 			query.addCriteria( new Criteria("address.geoCoordinates.location").withinSphere(circle));
-			
-			//near(point).maxDistance(0.01))
 		}
 		
 		return Collections.unmodifiableList(mongoOperations.find(query, Person.class, "person"));

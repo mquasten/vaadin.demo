@@ -164,5 +164,11 @@ class AddressImpl implements Address {
 		
 	}
 	
-
+	@Override
+	public final boolean hasGeoCoordinates() {
+		if( geoCoordinates==null ){
+			return false;
+		}
+		return true;
+	}
 }

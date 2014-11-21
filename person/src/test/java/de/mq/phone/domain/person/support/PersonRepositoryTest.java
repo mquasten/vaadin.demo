@@ -54,8 +54,8 @@ public class PersonRepositoryTest {
 		Assert.assertEquals(person.address().address(), ReflectionTestUtils.getField(person.address(), "address"));
 		final Double[] results =  (Double[]) ReflectionTestUtils.getField(person.address().coordinates(), "location");
 		Assert.assertEquals(2, results.length);
-		Assert.assertEquals(person.address().coordinates().latitude(), results[0]);
-		Assert.assertEquals(person.address().coordinates().longitude(), results[1]);
+		Assert.assertEquals(person.address().coordinates().latitude(), results[1]);
+		Assert.assertEquals(person.address().coordinates().longitude(), results[0]);
 		
 		Assert.assertEquals(person.contacts().iterator().next().contact(), ReflectionTestUtils.getField(person.contacts().iterator().next(), "contact"));
 	    Assert.assertEquals(person.bankingAccount().account(), ReflectionTestUtils.getField(person.bankingAccount(), "account"));

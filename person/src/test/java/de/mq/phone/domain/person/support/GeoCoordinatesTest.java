@@ -35,8 +35,8 @@ public class GeoCoordinatesTest {
 		Assert.assertNull(ReflectionTestUtils.getField(coordinates, "location"));
 		((GeoDegreesCoordinatesImpl)coordinates).beforeSave();
 		final Double[] result = (Double[]) ReflectionTestUtils.getField(coordinates, "location") ;
-		Assert.assertEquals(LATITUDE, result[0]);
-		Assert.assertEquals(LONGITUDE, result[1]);
+		Assert.assertEquals(LATITUDE, result[1]);
+		Assert.assertEquals(LONGITUDE, result[0]);
 	}
 	@Test
 	public final void  degrees() {

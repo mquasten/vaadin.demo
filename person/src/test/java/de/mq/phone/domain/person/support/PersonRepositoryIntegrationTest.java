@@ -104,6 +104,7 @@ public class PersonRepositoryIntegrationTest {
 	//	System.out.println(results.iterator().next().address().address());
 		System.out.println(results.size());
 		System.out.println(results.iterator().next().person());
+		
 	}
 	
 	

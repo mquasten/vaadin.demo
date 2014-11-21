@@ -166,7 +166,13 @@ class PersonImpl implements Person {
 		return person().equals(otherPerson.person());
 	}
 	
-	
+	@Override
+	public final boolean hasGeoCoordinates() {
+		if( address==null){
+			return false;
+		}
+		return address.hasGeoCoordinates();
+	}
 	
 	
 }

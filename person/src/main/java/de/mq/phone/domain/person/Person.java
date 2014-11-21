@@ -25,5 +25,7 @@ public interface Person extends PersonStringAware {
 	BankingAccount bankingAccount();
 
 	String alias();
+
+	boolean hasGeoCoordinates();
 	
 }
