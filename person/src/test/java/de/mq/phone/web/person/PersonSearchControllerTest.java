@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.data.geo.Circle;
 
 import de.mq.phone.domain.person.AddressStringAware;
 import de.mq.phone.domain.person.Contact;
@@ -28,7 +29,7 @@ public class PersonSearchControllerTest {
 		Mockito.when(model.getSearchCriteriaAddress()).thenReturn(addressStringAware);
 		final List<Person> persons = new ArrayList<>();
 		persons.add(Mockito.mock(Person.class));
-		Mockito.when(personService.persons(person, addressStringAware, contact)).thenReturn(persons);
+		Mockito.when(personService.persons(person, addressStringAware, contact, Mockito.mock(Circle.class))).thenReturn(persons);
 		personSearchController.assignPersons(model);
 		Mockito.verify(model, Mockito.times(1)).setPersons(persons);
 	}

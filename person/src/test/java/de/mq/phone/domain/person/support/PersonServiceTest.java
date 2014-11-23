@@ -7,6 +7,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.data.geo.Circle;
 
 import de.mq.phone.domain.person.Address;
 import de.mq.phone.domain.person.Contact;
@@ -28,7 +29,7 @@ public class PersonServiceTest {
 		final List<Person> persons = new ArrayList<>();
 		persons.add(Mockito.mock(Person.class));
 		Mockito.when(personRepository.forCriterias(person, address, contact, null)).thenReturn(persons);
-		Assert.assertEquals(persons, personService.persons(person, address, contact));
+		Assert.assertEquals(persons, personService.persons(person, address, contact, Mockito.mock(Circle.class) ));
 		
 	}
 	@Test

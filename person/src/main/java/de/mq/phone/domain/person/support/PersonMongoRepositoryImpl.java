@@ -119,7 +119,7 @@ public class PersonMongoRepositoryImpl implements PersonRepository {
 			query.addCriteria(new Criteria("address.address").regex(StringUtils.trimWhitespace(address.address())));
 		}
 		
-		if( circle != null) {
+		if( circle.getRadius().getValue() >= 0) {
 			query.addCriteria( new Criteria("address.geoCoordinates.location").withinSphere(circle));
 		}
 		

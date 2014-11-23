@@ -62,6 +62,7 @@ class PersonSearchView extends CustomComponent implements View {
 	static final String ADDRESS_SEARCH_PROPERTY = "address";
 	static final String PERSON_SEARCH_PROPERTY = "person";
 	static final String CONTACT_SEARCH_PROPERTY = "contact";
+	static final String DISTANCE_SEARCH_PROPERTY = "distance";
 
 	static final String CONTACTS = "contacts";
 	static final String ADDRESS = "address";
@@ -145,13 +146,14 @@ class PersonSearchView extends CustomComponent implements View {
 
 		personSearchItem.addItemProperty(CONTACT_SEARCH_PROPERTY, new ObjectProperty<String>(""));
 		personSearchItem.addItemProperty(ADDRESS_SEARCH_PROPERTY, new ObjectProperty<String>(""));
+		personSearchItem.addItemProperty(DISTANCE_SEARCH_PROPERTY, new ObjectProperty<String>(""));
 		final FieldGroup binder = new FieldGroup(personSearchItem);
 		binder.setBuffered(true);
 
 		binder.bind(nameField, PERSON_SEARCH_PROPERTY);
 		binder.bind(contactField, CONTACT_SEARCH_PROPERTY);
 		binder.bind(addressField, ADDRESS_SEARCH_PROPERTY);
-
+		binder.bind(distanceField, DISTANCE_SEARCH_PROPERTY);
 		final Button searchButton = new Button();
 		searchButton.addClickListener(event -> search(personSearchItem, binder));
 

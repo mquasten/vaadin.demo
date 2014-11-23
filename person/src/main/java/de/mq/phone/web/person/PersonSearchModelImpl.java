@@ -125,7 +125,11 @@ class PersonSearchModelImpl extends SubjectImpl<PersonSearchModel, PersonSearchM
 		 if( geoCoordinates == null) {
 			 return UNDEFINED_CIRCLE;
 		 }
-		 return new Circle(new Point(geoCoordinates.longitude() , geoCoordinates.latitude()), (Distance) search.get(Distance.class));
+		 final Distance distance = (Distance) search.get(Distance.class);
+		 if( distance.getValue() >= 0) {
+			 return new Circle(new Point(geoCoordinates.longitude() , geoCoordinates.latitude()), distance);
+		 }
+		return PersonSearchModelImpl.UNDEFINED_CIRCLE;
 	}
 	
 	@Override

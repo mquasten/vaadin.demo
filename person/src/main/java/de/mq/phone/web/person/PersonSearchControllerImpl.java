@@ -1,6 +1,7 @@
 package de.mq.phone.web.person;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.geo.Circle;
 import org.springframework.stereotype.Controller;
 
 import de.mq.phone.domain.person.AddressStringAware;
@@ -28,8 +29,8 @@ private final PersonService personService;
 		final PersonStringAware person = model.getSearchCriteriaPerson();
 		final Contact contact = model.getSearchCriteriaContact();
 		final AddressStringAware address = model.getSearchCriteriaAddress();
-		
-		model.setPersons(personService.persons(person,address, contact));
+		final Circle circle = model.getSearchCriteriaDistance();
+		model.setPersons(personService.persons(person,address, contact, circle));
 	}
 	
 	@Override

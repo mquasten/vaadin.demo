@@ -6,6 +6,8 @@ import java.util.UUID;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.geo.Circle;
+
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -33,8 +35,8 @@ class PersonServiceImpl implements PersonService {
 	 * @see de.mq.phone.domain.person.support.PersonService#persons(de.mq.phone.domain.person.Person, de.mq.phone.domain.person.Contact)
 	 */
 	@Override
-	public final  List<Person>  persons(final PersonStringAware person, final AddressStringAware address, final Contact contact) {
-		return personRepository.forCriterias(person,address, contact, null);
+	public final  List<Person>  persons(final PersonStringAware person, final AddressStringAware address, final Contact contact, Circle circle) {
+		return personRepository.forCriterias(person,address, contact, circle);
 		
 	}
 	
