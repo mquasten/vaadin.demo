@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
@@ -41,6 +42,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
 import de.mq.phone.domain.person.Person;
+import de.mq.vaadin.util.BindingResultsToFieldGroupMapper;
 import de.mq.vaadin.util.ViewNav;
 
 @Component()
@@ -78,9 +80,11 @@ class PersonSearchView extends CustomComponent implements View {
 	private final MessageSource messages;
 	private final ViewNav viewNav;
 	private final MainMenuBarView mainMenuBarView;
+	
+	private final BindingResultsToFieldGroupMapper bindingResultsToFieldGroupMapper;
 
 	@Autowired
-	PersonSearchView(final PersonSearchModel model, final PersonSearchController personSearchController, final MessageSource messages, final UserModel userModel, @ConverterQualifier(ConverterQualifier.Type.PersonList2Container) final Converter<Collection<Person>, Container> personListContainerConverter, @ConverterQualifier(ConverterQualifier.Type.Item2PersonSearchSet) final Converter<Item, Collection<Object>> itemToPersonSearchSetConverter, @ConverterQualifier(ConverterQualifier.Type.StringList2Container) final Converter<Collection<String>, Container> stringCollection2ContainerConverter, final ViewNav viewNav, final MainMenuBarView mainMenuBarView) {
+	PersonSearchView(final PersonSearchModel model, final PersonSearchController personSearchController, final MessageSource messages, final UserModel userModel, @ConverterQualifier(ConverterQualifier.Type.PersonList2Container) final Converter<Collection<Person>, Container> personListContainerConverter, @ConverterQualifier(ConverterQualifier.Type.Item2PersonSearchSet) final Converter<Item, Collection<Object>> itemToPersonSearchSetConverter, @ConverterQualifier(ConverterQualifier.Type.StringList2Container) final Converter<Collection<String>, Container> stringCollection2ContainerConverter, final ViewNav viewNav, final MainMenuBarView mainMenuBarView, final BindingResultsToFieldGroupMapper bindingResultsToFieldGroupMapper) {
 		this.model = model;
 		this.personSearchController = personSearchController;
 		this.messages = messages;
@@ -90,10 +94,11 @@ class PersonSearchView extends CustomComponent implements View {
 		this.stringCollection2ContainerConverter=stringCollection2ContainerConverter;
 		this.viewNav = viewNav;
 		this.mainMenuBarView=mainMenuBarView;
+		this.bindingResultsToFieldGroupMapper=bindingResultsToFieldGroupMapper;
 	}
 
 	PersonSearchView() {
-		this(null, null, null, null, null, null, null, null, null);
+		this(null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private static final long serialVersionUID = 1L;
@@ -138,6 +143,7 @@ class PersonSearchView extends CustomComponent implements View {
 		col4Layout.addComponent(addressField);
 		
 		final TextField distanceField = new TextField();
+	
 		distanceField.setEnabled(false);
 		col5Layout.addComponent(distanceField);
 
@@ -274,6 +280,15 @@ class PersonSearchView extends CustomComponent implements View {
 	}
 
 	private void search(final PropertysetItem personSearchItem, final FieldGroup binder) {
+		
+		
+		final BindingResult bindingresult = personSearchController.validate(bindingResultsToFieldGroupMapper.convert(binder));
+		bindingResultsToFieldGroupMapper.mapInto(bindingresult, binder);
+		if( bindingresult.hasErrors()){	
+			
+			return;
+		}
+		
 		commitBinder(binder);
 		itemToPersonSearchSetConverter.convert(personSearchItem).forEach(criteriaBean -> model.setSearchCriteria(criteriaBean));
 		personSearchController.assignPersons(model);

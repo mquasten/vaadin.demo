@@ -1,24 +1,33 @@
 package de.mq.phone.web.person;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.Circle;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.MapBindingResult;
+import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.Validator;
 
 import de.mq.phone.domain.person.AddressStringAware;
 import de.mq.phone.domain.person.Contact;
 import de.mq.phone.domain.person.Person;
 import de.mq.phone.domain.person.PersonService;
 import de.mq.phone.domain.person.PersonStringAware;
+import de.mq.phone.web.person.ValidatorQualifier.Type;
 
 @Controller()
 class PersonSearchControllerImpl implements PersonSearchController {
 	
 	
 private final PersonService personService;
+private final Validator validator; 
 	
 	@Autowired
-	PersonSearchControllerImpl(final PersonService personService) {
+	PersonSearchControllerImpl(final PersonService personService, @ValidatorQualifier(Type.Distance) final Validator validator) {
 	this.personService = personService;
+	this.validator=validator;
 }
 
 	/* (non-Javadoc)
@@ -43,5 +52,13 @@ private final PersonService personService;
 		model.setGeoCoordinates(person.address().coordinates());
 	
 		
+	}
+	
+	@Override
+	public final BindingResult validate(Map<String,Object> map) {
+		final MapBindingResult bindingResult = new MapBindingResult(map, "search");
+
+		ValidationUtils.invokeValidator(validator, map, bindingResult);
+		return bindingResult; 
 	}
 }

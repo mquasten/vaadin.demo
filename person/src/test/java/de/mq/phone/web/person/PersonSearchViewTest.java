@@ -43,6 +43,7 @@ import de.mq.phone.domain.person.Contact;
 import de.mq.phone.domain.person.Person;
 import de.mq.phone.domain.person.PersonStringAware;
 import de.mq.phone.domain.person.support.BankingAccount;
+import de.mq.vaadin.util.BindingResultsToFieldGroupMapper;
 import de.mq.vaadin.util.Observer;
 import de.mq.vaadin.util.ViewNav;
 
@@ -71,7 +72,7 @@ public class PersonSearchViewTest {
 	private final UserModel userModel = Mockito.mock(UserModel.class);
 
 	private final ViewNav viewNav = Mockito.mock(ViewNav.class);
-	private final PersonSearchView personSearchView = new PersonSearchView(personSearchModel, personSearchController, messages, userModel, personListContainerConverter, itemToPersonSearchSetConverter, new StringCollectionToContainerConverter(), viewNav, Mockito.mock(MainMenuBarView.class));
+	private final PersonSearchView personSearchView = new PersonSearchView(personSearchModel, personSearchController, messages, userModel, personListContainerConverter, itemToPersonSearchSetConverter, new StringCollectionToContainerConverter(), viewNav, Mockito.mock(MainMenuBarView.class), Mockito.mock(BindingResultsToFieldGroupMapper.class));
 
 	@SuppressWarnings("rawtypes")
 	private final ArgumentCaptor<Observer> localeObserverCaptor = ArgumentCaptor.forClass(Observer.class);

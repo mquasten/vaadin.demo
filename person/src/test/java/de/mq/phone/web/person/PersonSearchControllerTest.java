@@ -6,6 +6,7 @@ import java.util.List;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.data.geo.Circle;
+import org.springframework.validation.Validator;
 
 import de.mq.phone.domain.person.AddressStringAware;
 import de.mq.phone.domain.person.Contact;
@@ -16,7 +17,7 @@ import de.mq.phone.domain.person.PersonStringAware;
 public class PersonSearchControllerTest {
 	
 	private PersonService personService = Mockito.mock(PersonService.class);
-	private final PersonSearchController personSearchController = new PersonSearchControllerImpl(personService);
+	private final PersonSearchController personSearchController = new PersonSearchControllerImpl(personService, Mockito.mock(Validator.class));
 	
 	@Test
 	public final void assign() {
