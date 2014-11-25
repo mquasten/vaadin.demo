@@ -1,11 +1,14 @@
 package de.mq.phone.web.person;
 
 import java.util.Collection;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Metrics;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -35,6 +38,10 @@ public class ItemToPersonSearchEntitySetConverterTest {
 		final Property<String> addressProperty = Mockito.mock(Property.class);
 		Mockito.when(addressProperty.getValue()).thenReturn("London");
 		Mockito.when(item.getItemProperty(PersonSearchView.ADDRESS_SEARCH_PROPERTY)).thenReturn(addressProperty);
+		final Property<String> distanceProperty = Mockito.mock(Property.class);
+		Mockito.when(distanceProperty.getValue()).thenReturn("67.1");
+		Mockito.when(item.getItemProperty(PersonSearchView.DISTANCE_SEARCH_PROPERTY)).thenReturn(distanceProperty);
+		
 		for(Object criteria : converter.convert(item)) {
 			
 			if (criteria instanceof PersonStringAware) {
@@ -53,7 +60,12 @@ public class ItemToPersonSearchEntitySetConverterTest {
 				Assert.assertEquals(addressProperty.getValue(), (((AddressStringAware)criteria).address()));
 		        continue;
 			}
-			Assert.fail("Wrong type");
+			
+			if (criteria instanceof Distance) {
+				Assert.assertEquals(new Distance(67.1D,Metrics.KILOMETERS), criteria);
+				continue;
+			}
+			Assert.fail("Wrong type:" + criteria.getClass());
 		}
 	}
 }

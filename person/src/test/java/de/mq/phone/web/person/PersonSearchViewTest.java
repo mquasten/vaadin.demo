@@ -18,12 +18,14 @@ import org.mockito.Mockito;
 import org.springframework.context.MessageSource;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.validation.BindingResult;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.event.ListenerMethod;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
@@ -49,6 +51,7 @@ import de.mq.vaadin.util.ViewNav;
 
 public class PersonSearchViewTest {
 
+	private  final BindingResultsToFieldGroupMapper bindingResultsToFieldGroupMapper = Mockito.mock(BindingResultsToFieldGroupMapper.class);
 	private static final String ID = "19680528";
 	private static final String MAIL = "kinky.kylie@minogue.uk";
 	private static final String SEARCH_FIELD_PERSON_CAPTION = "Person";
@@ -72,22 +75,21 @@ public class PersonSearchViewTest {
 	private final UserModel userModel = Mockito.mock(UserModel.class);
 
 	private final ViewNav viewNav = Mockito.mock(ViewNav.class);
-	private final PersonSearchView personSearchView = new PersonSearchView(personSearchModel, personSearchController, messages, userModel, personListContainerConverter, itemToPersonSearchSetConverter, new StringCollectionToContainerConverter(), viewNav, Mockito.mock(MainMenuBarView.class), Mockito.mock(BindingResultsToFieldGroupMapper.class));
+	private final PersonSearchView personSearchView = new PersonSearchView(personSearchModel, personSearchController, messages, userModel, personListContainerConverter, itemToPersonSearchSetConverter, new StringCollectionToContainerConverter(), viewNav, Mockito.mock(MainMenuBarView.class), bindingResultsToFieldGroupMapper);
 
 	@SuppressWarnings("rawtypes")
 	private final ArgumentCaptor<Observer> localeObserverCaptor = ArgumentCaptor.forClass(Observer.class);
 	private final ArgumentCaptor<UserModel.EventType> eventCaptor = ArgumentCaptor.forClass(UserModel.EventType.class);
 
-	@SuppressWarnings("rawtypes")
-	private final ArgumentCaptor<Observer> modelChangeObserverCaptor = ArgumentCaptor.forClass(Observer.class);
-	private final ArgumentCaptor<PersonSearchModel.EventType> modelEventCaptor = ArgumentCaptor.forClass(PersonSearchModel.EventType.class);
-
 	private final Map<String, Component> components = new HashMap<>();
+	
+	private final Map<PersonSearchModel.EventType, Observer<PersonSearchModel.EventType>> observers = new HashMap<>();
 
 	@SuppressWarnings("unchecked")
 	@Before
 	public final void setup() {
 		components.clear();
+		observers.clear();
 		Mockito.when(messages.getMessage(PersonSearchView.I18N_SEARCH_PANEL_CAPTION, null, Locale.GERMAN)).thenReturn(SEARCH_PANEL_CAPTION);
 		Mockito.when(messages.getMessage(PersonSearchView.I18N_SEARCH_PERSON_FIELD_CAPTION, null, Locale.GERMAN)).thenReturn(SEARCH_FIELD_PERSON_CAPTION);
 		Mockito.when(messages.getMessage(PersonSearchView.I18N_SEARCH_CONTACT_FIELD_CAPTION, null, Locale.GERMAN)).thenReturn(SEARCH_FIELD_CONTACT_CAPTION);
@@ -106,10 +108,18 @@ public class PersonSearchViewTest {
 		locales.add(Locale.ENGLISH);
 		Mockito.when(userModel.getSupportedLocales()).thenReturn(locales);
 
+		Mockito.doAnswer( invocation -> {
+			observers.put((PersonSearchModel.EventType) invocation.getArguments()[1], (Observer<PersonSearchModel.EventType>)invocation.getArguments()[0]);
+			return null; 
+			
+		}).when(personSearchModel).register(Mockito.any(Observer.class), Mockito.any(PersonSearchModel.EventType.class));
+		
 		personSearchView.init();
 
 		Mockito.verify(userModel, Mockito.times(1)).register(localeObserverCaptor.capture(), eventCaptor.capture());
-		Mockito.verify(personSearchModel, Mockito.times(1)).register(modelChangeObserverCaptor.capture(), modelEventCaptor.capture());
+		Mockito.verify(personSearchModel, Mockito.times(1)).register(observers.get(PersonSearchModel.EventType.HomeLocationChanges),PersonSearchModel.EventType.HomeLocationChanges);
+		Mockito.verify(personSearchModel, Mockito.times(1)).register(observers.get(PersonSearchModel.EventType.PersonsChanges),PersonSearchModel.EventType.PersonsChanges);
+		
 		@SuppressWarnings("rawtypes")
 		final Observer observer = localeObserverCaptor.getValue();
 		observer.process(UserModel.EventType.LocaleChanges);
@@ -149,7 +159,13 @@ public class PersonSearchViewTest {
 		searchBeans.add(Mockito.mock(Contact.class));
 		searchBeans.add(Mockito.mock(AddressStringAware.class));
 		Mockito.when(itemToPersonSearchSetConverter.convert(Matchers.any(Item.class))).thenReturn(searchBeans);
-
+		final BindingResult  bindingresult = Mockito.mock(BindingResult.class);
+	
+		Map<String, Object> values = new HashMap<>();
+		Mockito.when(bindingResultsToFieldGroupMapper.convert(Mockito.any(FieldGroup.class))).thenReturn(values);
+		
+		Mockito.when(personSearchController.validate(values)).thenReturn(bindingresult);
+		
 		for (final ClickListener listener : (Collection<ClickListener>) (button.getListeners(ClickEvent.class))) {
 			listener.buttonClick(clickEvent);
 		}
@@ -178,7 +194,7 @@ public class PersonSearchViewTest {
 		Mockito.when(personSearchModel.getPersons()).thenReturn(persons);
 
 		ReflectionTestUtils.setField(personSearchView, "personListContainerConverter", new PersonListToItemContainerConverter());
-		modelChangeObserverCaptor.getValue().process(PersonSearchModel.EventType.PersonsChanges);
+		observers.get(PersonSearchModel.EventType.PersonsChanges).process(PersonSearchModel.EventType.PersonsChanges);
 
 		final Table table = (Table) components.get(CONTACT_TABLE_CAPTION);
 		Assert.assertEquals(searchResult.person(), table.getContainerProperty(searchResult.id(), PersonSearchView.PERSON).getValue());
@@ -292,7 +308,7 @@ public class PersonSearchViewTest {
 		Assert.assertEquals(2, subtable.getPageLength());
 	}
 
-	@SuppressWarnings("unchecked")
+	
 	@Test
 	public final void executeColumnGenerator() {
 
@@ -306,7 +322,7 @@ public class PersonSearchViewTest {
 		final Container container = converter.convert(persons);
 		Mockito.when(personListContainerConverter.convert(persons)).thenReturn(container);
 
-		modelChangeObserverCaptor.getValue().process(PersonSearchModel.EventType.PersonsChanges);
+		observers.get(PersonSearchModel.EventType.PersonsChanges).process(PersonSearchModel.EventType.PersonsChanges);
 		final ColumnGenerator generator = table.getColumnGenerator(PersonSearchView.CONTACTS);
 		Assert.assertNotNull(generator);
 		Assert.assertNull(generator.generateCell(table, ID, null));
