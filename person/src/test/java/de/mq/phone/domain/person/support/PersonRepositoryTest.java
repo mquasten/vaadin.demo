@@ -10,13 +10,15 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.springframework.data.geo.Circle;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.MongoOperations;
-
-
-
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import com.mongodb.BasicDBObject;
 
 import de.mq.phone.domain.person.Address;
 import de.mq.phone.domain.person.Contact;
@@ -115,23 +117,33 @@ public class PersonRepositoryTest {
 		ArgumentCaptor<String> collectionCaptor = ArgumentCaptor.forClass(String.class) ;
 		final List<Person> persons = new ArrayList<>();
 		persons.add(Mockito.mock(Person.class));
+		final Circle circle = Mockito.mock(Circle.class);
+		final Distance distance = Mockito.mock(Distance.class);
+		final Point point = Mockito.mock(Point.class);
+		Mockito.when(circle.getRadius()).thenReturn(distance);
+		Mockito.when(circle.getCenter()).thenReturn(point);
 		Mockito.when(mongoOperations.find(queryCaptor.capture(), classCaptor.capture(), collectionCaptor.capture())).thenReturn(persons);
-		Assert.assertEquals(persons, personRepository.forCriterias(person, address, contact, null));
+		Assert.assertEquals(persons, personRepository.forCriterias(person, address, contact, circle));
 		
 		Assert.assertEquals(Person.class, classCaptor.getValue());
 		Assert.assertEquals("person", collectionCaptor.getValue());
 		final Query query = queryCaptor.getValue();
 		
 		final Map<String, Criteria> results = (Map<String, Criteria>) ReflectionTestUtils.getField(query, "criteria");
-		Assert.assertEquals(3, results.size());
+		Assert.assertEquals(4, results.size());
 		Assert.assertTrue(results.containsKey("person"));
 	
 		Assert.assertTrue(results.containsKey("contacts.contact"));
 		Assert.assertTrue(results.containsKey("address.address"));
+		Assert.assertTrue(results.containsKey("address.geoCoordinates.location"));
 		
 		Assert.assertEquals(FIRSTNAME, results.get("person").getCriteriaObject().get("person").toString());
 		Assert.assertEquals(CONTACT, results.get("contacts.contact").getCriteriaObject().get("contacts.contact").toString());
 		Assert.assertEquals(CITY, results.get("address.address").getCriteriaObject().get("address.address").toString());
+		BasicDBObject distanceResult = (BasicDBObject) results.get("address.geoCoordinates.location").getCriteriaObject();
+		Assert.assertEquals(1, distanceResult.keySet().size());
+		Assert.assertEquals("address.geoCoordinates.location", distanceResult.keySet().iterator().next());
+		
 		
 		
 	}
@@ -144,7 +156,12 @@ public class PersonRepositoryTest {
 		final Person person = Mockito.mock(Person.class);
 		final Address address = Mockito.mock(Address.class);
 		final Contact contact = Mockito.mock(Contact.class);
-		
+		final Circle circle = Mockito.mock(Circle.class);
+		final Distance radius = Mockito.mock(Distance.class);
+		Mockito.when(circle.getRadius()).thenReturn(radius);
+		Mockito.when(radius.getValue()).thenReturn(-1D);
+		final Point point = Mockito.mock(Point.class);
+		Mockito.when(circle.getCenter()).thenReturn(point);
 		ArgumentCaptor<Query> queryCaptor = ArgumentCaptor.forClass(Query.class) ;
 		@SuppressWarnings("rawtypes")
 		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class) ;
@@ -154,7 +171,7 @@ public class PersonRepositoryTest {
 		Mockito.when(mongoOperations.find(queryCaptor.capture(), classCaptor.capture(), collectionCaptor.capture())).thenReturn(persons);
 		
 		
-		Assert.assertEquals(persons, personRepository.forCriterias(person, address, contact, null));
+		Assert.assertEquals(persons, personRepository.forCriterias(person, address, contact, circle));
 		
 		final Map<String, Criteria> results = (Map<String, Criteria>) ReflectionTestUtils.getField(queryCaptor.getValue(), "criteria");
 		Assert.assertTrue(results.isEmpty());

@@ -26,10 +26,11 @@ public class PersonServiceTest {
 		final Person person = Mockito.mock(Person.class);
 		final Address address = Mockito.mock(Address.class);
 		final Contact contact = Mockito.mock(Contact.class);
+		final Circle circle =  Mockito.mock(Circle.class);
 		final List<Person> persons = new ArrayList<>();
 		persons.add(Mockito.mock(Person.class));
-		Mockito.when(personRepository.forCriterias(person, address, contact, null)).thenReturn(persons);
-		Assert.assertEquals(persons, personService.persons(person, address, contact, Mockito.mock(Circle.class) ));
+		Mockito.when(personRepository.forCriterias(person, address, contact, circle)).thenReturn(persons);
+		Assert.assertEquals(persons, personService.persons(person, address, contact, circle ));
 		
 	}
 	@Test

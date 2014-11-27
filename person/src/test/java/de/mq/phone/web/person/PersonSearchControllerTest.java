@@ -25,12 +25,14 @@ public class PersonSearchControllerTest {
 		final PersonStringAware person = Mockito.mock(PersonStringAware.class);
 		final Contact contact = Mockito.mock(Contact.class);
 		final AddressStringAware addressStringAware = Mockito.mock(AddressStringAware.class);
+		final Circle circle = Mockito.mock(Circle.class);
 		Mockito.when(model.getSearchCriteriaPerson()).thenReturn(person);
 		Mockito.when(model.getSearchCriteriaContact()).thenReturn(contact);
 		Mockito.when(model.getSearchCriteriaAddress()).thenReturn(addressStringAware);
+		Mockito.when(model.getSearchCriteriaDistance()).thenReturn(circle);
 		final List<Person> persons = new ArrayList<>();
 		persons.add(Mockito.mock(Person.class));
-		Mockito.when(personService.persons(person, addressStringAware, contact, Mockito.mock(Circle.class))).thenReturn(persons);
+		Mockito.when(personService.persons(person, addressStringAware, contact,circle)).thenReturn(persons);
 		personSearchController.assignPersons(model);
 		Mockito.verify(model, Mockito.times(1)).setPersons(persons);
 	}
