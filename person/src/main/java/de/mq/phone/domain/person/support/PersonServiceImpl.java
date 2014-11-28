@@ -7,10 +7,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.geo.Circle;
-
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
 
 import de.mq.phone.domain.person.AddressStringAware;
 import de.mq.phone.domain.person.Contact;
@@ -42,7 +40,7 @@ class PersonServiceImpl implements PersonService {
 	
 	@Override
 	public final void save(final Person person) {
-		if (( person.address() != null) && StringUtils.hasText(person.address().address())) {
+		if (person.hasAddress()) {
 			person.address().assign(coordinatesRepository.forAddress(person.address()));
 		}
 		

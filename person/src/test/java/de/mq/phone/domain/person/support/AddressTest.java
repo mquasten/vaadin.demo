@@ -92,10 +92,24 @@ public class AddressTest {
 	public final void equals() {
 		final Address address = new AddressImpl(ZIP_CODE, CITY, STREET, HOUSE_NUMBER);
 		final Address other = new AddressImpl(ZIP_CODE, CITY, STREET, HOUSE_NUMBER);
-		
-		
 		Assert.assertTrue(address.equals(other));
 		Assert.assertFalse(address.equals("Don't Let Me Get Me"));
 		
 	}
+	
+	@Test
+	public final void hasGeoCoordinates() {
+		final Address address = new AddressImpl(ZIP_CODE, CITY, STREET, HOUSE_NUMBER);
+		final GeoCoordinates geoCoordinates = Mockito.mock(GeoCoordinates.class);
+		address.assign(geoCoordinates);
+		Assert.assertTrue(address.hasGeoCoordinates());
+	}
+	
+	
+	@Test
+	public final void hasGeoCoordinatesNoKoordinates() {
+		final Address address = new AddressImpl(ZIP_CODE, CITY, STREET, HOUSE_NUMBER);
+		Assert.assertFalse(address.hasGeoCoordinates());
+	}
+	
 }

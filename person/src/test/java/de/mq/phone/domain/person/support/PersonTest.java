@@ -19,6 +19,7 @@ import de.mq.phone.domain.person.Person;
 
 public class PersonTest {
 	
+	private static final String ADDRESS = "address";
 	private static final String ID = "19680528";
 	private static final String FIRSTNAME = "Kylie";
 	private static final String NAME = "Minogue";
@@ -123,6 +124,28 @@ public class PersonTest {
 		Assert.assertTrue(new PersonImpl(NAME).equals(new PersonImpl(NAME)));
 		Assert.assertTrue(personWithId.equals(personWithId));
 		Assert.assertFalse(personWithId.equals(new PersonImpl(NAME)));
+	}
+	
+	@Test
+	public final void hasAddress() {
+		final Person person = new PersonImpl(NAME);
+		Assert.assertFalse(person.hasAddress());
+		final Address address = Mockito.mock(Address.class);
+		Mockito.when(address.address()).thenReturn(ADDRESS);
+		person.assign(address);
+		Assert.assertTrue(person.hasAddress());
+		
+	}
+	
+	@Test
+	public final void hasGeoCoordinates() {
+		final Person person = new PersonImpl(NAME);
+		
+		Assert.assertFalse(person.hasGeoCoordinates());
+		final Address address = Mockito.mock(Address.class);
+		Mockito.when(address.hasGeoCoordinates()).thenReturn(true);
+		person.assign(address);
+		Assert.assertTrue(person.hasGeoCoordinates());
 	}
 
 }

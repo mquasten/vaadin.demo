@@ -167,6 +167,14 @@ class PersonImpl implements Person {
 	}
 	
 	@Override
+	public final boolean hasAddress() {
+		if( address()==null) {
+			return false;
+		}
+		return StringUtils.hasText(address.address());
+	}
+	
+	@Override
 	public final boolean hasGeoCoordinates() {
 		if( address==null){
 			return false;

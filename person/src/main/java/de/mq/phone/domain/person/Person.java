@@ -27,5 +27,7 @@ public interface Person extends PersonStringAware {
 	String alias();
 
 	boolean hasGeoCoordinates();
+
+	boolean hasAddress();
 	
 }
