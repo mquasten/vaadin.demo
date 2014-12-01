@@ -26,7 +26,7 @@ public class DistanceValidator  implements Validator {
 
 	
 	@Override
-	public void validate(final Object target, Errors errors) {
+	public void validate(final Object target, final Errors errors) {
 		@SuppressWarnings("unchecked")
 		final String value = ((Map<String,String>) target).get(PersonSearchView.DISTANCE_SEARCH_PROPERTY);
 		if( ! StringUtils.hasText(value)) {
