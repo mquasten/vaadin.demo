@@ -68,4 +68,29 @@ public class ItemToPersonSearchEntitySetConverterTest {
 			Assert.fail("Wrong type:" + criteria.getClass());
 		}
 	}
+
+	@Test
+	public final void convertWithoutDistance() {
+		final Item item = Mockito.mock(Item.class);
+		Mockito.when(item.getItemProperty(PersonSearchView.PERSON_SEARCH_PROPERTY)).thenReturn((Property<?>) Mockito.mock(Property.class));
+		Mockito.when(item.getItemProperty(PersonSearchView.ADDRESS_SEARCH_PROPERTY)).thenReturn((Property<?>) Mockito.mock(Property.class));
+		Mockito.when(item.getItemProperty(PersonSearchView.CONTACT_SEARCH_PROPERTY)).thenReturn((Property<?>) Mockito.mock(Property.class));
+		@SuppressWarnings("unchecked")
+		final Property<String> distanceProperty = Mockito.mock(Property.class);
+		Mockito.when(distanceProperty.getValue()).thenReturn("");
+		Mockito.when(item.getItemProperty(PersonSearchView.DISTANCE_SEARCH_PROPERTY)).thenReturn(distanceProperty);
+		
+		for(final Object criteria : converter.convert(item)) {
+		
+			if (criteria instanceof Distance) {
+			   Assert.assertEquals(-1D , (((Distance) criteria).getValue()));
+				Assert.assertEquals(Metrics.KILOMETERS, (((Distance) criteria).getMetric()));
+				return;
+			}
+			
+		
+		}
+		
+		Assert.fail("Distance-Criteria missed");
+	}
 }

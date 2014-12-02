@@ -1,23 +1,31 @@
 package de.mq.phone.web.person;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import junit.framework.Assert;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.data.geo.Circle;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
 
+import de.mq.phone.domain.person.Address;
 import de.mq.phone.domain.person.AddressStringAware;
 import de.mq.phone.domain.person.Contact;
+import de.mq.phone.domain.person.GeoCoordinates;
 import de.mq.phone.domain.person.Person;
 import de.mq.phone.domain.person.PersonService;
 import de.mq.phone.domain.person.PersonStringAware;
 
 public class PersonSearchControllerTest {
 	
+	private  final Validator validator = Mockito.mock(Validator.class);
 	private PersonService personService = Mockito.mock(PersonService.class);
-	private final PersonSearchController personSearchController = new PersonSearchControllerImpl(personService, Mockito.mock(Validator.class));
+	private final PersonSearchController personSearchController = new PersonSearchControllerImpl(personService, validator);
 	
 	@Test
 	public final void assign() {
@@ -35,6 +43,39 @@ public class PersonSearchControllerTest {
 		Mockito.when(personService.persons(person, addressStringAware, contact,circle)).thenReturn(persons);
 		personSearchController.assignPersons(model);
 		Mockito.verify(model, Mockito.times(1)).setPersons(persons);
+	}
+	
+	@Test
+	public final void assignGeoKoordinates() {
+		final PersonSearchModel model = Mockito.mock(PersonSearchModel.class);
+		final Person person = Mockito.mock(Person.class);
+		Mockito.when(person.hasGeoCoordinates()).thenReturn(true);
+		final Address address = Mockito.mock(Address.class);
+		final GeoCoordinates geoCoordinates = Mockito.mock(GeoCoordinates.class);
+		Mockito.when(address.coordinates()).thenReturn(geoCoordinates);
+		Mockito.when(person.address()).thenReturn(address);
+		Mockito.when(personService.defaultPerson()).thenReturn(person);
+		personSearchController.assignGeoKoordinates(model);
+		Mockito.verify(model, Mockito.times(1)).setGeoCoordinates(geoCoordinates);
+	}
+	
+	@Test
+	public final void assignGeoKoordinatesNotAware() {
+		final PersonSearchModel model = Mockito.mock(PersonSearchModel.class);
+		final Person person = Mockito.mock(Person.class);
+		Mockito.when(person.hasGeoCoordinates()).thenReturn(false);
+		Mockito.when(personService.defaultPerson()).thenReturn(person);
+		personSearchController.assignGeoKoordinates(model);
+		Mockito.verify(model, Mockito.times(1)).setGeoCoordinates(null);
+	}
+	
+	@Test
+	public final void validate() {
+		final Map<String,Object> map = new HashMap<>();
+		Mockito.when(validator.supports(map.getClass())).thenReturn(true);
+		BindingResult result = personSearchController.validate(map);
+		Assert.assertEquals(PersonSearchControllerImpl.BINDING_RESULT_NAME, result.getObjectName());
+		Mockito.verify(validator, Mockito.times(1)).validate(map, result);
 	}
 
 }

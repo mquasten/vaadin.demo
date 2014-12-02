@@ -183,5 +183,10 @@ public class PersonEditControllerTest {
 		personEditController.delete(personEditModel);
 	   Mockito.verifyZeroInteractions(personService);
 	}
+	@Test
+	public final void defaultPerson() {
+		Mockito.when(personService.defaultPerson()).thenReturn(person);
+		Assert.assertEquals(person, personEditController.defaultPerson());
+	}
 
 }

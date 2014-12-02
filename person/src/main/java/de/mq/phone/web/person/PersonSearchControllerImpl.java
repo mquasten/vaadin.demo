@@ -20,7 +20,7 @@ import de.mq.phone.web.person.ValidatorQualifier.Type;
 @Controller()
 class PersonSearchControllerImpl implements PersonSearchController {
 	
-	
+static final String BINDING_RESULT_NAME = "search";
 private final PersonService personService;
 private final Validator validator; 
 	
@@ -55,8 +55,8 @@ private final Validator validator;
 	}
 	
 	@Override
-	public final BindingResult validate(Map<String,Object> map) {
-		final MapBindingResult bindingResult = new MapBindingResult(map, "search");
+	public final BindingResult validate(final Map<String,Object> map) {
+		final MapBindingResult bindingResult = new MapBindingResult(map, BINDING_RESULT_NAME);
 
 		ValidationUtils.invokeValidator(validator, map, bindingResult);
 		return bindingResult; 
