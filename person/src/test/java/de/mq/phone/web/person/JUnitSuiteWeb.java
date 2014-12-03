@@ -13,7 +13,8 @@ import org.junit.runners.Suite.SuiteClasses;
 		PersonEditModelTest.class	, PersonEditControllerTest.class	, EMailValidatorTest.class, 
 		PhoneValidatorTest.class, PersonFieldSetValidatorTest.class, ContactMapperTest.class,
 		ContactMapperTest.class, MapToPersonConverterTest.class, ValidatorQualifierTest.class,
-		ContactEditorViewTest.class, PersonEditViewTest.class , StringCollectionToContainerConverterTest.class, DistanceValidatorTest.class 
+		ContactEditorViewTest.class, PersonEditViewTest.class , StringCollectionToContainerConverterTest.class, 
+		DistanceValidatorTest.class, MainMenuBarViewTest.class 
 })
 public class JUnitSuiteWeb {
 

@@ -45,6 +45,7 @@ import de.mq.phone.domain.person.Contact;
 import de.mq.phone.domain.person.Person;
 import de.mq.phone.domain.person.PersonStringAware;
 import de.mq.phone.domain.person.support.BankingAccount;
+import de.mq.phone.web.person.PersonSearchModel.EventType;
 import de.mq.vaadin.util.BindingResultsToFieldGroupMapper;
 import de.mq.vaadin.util.Observer;
 import de.mq.vaadin.util.ViewNav;
@@ -101,7 +102,9 @@ public class PersonSearchViewTest {
 		Mockito.when(messages.getMessage(PersonSearchView.I18N_LANGUAGE_COMBOBOX_CAPTION, null, Locale.GERMAN)).thenReturn(LANGUAGE_BOX_CAPTION);
 		Mockito.when(messages.getMessage(PersonSearchView.I18N_CONTACT_TABLE_CAPTION, null, Locale.GERMAN)).thenReturn(CONTACT_TABLE_CAPTION);
 		Mockito.when(messages.getMessage(PersonSearchView.I18N_CONTACT_TABLE_PANEL_CAPTION, null, Locale.GERMAN)).thenReturn(CONTACT_TABLE_PANEL_CAPTION);
-
+		Mockito.when(messages.getMessage(PersonSearchView.I18N_SEARCH_DISTANCE_FIELD_CAPTION, null, Locale.GERMAN)).thenReturn(PersonSearchView.I18N_SEARCH_DISTANCE_FIELD_CAPTION);
+		
+		
 		Mockito.when(userModel.getLocale()).thenReturn(Locale.GERMAN);
 		Collection<Locale> locales = new ArrayList<>();
 		locales.add(Locale.GERMAN);
@@ -114,6 +117,7 @@ public class PersonSearchViewTest {
 			
 		}).when(personSearchModel).register(Mockito.any(Observer.class), Mockito.any(PersonSearchModel.EventType.class));
 		
+	
 		personSearchView.init();
 
 		Mockito.verify(userModel, Mockito.times(1)).register(localeObserverCaptor.capture(), eventCaptor.capture());
@@ -130,7 +134,7 @@ public class PersonSearchViewTest {
 	@Test
 	public void init() {
 
-		Assert.assertEquals(10, components.size());
+		Assert.assertEquals(11, components.size());
 		Assert.assertEquals(Panel.class, components.get(SEARCH_PANEL_CAPTION).getClass());
 
 		Assert.assertEquals(Button.class, components.get(SEARCH_BUTTON_CAPTION).getClass());
@@ -146,7 +150,7 @@ public class PersonSearchViewTest {
 
 		Assert.assertEquals(Panel.class, components.get(CONTACT_TABLE_PANEL_CAPTION).getClass());
 		Assert.assertEquals(Table.class, components.get(CONTACT_TABLE_CAPTION).getClass());
-
+		
 	}
 
 	@SuppressWarnings("unchecked")
@@ -353,6 +357,21 @@ public class PersonSearchViewTest {
 		Mockito.when(property.getValue()).thenReturn(null);
 		listener.valueChange(event);
 		Assert.assertFalse(button.isEnabled());
+	}
+	@Test
+	public void homeLocationChanged() {
+		final TextField textField = (TextField) components.get(PersonSearchView.I18N_SEARCH_DISTANCE_FIELD_CAPTION);
+		Assert.assertTrue(textField.isEnabled());
+		Mockito.when(personSearchModel.hasGeoCoordinates()).thenReturn(false);
+		observers.get(EventType.HomeLocationChanges).process(EventType.HomeLocationChanges);
+		
+		Assert.assertFalse(textField.isEnabled());
+		Mockito.when(personSearchModel.hasGeoCoordinates()).thenReturn(true);
+		
+		observers.get(EventType.HomeLocationChanges).process(EventType.HomeLocationChanges);
+		
+		Assert.assertTrue(textField.isEnabled());
+		
 	}
 
 }

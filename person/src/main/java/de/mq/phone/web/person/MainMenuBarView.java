@@ -19,6 +19,10 @@ import de.mq.vaadin.util.ViewNav;
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS, value = "session")
 public class MainMenuBarView  extends CustomComponent{
 	
+	static final String I18N_MENU_ADDRESS = "settings_address";
+
+	static final String I18N_NENU_SETTINGS = "menu_settings";
+
 	private static final long serialVersionUID = 1L;
 	
 	private final UserModel userModel;
@@ -38,15 +42,18 @@ public class MainMenuBarView  extends CustomComponent{
 
 	@PostConstruct
 	void init() {
+		setLocale(userModel.getLocale());
 		final MenuBar menubar = new MenuBar();
+		menubar.setCaption(getString(I18N_NENU_SETTINGS));
 		setCompositionRoot(menubar);
 		final Command command = item -> {
 			viewNav.navigateTo(PersonEditView.class, personEditController.defaultPerson().id());
 		};
 		userModel.register(event -> { 
+			
 			menubar.removeItems();
 			
-			menubar.addItem(getString("menu_settings"), null).addItem(getString("settings_address"),  command);
+			menubar.addItem(getString(I18N_NENU_SETTINGS), null).addItem(getString(I18N_MENU_ADDRESS),  command);
 			
 			
 		}, UserModel.EventType.LocaleChanges);
