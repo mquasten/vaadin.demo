@@ -288,7 +288,6 @@ class PersonSearchView extends CustomComponent implements View {
 			return;
 		}
 		commitBinder(binder);
-		System.out.println(itemToPersonSearchSetConverter);
 		itemToPersonSearchSetConverter.convert(personSearchItem).forEach(criteriaBean -> model.setSearchCriteria(criteriaBean));
 		personSearchController.assignPersons(model);
 	}
