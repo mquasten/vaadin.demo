@@ -285,11 +285,10 @@ class PersonSearchView extends CustomComponent implements View {
 		final BindingResult bindingresult = personSearchController.validate(bindingResultsToFieldGroupMapper.convert(binder));
 		bindingResultsToFieldGroupMapper.mapInto(bindingresult, binder);
 		if( bindingresult.hasErrors()){	
-			
 			return;
 		}
-		
 		commitBinder(binder);
+		System.out.println(itemToPersonSearchSetConverter);
 		itemToPersonSearchSetConverter.convert(personSearchItem).forEach(criteriaBean -> model.setSearchCriteria(criteriaBean));
 		personSearchController.assignPersons(model);
 	}

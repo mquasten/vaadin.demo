@@ -373,5 +373,25 @@ public class PersonSearchViewTest {
 		Assert.assertTrue(textField.isEnabled());
 		
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public final void  searchWithBindingErrors() {
+		final Button button = (Button) components.get(SEARCH_BUTTON_CAPTION);
+		final ClickEvent clickEvent = Mockito.mock(ClickEvent.class);
+		final Map<String, Object> values = new HashMap<>();
+		Mockito.when(bindingResultsToFieldGroupMapper.convert(Mockito.mock(FieldGroup.class))).thenReturn(values);
+		final BindingResult bindingResult = Mockito.mock(BindingResult.class);
+		Mockito.when(personSearchController.validate(values)).thenReturn(bindingResult);
+		Mockito.when(bindingResult.hasErrors()).thenReturn(true);
+		Collection<Object> objects = new ArrayList<>();
+		Mockito.when(itemToPersonSearchSetConverter.convert(Mockito.any(Item.class))).thenReturn(objects);
+		for (final ClickListener listener : (Collection<ClickListener>) (button.getListeners(ClickEvent.class))) {
+			listener.buttonClick(clickEvent);
+		}
+		
+		Mockito.verifyZeroInteractions(itemToPersonSearchSetConverter);
+		Mockito.verify(personSearchController, Mockito.times(0)).assignPersons(Mockito.any(PersonSearchModel.class));
+	}
 
 }
