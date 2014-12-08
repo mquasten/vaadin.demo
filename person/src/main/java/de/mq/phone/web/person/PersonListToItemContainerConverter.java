@@ -10,7 +10,9 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.IndexedContainer;
 
+import de.mq.phone.domain.person.GeoCoordinates;
 import de.mq.phone.domain.person.Person;
+import de.mq.phone.domain.person.support.PersonEntities;
 @Component()
 @ConverterQualifier(value = ConverterQualifier.Type.PersonList2Container)
 class PersonListToItemContainerConverter  implements Converter<Collection<Person>, Container> {
@@ -28,6 +30,7 @@ class PersonListToItemContainerConverter  implements Converter<Collection<Person
 		ic.addContainerProperty(PersonSearchView.ADDRESS, String.class, "");
 		ic.addContainerProperty(PersonSearchView.CONTACTS, Collection.class, new ArrayList<>());
 		ic.addContainerProperty(PersonSearchView.BANKING_ACCOUNT, String.class, "");
+		ic.addContainerProperty(PersonSearchView.COORDINATES, GeoCoordinates.class, PersonEntities.newCoordinates());
 
 		persons.forEach(person -> {
 
@@ -38,6 +41,10 @@ class PersonListToItemContainerConverter  implements Converter<Collection<Person
 			}
 			if (person.address() != null) {
 				item.getItemProperty(PersonSearchView.ADDRESS).setValue(person.address().address());
+			}
+			
+			if( person.hasGeoCoordinates() ) {
+				item.getItemProperty(PersonSearchView.COORDINATES).setValue(person.address().coordinates());
 			}
 
 			final Collection<String> contacts = new ArrayList<>();

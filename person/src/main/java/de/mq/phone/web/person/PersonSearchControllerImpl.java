@@ -1,5 +1,7 @@
 package de.mq.phone.web.person;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +14,11 @@ import org.springframework.validation.Validator;
 
 import de.mq.phone.domain.person.AddressStringAware;
 import de.mq.phone.domain.person.Contact;
+import de.mq.phone.domain.person.GeoCoordinates;
 import de.mq.phone.domain.person.Person;
 import de.mq.phone.domain.person.PersonService;
 import de.mq.phone.domain.person.PersonStringAware;
+import de.mq.phone.domain.person.support.DistanceCalculator;
 import de.mq.phone.web.person.ValidatorQualifier.Type;
 
 @Controller()
@@ -22,11 +26,13 @@ class PersonSearchControllerImpl implements PersonSearchController {
 	
 static final String BINDING_RESULT_NAME = "search";
 private final PersonService personService;
+private final DistanceCalculator distanceCalculator;
 private final Validator validator; 
 	
 	@Autowired
-	PersonSearchControllerImpl(final PersonService personService, @ValidatorQualifier(Type.Distance) final Validator validator) {
+	PersonSearchControllerImpl(final PersonService personService, DistanceCalculator distanceCalculator , @ValidatorQualifier(Type.Distance) final Validator validator) {
 	this.personService = personService;
+	this.distanceCalculator=distanceCalculator;
 	this.validator=validator;
 }
 
@@ -60,5 +66,18 @@ private final Validator validator;
 
 		ValidationUtils.invokeValidator(validator, map, bindingResult);
 		return bindingResult; 
+	}
+	
+	@Override
+	public final Collection<String> geoInfos(GeoCoordinates geoCoordinates, final PersonSearchModel model) {
+		final Collection<String> results = new ArrayList<>();
+		
+		
+		results.add(geoCoordinates.location());
+		if( model.hasGeoCoordinates() ) {
+			results.add("" + distanceCalculator.distance(model.getGeoCoordinates(), geoCoordinates) + " "+ distanceCalculator.angle(model.getGeoCoordinates(), geoCoordinates) );
+		}
+	   return results;
+		
 	}
 }

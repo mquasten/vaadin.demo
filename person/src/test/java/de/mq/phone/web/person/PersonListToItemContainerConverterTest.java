@@ -46,7 +46,7 @@ public class PersonListToItemContainerConverterTest {
 		final String id = (String) container.getItemIds().iterator().next();
 		Assert.assertEquals(person.id(), id);
 		final Item item = container.getItem(id);
-		Assert.assertEquals(4, item.getItemPropertyIds().size());
+		Assert.assertEquals(5, item.getItemPropertyIds().size());
 		Assert.assertTrue(item.getItemPropertyIds().contains(PersonSearchView.PERSON));
 		Assert.assertTrue(item.getItemPropertyIds().contains(PersonSearchView.ADDRESS));
 		Assert.assertTrue(item.getItemPropertyIds().contains(PersonSearchView.CONTACTS));

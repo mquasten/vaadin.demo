@@ -20,12 +20,14 @@ import de.mq.phone.domain.person.GeoCoordinates;
 import de.mq.phone.domain.person.Person;
 import de.mq.phone.domain.person.PersonService;
 import de.mq.phone.domain.person.PersonStringAware;
+import de.mq.phone.domain.person.support.DistanceCalculator;
 
 public class PersonSearchControllerTest {
 	
 	private  final Validator validator = Mockito.mock(Validator.class);
 	private PersonService personService = Mockito.mock(PersonService.class);
-	private final PersonSearchController personSearchController = new PersonSearchControllerImpl(personService, validator);
+	private DistanceCalculator distanceCalculator = Mockito.mock(DistanceCalculator.class);
+	private final PersonSearchController personSearchController = new PersonSearchControllerImpl(personService, distanceCalculator, validator);
 	
 	@Test
 	public final void assign() {

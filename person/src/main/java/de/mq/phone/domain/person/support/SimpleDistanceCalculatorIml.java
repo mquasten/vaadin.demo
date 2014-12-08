@@ -2,10 +2,11 @@ package de.mq.phone.domain.person.support;
 
 
 
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import de.mq.phone.domain.person.GeoCoordinates;
-
+@Service
 public class SimpleDistanceCalculatorIml implements DistanceCalculator {
 	
 	private static final double RE = 6371;

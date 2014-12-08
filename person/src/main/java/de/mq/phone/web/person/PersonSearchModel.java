@@ -35,6 +35,8 @@ interface PersonSearchModel extends Subject<PersonSearchModel, PersonSearchModel
 	void setGeoCoordinates(final GeoCoordinates geoCoordinates);
 
 	boolean hasGeoCoordinates();
+	
+	GeoCoordinates getGeoCoordinates();
 
 	
 

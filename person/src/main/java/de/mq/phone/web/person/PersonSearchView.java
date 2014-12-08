@@ -41,6 +41,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
+import de.mq.phone.domain.person.GeoCoordinates;
 import de.mq.phone.domain.person.Person;
 import de.mq.vaadin.util.BindingResultsToFieldGroupMapper;
 import de.mq.vaadin.util.ViewNav;
@@ -70,6 +71,7 @@ class PersonSearchView extends CustomComponent implements View {
 	static final String ADDRESS = "address";
 	static final String PERSON = "person";
 	static final String BANKING_ACCOUNT = "bank";
+	static final String COORDINATES = "coordinates";
 
 	private final Converter<Collection<Person>, Container> personListContainerConverter;
 	private final Converter<Item, Collection<Object>> itemToPersonSearchSetConverter;
@@ -265,6 +267,7 @@ class PersonSearchView extends CustomComponent implements View {
 			table.setColumnHeader(ADDRESS, getString("table_address"));
 			table.setColumnHeader(BANKING_ACCOUNT, getString("table_bank"));
 			table.setColumnHeader(CONTACTS, getString("table_contacts"));
+			table.setColumnHeader(COORDINATES, getString("table_coordinates"));
 			languageBox.getItemIds().forEach(itemId -> languageBox.setItemCaption(itemId, ((Locale) itemId).getDisplayLanguage(userModel.getLocale())));
 
 			distanceField.setCaption(getString(I18N_SEARCH_DISTANCE_FIELD_CAPTION));
@@ -295,9 +298,17 @@ class PersonSearchView extends CustomComponent implements View {
 	private void personChangeObserver(final Table table) {
 		table.setContainerDataSource(personListContainerConverter.convert(model.getPersons()));
 		table.removeGeneratedColumn(CONTACTS);
-		table.addGeneratedColumn(CONTACTS, (source, itemId, ColumnId) -> contactColumnGenerator(table, itemId));
-
-		table.setVisibleColumns(new Object[] { PERSON, CONTACTS, ADDRESS, BANKING_ACCOUNT });
+		table.addGeneratedColumn(CONTACTS, (source, itemId, columnId) -> contactColumnGenerator(table, itemId));
+		table.removeGeneratedColumn(COORDINATES);
+		table.addGeneratedColumn(COORDINATES, (source, itemId, columnId) -> {
+			
+			GeoCoordinates coordinates = (GeoCoordinates) source.getItem(itemId).getItemProperty(COORDINATES).getValue();
+			
+			return newSubTable(personSearchController.geoInfos(coordinates, model));
+			
+			
+		});
+		table.setVisibleColumns(new Object[] { PERSON, CONTACTS, ADDRESS, BANKING_ACCOUNT, COORDINATES });
 
 		Arrays.stream(table.getVisibleColumns()).forEach(col -> table.setColumnExpandRatio(col, 1f));
 
@@ -316,6 +327,12 @@ class PersonSearchView extends CustomComponent implements View {
 		}
 		
 			
+		final Table subTable = newSubTable(contacts);
+		return subTable;
+	
+	}
+
+	private Table newSubTable(final Collection<String> contacts) {
 		final  Table subTable = new  Table();
 		subTable.setContainerDataSource(stringCollection2ContainerConverter.convert(contacts));
 		subTable.setColumnHeaderMode(ColumnHeaderMode.HIDDEN);
@@ -324,7 +341,6 @@ class PersonSearchView extends CustomComponent implements View {
 		subTable.setSizeFull();
 		subTable.setSelectable(true);
 		return subTable;
-	
 	}
 	
 	

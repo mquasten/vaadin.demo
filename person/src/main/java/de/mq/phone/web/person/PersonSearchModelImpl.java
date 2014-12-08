@@ -136,5 +136,9 @@ class PersonSearchModelImpl extends SubjectImpl<PersonSearchModel, PersonSearchM
 	public final boolean hasGeoCoordinates() {
 		return this.geoCoordinates!=null;
 	}
+	
+	public final GeoCoordinates getGeoCoordinates() {
+		return geoCoordinates;
+	}
 
 }

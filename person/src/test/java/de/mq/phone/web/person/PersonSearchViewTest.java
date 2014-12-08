@@ -213,7 +213,7 @@ public class PersonSearchViewTest {
 			cols.add(id);
 
 		}
-		Assert.assertEquals(4, cols.size());
+		Assert.assertEquals(5, cols.size());
 		Assert.assertEquals(PersonSearchView.PERSON, cols.get(0));
 		Assert.assertEquals(PersonSearchView.CONTACTS, cols.get(1));
 		Assert.assertEquals(PersonSearchView.ADDRESS, cols.get(2));

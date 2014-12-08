@@ -9,6 +9,7 @@ import org.springframework.util.ReflectionUtils;
 import de.mq.phone.domain.person.Address;
 import de.mq.phone.domain.person.AddressStringAware;
 import de.mq.phone.domain.person.Contact;
+import de.mq.phone.domain.person.GeoCoordinates;
 import de.mq.phone.domain.person.Person;
 import de.mq.phone.domain.person.PersonStringAware;
 
@@ -112,6 +113,9 @@ public  final  class PersonEntities {
 		};
 	}
 	
+	public static GeoCoordinates newCoordinates() {
+		return BeanUtils.instantiateClass(GeoDegreesCoordinatesImpl.class, GeoCoordinates.class);
+	}
 	
 
 }
