@@ -1,6 +1,7 @@
 package de.mq.phone.web.person;
 
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.validation.BindingResult;
@@ -16,7 +17,8 @@ interface PersonSearchController {
 
 	BindingResult validate(final Map<String, Object> map);
 
-	Collection<String> geoInfos(final GeoCoordinates geoCoordinates, final PersonSearchModel model);
+	
+	Collection<String> geoInfos(final GeoCoordinates geoCoordinates, final PersonSearchModel model, final Locale locale);
 
 	
 

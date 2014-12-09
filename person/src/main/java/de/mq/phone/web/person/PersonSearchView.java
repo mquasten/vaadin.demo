@@ -1,6 +1,5 @@
 package de.mq.phone.web.person;
 
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Locale;
@@ -304,7 +303,7 @@ class PersonSearchView extends CustomComponent implements View {
 			
 			GeoCoordinates coordinates = (GeoCoordinates) source.getItem(itemId).getItemProperty(COORDINATES).getValue();
 			
-			return newSubTable(personSearchController.geoInfos(coordinates, model));
+			return newSubTable(personSearchController.geoInfos(coordinates, model, userModel.getLocale()));
 			
 			
 		});
@@ -316,8 +315,13 @@ class PersonSearchView extends CustomComponent implements View {
 	
 	@SuppressWarnings("unchecked")
 	AbstractComponent contactColumnGenerator(final Table table, final Object itemId) {
-		final Collection<String> contacts = (Collection<String>) table.getContainerDataSource().getItem(itemId).getItemProperty(CONTACTS).getValue();
-		
+		final Collection<String> contacts = (Collection<String>) table.getContainerDataSource().getItem(itemId).getItemProperty(CONTACTS).getValue();	
+		return  newSubTable(contacts);
+	
+	
+	}
+
+	private AbstractComponent newSubTable(final Collection<String> contacts) {
 		if( contacts.size() == 0){
 			return null;
 		}
@@ -326,13 +330,6 @@ class PersonSearchView extends CustomComponent implements View {
 			return new Label(contacts.iterator().next());
 		}
 		
-			
-		final Table subTable = newSubTable(contacts);
-		return subTable;
-	
-	}
-
-	private Table newSubTable(final Collection<String> contacts) {
 		final  Table subTable = new  Table();
 		subTable.setContainerDataSource(stringCollection2ContainerConverter.convert(contacts));
 		subTable.setColumnHeaderMode(ColumnHeaderMode.HIDDEN);
