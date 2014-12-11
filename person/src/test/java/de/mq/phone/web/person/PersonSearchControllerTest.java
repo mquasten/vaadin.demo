@@ -3,6 +3,7 @@ package de.mq.phone.web.person;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import junit.framework.Assert;
@@ -24,6 +25,7 @@ import de.mq.phone.domain.person.support.DistanceCalculator;
 
 public class PersonSearchControllerTest {
 	
+	private static final String COORDINATES = "48° 42′ N, 44° 29′ O";
 	private  final Validator validator = Mockito.mock(Validator.class);
 	private PersonService personService = Mockito.mock(PersonService.class);
 	private DistanceCalculator distanceCalculator = Mockito.mock(DistanceCalculator.class);
@@ -78,6 +80,32 @@ public class PersonSearchControllerTest {
 		BindingResult result = personSearchController.validate(map);
 		Assert.assertEquals(PersonSearchControllerImpl.BINDING_RESULT_NAME, result.getObjectName());
 		Mockito.verify(validator, Mockito.times(1)).validate(map, result);
+	}
+	
+	@Test
+	public final void geoInfos() {
+		final GeoCoordinates geoCoordinates = Mockito.mock(GeoCoordinates.class);
+		final GeoCoordinates homeCoordinates = Mockito.mock(GeoCoordinates.class);
+		
+		Mockito.when(geoCoordinates.location()).thenReturn(COORDINATES);
+		PersonSearchModel model = Mockito.mock(PersonSearchModel.class);
+		Mockito.when(model.hasGeoCoordinates()).thenReturn(true);
+		Mockito.when(model.getGeoCoordinates()).thenReturn(homeCoordinates);
+		Mockito.when(distanceCalculator.distance(homeCoordinates, geoCoordinates)).thenReturn(2216D);
+		Mockito.when(distanceCalculator.angle(homeCoordinates, geoCoordinates)).thenReturn(89D);
+		final List<String> results = new ArrayList<>();
+		results.addAll(personSearchController.geoInfos(geoCoordinates, model, Locale.GERMAN));
+		Assert.assertEquals(2, results.size());
+		
+		Assert.assertEquals(COORDINATES, results.get(0));
+		Assert.assertEquals("2216,00 km, 89,00°", results.get(1));
+		results.clear();
+		Mockito.when(model.hasGeoCoordinates()).thenReturn(false);
+		results.addAll(personSearchController.geoInfos(geoCoordinates, model, Locale.GERMAN));
+		Assert.assertEquals(1, results.size());
+		Assert.assertEquals(COORDINATES, results.get(0));
+		
+		Assert.assertTrue(personSearchController.geoInfos(null, model, Locale.GERMAN).isEmpty());
 	}
 
 }

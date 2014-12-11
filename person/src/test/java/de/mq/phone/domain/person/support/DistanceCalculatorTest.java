@@ -44,5 +44,11 @@ public class DistanceCalculatorTest {
 	private double round(double result) {
 		return (double) Math.round(10* result)/10;
 	}
+	
+	@Test
+	public final void test() {
+		System.out.println( round(distanceCalculator.angle(new GeoDegreesCoordinatesImpl(52.0 + 31.0/60 + 10.0/3600, 13.0 + 24.0/60 + 24.0/3600 ), new GeoDegreesCoordinatesImpl(48.0 + 42.0/60, 44.0 + 29.0/60))));
+		System.out.println( round(distanceCalculator.distance(new GeoDegreesCoordinatesImpl(52.0 + 31.0/60 + 10.0/3600, 13.0 + 24.0/60 + 24.0/3600 ), new GeoDegreesCoordinatesImpl(48.0 + 42.0/60, 44.0 + 29.0/60))));
+	}
 
 }

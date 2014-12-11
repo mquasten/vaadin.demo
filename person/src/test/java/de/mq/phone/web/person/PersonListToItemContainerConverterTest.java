@@ -14,6 +14,7 @@ import com.vaadin.data.Item;
 
 import de.mq.phone.domain.person.Address;
 import de.mq.phone.domain.person.Contact;
+import de.mq.phone.domain.person.GeoCoordinates;
 import de.mq.phone.domain.person.Person;
 import de.mq.phone.domain.person.support.BankingAccount;
 
@@ -34,6 +35,10 @@ public class PersonListToItemContainerConverterTest {
 		final Collection<Contact> contacts = new ArrayList<>();
 		contacts.add(contact);
 		Mockito.when(person.contacts()).thenReturn(contacts);
+		
+		final GeoCoordinates geoCoordinates = Mockito.mock(GeoCoordinates.class);
+		Mockito.when(address.coordinates()).thenReturn(geoCoordinates);
+		Mockito.when(person.hasGeoCoordinates()).thenReturn(true);
 		
 		final BankingAccount bankingAccount = Mockito.mock(BankingAccount.class);
 		Mockito.when(bankingAccount.account()).thenReturn("bankingAccountString");
@@ -59,6 +64,8 @@ public class PersonListToItemContainerConverterTest {
 		Assert.assertEquals(contact.contact(),((Collection<?>) item.getItemProperty(PersonSearchView.CONTACTS).getValue()).iterator().next());
 		
 		Assert.assertEquals(bankingAccount.account(), item.getItemProperty(PersonSearchView.BANKING_ACCOUNT).getValue());
+		
+		Assert.assertEquals(geoCoordinates, item.getItemProperty(PersonSearchView.COORDINATES).getValue());
 	}
 	
 	@Test
@@ -76,7 +83,11 @@ public class PersonListToItemContainerConverterTest {
 					Assert.assertTrue(((Collection<?>) value).isEmpty());
 					continue;
 				}
-				Assert.assertEquals("", value);
+				if (value instanceof String) {
+					Assert.assertEquals("", value);
+					continue;
+				}
+				Assert.assertNull(value);
 		}
 				
 	}
