@@ -46,9 +46,9 @@ public class DistanceCalculatorTest {
 	}
 	
 	@Test
-	public final void test() {
-		System.out.println( round(distanceCalculator.angle(new GeoDegreesCoordinatesImpl(52.0 + 31.0/60 + 10.0/3600, 13.0 + 24.0/60 + 24.0/3600 ), new GeoDegreesCoordinatesImpl(48.0 + 42.0/60, 44.0 + 29.0/60))));
-		System.out.println( round(distanceCalculator.distance(new GeoDegreesCoordinatesImpl(52.0 + 31.0/60 + 10.0/3600, 13.0 + 24.0/60 + 24.0/3600 ), new GeoDegreesCoordinatesImpl(48.0 + 42.0/60, 44.0 + 29.0/60))));
+	public final void stg() {
+		Assert.assertEquals(88.6, round(distanceCalculator.angle(new GeoDegreesCoordinatesImpl(52.0 + 31.0/60 + 10.0/3600, 13.0 + 24.0/60 + 24.0/3600 ), new GeoDegreesCoordinatesImpl(48.0 + 42.0/60, 44.0 + 29.0/60))));
+		Assert.assertEquals(2215.6,  round(distanceCalculator.distance(new GeoDegreesCoordinatesImpl(52.0 + 31.0/60 + 10.0/3600, 13.0 + 24.0/60 + 24.0/3600 ), new GeoDegreesCoordinatesImpl(48.0 + 42.0/60, 44.0 + 29.0/60))));
 	}
 
 }

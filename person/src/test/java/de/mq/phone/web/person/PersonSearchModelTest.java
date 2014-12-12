@@ -136,4 +136,13 @@ public class PersonSearchModelTest {
 		
 	}
 	
+	@Test
+	public final void getGeoCoordinates() {
+		Assert.assertFalse(personSearchModel.hasGeoCoordinates());
+		final GeoCoordinates geoCoordinates = Mockito.mock(GeoCoordinates.class);
+		personSearchModel.setGeoCoordinates(geoCoordinates);
+		Assert.assertEquals(geoCoordinates, personSearchModel.getGeoCoordinates());
+		Assert.assertTrue(personSearchModel.hasGeoCoordinates());
+	}
+	
 }

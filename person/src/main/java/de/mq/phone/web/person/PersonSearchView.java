@@ -299,14 +299,7 @@ class PersonSearchView extends CustomComponent implements View {
 		table.removeGeneratedColumn(CONTACTS);
 		table.addGeneratedColumn(CONTACTS, (source, itemId, columnId) -> contactColumnGenerator(table, itemId));
 		table.removeGeneratedColumn(COORDINATES);
-		table.addGeneratedColumn(COORDINATES, (source, itemId, columnId) -> {
-			
-			GeoCoordinates coordinates = (GeoCoordinates) source.getItem(itemId).getItemProperty(COORDINATES).getValue();
-			
-			return newSubTable(personSearchController.geoInfos(coordinates, model, userModel.getLocale()));
-			
-			
-		});
+		table.addGeneratedColumn(COORDINATES, (source, itemId, columnId) -> newSubTable(personSearchController.geoInfos((GeoCoordinates) source.getItem(itemId).getItemProperty(COORDINATES).getValue(), model, userModel.getLocale())));
 		table.setVisibleColumns(new Object[] { PERSON, CONTACTS, ADDRESS, BANKING_ACCOUNT, COORDINATES });
 
 		Arrays.stream(table.getVisibleColumns()).forEach(col -> table.setColumnExpandRatio(col, 1f));
@@ -315,6 +308,7 @@ class PersonSearchView extends CustomComponent implements View {
 	
 	@SuppressWarnings("unchecked")
 	AbstractComponent contactColumnGenerator(final Table table, final Object itemId) {
+		
 		final Collection<String> contacts = (Collection<String>) table.getContainerDataSource().getItem(itemId).getItemProperty(CONTACTS).getValue();	
 		return  newSubTable(contacts);
 	

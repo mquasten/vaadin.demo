@@ -42,6 +42,7 @@ import com.vaadin.ui.TextField;
 import de.mq.phone.domain.person.Address;
 import de.mq.phone.domain.person.AddressStringAware;
 import de.mq.phone.domain.person.Contact;
+import de.mq.phone.domain.person.GeoCoordinates;
 import de.mq.phone.domain.person.Person;
 import de.mq.phone.domain.person.PersonStringAware;
 import de.mq.phone.domain.person.support.BankingAccount;
@@ -314,7 +315,7 @@ public class PersonSearchViewTest {
 
 	
 	@Test
-	public final void executeColumnGenerator() {
+	public final void executeContactsColumnGenerator() {
 
 		final Table table = (Table) components.get(PersonSearchView.I18N_CONTACT_TABLE_CAPTION);
 		final List<Person> persons = new ArrayList<>();
@@ -331,6 +332,34 @@ public class PersonSearchViewTest {
 		Assert.assertNotNull(generator);
 		Assert.assertNull(generator.generateCell(table, ID, null));
 
+	}
+	
+	@Test
+	public final void executeGeoInfosColumnGenerator() {
+		final Table table = (Table) components.get(PersonSearchView.I18N_CONTACT_TABLE_CAPTION);
+		final List<Person> persons = new ArrayList<>();
+		Mockito.when(personSearchModel.getPersons()).thenReturn(persons);
+		Converter<Collection<Person>, Container> converter = new PersonListToItemContainerConverter();
+		final Person person = Mockito.mock(Person.class);
+		Mockito.when(person.id()).thenReturn(ID);
+		Mockito.when(person.hasGeoCoordinates()).thenReturn(true);
+		Address address = Mockito.mock(Address.class);
+		Mockito.when(person.address()).thenReturn(address);
+		GeoCoordinates coordinates = Mockito.mock(GeoCoordinates.class);
+		Mockito.when(address.coordinates()).thenReturn(coordinates);
+		persons.add(person);
+		final Container container = converter.convert(persons);
+		Mockito.when(personListContainerConverter.convert(persons)).thenReturn(container);
+		observers.get(PersonSearchModel.EventType.PersonsChanges).process(PersonSearchModel.EventType.PersonsChanges);
+		final ColumnGenerator generator = table.getColumnGenerator(PersonSearchView.COORDINATES);
+		final Collection<String> infos = new ArrayList<>();
+		final String position = "51 °N , 4° O";
+		infos.add(position);
+		
+		Mockito.when(personSearchController.geoInfos(coordinates, personSearchModel, userModel.getLocale())).thenReturn(infos);
+		final Label resultAsLabel = (Label) generator.generateCell(table, ID, null);
+		Assert.assertEquals(position, resultAsLabel.getValue());
+		
 	}
 
 	@Test
