@@ -10,8 +10,8 @@
 
 
 
-	<mongo:mongo host="127.0.0.1" port="27017" />
-	<mongo:db-factory dbname="person" />
+	<mongo:mongo host="${db.host}" port="${db.port}" />
+	<mongo:db-factory dbname="${db.dbname}" />
 
 	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
 		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
@@ -38,6 +38,14 @@
     </property>
 </bean>
 
+<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+  <property name="locations">
+    <list>
+      <value>classpath:mongo.properties</value>
+    </list>
+  </property>
+  <property name="ignoreUnresolvablePlaceholders" value="true"/>
+</bean>
 
 	<context:component-scan base-package="de.mq.phone.web,de.mq.phone.domain,de.mq.vaadin.util" />
 </beans>
