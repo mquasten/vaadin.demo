@@ -89,10 +89,6 @@ private final NumberFormat numberFormat = NumberFormat.getNumberInstance();
 			return  Collections.unmodifiableCollection(results);
 		}
 		
-		if( ! model.hasGeoCoordinates() ){
-			 assignGeoKoordinates(model);
-		}
-		
 		results.add(geoCoordinates.location());
 		if( model.hasGeoCoordinates() ) {
 			results.add(String.format("%s km, %s°" , numberFormat.format(distanceCalculator.distance(model.getGeoCoordinates(), geoCoordinates)),  numberFormat.format(distanceCalculator.angle(model.getGeoCoordinates(), geoCoordinates) )));

@@ -349,8 +349,9 @@ class PersonSearchView extends CustomComponent implements View {
 
 	@Override
 	public void enter(final ViewChangeEvent event) {
-		personSearchController.assignPersons(model);
 		personSearchController.assignGeoKoordinates(model);
+		personSearchController.assignPersons(model);
+		
 	}
 
 }

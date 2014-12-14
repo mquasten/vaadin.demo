@@ -96,13 +96,7 @@ public class PersonSearchControllerTest {
 		final List<String> results = new ArrayList<>();
 		results.addAll(personSearchController.geoInfos(geoCoordinates, model, Locale.GERMAN));
 		Assert.assertEquals(2, results.size());
-		final Person defaultPerson = Mockito.mock(Person.class);
-		Mockito.when(personService.defaultPerson()).thenReturn(defaultPerson);
-		Mockito.when(defaultPerson.hasGeoCoordinates()).thenReturn(true);
-		final Address defaultAddress = Mockito.mock(Address.class);
-		Mockito.when(defaultPerson.address()).thenReturn(defaultAddress);
-		final GeoCoordinates defaultCoordinates = Mockito.mock(GeoCoordinates.class);
-		Mockito.when(defaultAddress.coordinates()).thenReturn(defaultCoordinates);
+	
 		Assert.assertEquals(COORDINATES, results.get(0));
 		Assert.assertEquals("2216,00 km, 89,00°", results.get(1));
 		results.clear();
@@ -112,8 +106,6 @@ public class PersonSearchControllerTest {
 		Assert.assertEquals(COORDINATES, results.get(0));
 		
 		Assert.assertTrue(personSearchController.geoInfos(null, model, Locale.GERMAN).isEmpty());
-		
-		Mockito.verify(model, Mockito.times(1)).setGeoCoordinates(defaultCoordinates);
 	}
 
 }
