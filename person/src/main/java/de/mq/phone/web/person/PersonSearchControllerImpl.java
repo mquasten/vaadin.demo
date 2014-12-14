@@ -83,8 +83,14 @@ private final NumberFormat numberFormat = NumberFormat.getNumberInstance();
 	@Override
 	public final Collection<String> geoInfos(final GeoCoordinates geoCoordinates, final PersonSearchModel model, final Locale locale) {
 		final Collection<String> results = new ArrayList<>();
+		
+		
 		if( geoCoordinates==null){
 			return  Collections.unmodifiableCollection(results);
+		}
+		
+		if( ! model.hasGeoCoordinates() ){
+			 assignGeoKoordinates(model);
 		}
 		
 		results.add(geoCoordinates.location());

@@ -4,11 +4,13 @@
 	<groupId>de.mq</groupId>
 	<artifactId>addressbook</artifactId>
 	<packaging>war</packaging>
+	
 	<version>1.0</version>
 
 	<name>Vaadin Web Application</name>
 	<url>http://maven.apache.org</url>
 	<properties>
+		<propDir>dev</propDir>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<vaadin.version>7.3.0</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
@@ -16,7 +18,7 @@
 		<mockito.version>1.9.5</mockito.version>
 		<spring.version>4.1.0.RELEASE</spring.version>
 
-			<jackson-mapper-asl.version>1.9.11</jackson-mapper-asl.version>
+		<jackson-mapper-asl.version>1.9.11</jackson-mapper-asl.version>
 	</properties>
 	<repositories>
 		<repository>
@@ -99,34 +101,34 @@
 			<artifactId>spring-web</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>${jackson-mapper-asl.version}</version>
-			
+
 		</dependency>
 
 
-	<dependency>
-		<groupId>com.fasterxml.jackson.core</groupId>
-		<artifactId>jackson-core</artifactId>
-		<version>2.2.2</version>
-	</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>2.2.2</version>
+		</dependency>
 
-	<dependency>
-		<groupId>com.fasterxml.jackson.core</groupId>
-		<artifactId>jackson-databind</artifactId>
-		<version>2.2.2</version>
-	</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.2.2</version>
+		</dependency>
 
-	<dependency>
-		<groupId>com.fasterxml.jackson.core</groupId>
-		<artifactId>jackson-annotations</artifactId>
-		<version>2.2.2</version>
-	</dependency>
-		
-		
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>2.2.2</version>
+		</dependency>
+
+
 
 		<!-- mongodb java driver -->
 		<dependency>
@@ -273,19 +275,57 @@
 						</lifecycleMappingMetadata>
 					</configuration>
 				</plugin>
-
-
-
+				<plugin>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.6</version>
+					<executions>
+						<execution>
+							<id>copy-resources</id>
+							<phase>validate</phase>
+							
+							<goals>
+								<goal>copy-resources</goal>
+							</goals>
+							<configuration>
+								<overwrite>true</overwrite>
+								<outputDirectory>src/main/resources</outputDirectory>
+								
+								<resources>
+									<resource>
+										<directory>src/main/resources/${propDir}</directory>
+										<filtering>true</filtering>
+										<includes>
+											<include>*.properties</include>
+										</includes>
+										<excludes>
+											<exclude>prod/**</exclude>
+											<exclude>dev/**</exclude>
+										</excludes>
+									
+									</resource>
+								</resources>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
 
 			</plugins>
 		</pluginManagement>
 	</build>
 
-	<reporting>
-		<plugins>
+	<profiles>
+		<profile>
+
+			<id>prod</id>
+			<properties>
+				<propDir>prod</propDir>
+			</properties>
+
+		</profile>
 
 
-		</plugins>
-	</reporting>
+
+
+	</profiles>
 
 </project>
