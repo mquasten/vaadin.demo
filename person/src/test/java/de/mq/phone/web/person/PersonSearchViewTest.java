@@ -75,9 +75,11 @@ public class PersonSearchViewTest {
 	private final PersonSearchModel personSearchModel = Mockito.mock(PersonSearchModel.class);
 	private final PersonSearchController personSearchController = Mockito.mock(PersonSearchController.class);
 	private final UserModel userModel = Mockito.mock(UserModel.class);
+	
+	private final PagerView pagerView = Mockito.mock(PagerView.class);
 
 	private final ViewNav viewNav = Mockito.mock(ViewNav.class);
-	private final PersonSearchView personSearchView = new PersonSearchView(personSearchModel, personSearchController, messages, userModel, personListContainerConverter, itemToPersonSearchSetConverter, new StringCollectionToContainerConverter(), viewNav, Mockito.mock(MainMenuBarView.class), bindingResultsToFieldGroupMapper);
+	private final PersonSearchView personSearchView = new PersonSearchView(personSearchModel, personSearchController, messages, userModel, personListContainerConverter, itemToPersonSearchSetConverter, new StringCollectionToContainerConverter(), viewNav, Mockito.mock(MainMenuBarView.class), bindingResultsToFieldGroupMapper, pagerView);
 
 	@SuppressWarnings("rawtypes")
 	private final ArgumentCaptor<Observer> localeObserverCaptor = ArgumentCaptor.forClass(Observer.class);

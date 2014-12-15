@@ -82,10 +82,12 @@ class PersonSearchView extends CustomComponent implements View {
 	private final ViewNav viewNav;
 	private final MainMenuBarView mainMenuBarView;
 	
+	private final PagerView pagerView;
+	
 	private final BindingResultsToFieldGroupMapper bindingResultsToFieldGroupMapper;
 
 	@Autowired
-	PersonSearchView(final PersonSearchModel model, final PersonSearchController personSearchController, final MessageSource messages, final UserModel userModel, @ConverterQualifier(ConverterQualifier.Type.PersonList2Container) final Converter<Collection<Person>, Container> personListContainerConverter, @ConverterQualifier(ConverterQualifier.Type.Item2PersonSearchSet) final Converter<Item, Collection<Object>> itemToPersonSearchSetConverter, @ConverterQualifier(ConverterQualifier.Type.StringList2Container) final Converter<Collection<String>, Container> stringCollection2ContainerConverter, final ViewNav viewNav, final MainMenuBarView mainMenuBarView, final BindingResultsToFieldGroupMapper bindingResultsToFieldGroupMapper) {
+	PersonSearchView(final PersonSearchModel model, final PersonSearchController personSearchController, final MessageSource messages, final UserModel userModel, @ConverterQualifier(ConverterQualifier.Type.PersonList2Container) final Converter<Collection<Person>, Container> personListContainerConverter, @ConverterQualifier(ConverterQualifier.Type.Item2PersonSearchSet) final Converter<Item, Collection<Object>> itemToPersonSearchSetConverter, @ConverterQualifier(ConverterQualifier.Type.StringList2Container) final Converter<Collection<String>, Container> stringCollection2ContainerConverter, final ViewNav viewNav, final MainMenuBarView mainMenuBarView, final BindingResultsToFieldGroupMapper bindingResultsToFieldGroupMapper, final PagerView pagerView) {
 		this.model = model;
 		this.personSearchController = personSearchController;
 		this.messages = messages;
@@ -96,10 +98,11 @@ class PersonSearchView extends CustomComponent implements View {
 		this.viewNav = viewNav;
 		this.mainMenuBarView=mainMenuBarView;
 		this.bindingResultsToFieldGroupMapper=bindingResultsToFieldGroupMapper;
+		this.pagerView=pagerView;
 	}
 
 	PersonSearchView() {
-		this(null, null, null, null, null, null, null, null, null, null);
+		this(null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private static final long serialVersionUID = 1L;
@@ -174,7 +177,7 @@ class PersonSearchView extends CustomComponent implements View {
 
 		tablePanel.setContent(tableLayout);
 		final HorizontalLayout gridLayout = new HorizontalLayout();
-
+		
 		GridLayout buttonLayout = new GridLayout(2, 1);
 		buttonLayout.setSpacing(true);
 		buttonLayout.setMargin(true);
@@ -205,6 +208,7 @@ class PersonSearchView extends CustomComponent implements View {
 		languageLaylout.addComponent(languageBox);
 		languageBox.setNullSelectionAllowed(false);
 
+		
 		languageBox.setNewItemsAllowed(false);
 
 		languageBox.setContainerDataSource(new BeanItemContainer<Locale>(Locale.class, userModel.getSupportedLocales()));
@@ -212,21 +216,28 @@ class PersonSearchView extends CustomComponent implements View {
 		languageBox.setImmediate(true);
 
 		boxLayout.addComponent(languageLaylout);
-
+		
 		gridLayout.addComponent(boxLayout);
-
+ 
+		
 		languageBinder.bind(languageBox, "locale");
 
 		languageBox.addValueChangeListener(event -> commitBinder(languageBinder));
 
+		pagerView.setSpacing(true);
+		gridLayout.addComponent(pagerView);	
+		
+		gridLayout.setComponentAlignment(pagerView, Alignment.MIDDLE_LEFT);
+		
 		tableLayout.addComponent(gridLayout);
+	
+		
 
 		mainLayoout.addComponent(tablePanel);
 		mainLayoout.setMargin(true);
 		mainLayoout.setSpacing(true);
 
 		final Table table = new Table();
-
 		table.setSelectable(true);
 		tableLayout.addComponent(table);
 		table.setSizeFull();
