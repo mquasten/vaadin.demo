@@ -20,6 +20,7 @@ import de.mq.phone.domain.person.PersonStringAware;
 class PersonServiceImpl implements PersonService {
 	
 	static final UUID DEFAULT_PERSON_ID = new UUID(19680528L, 19680528L);
+	static Number PAGE_SIZE = 5L;
 	private final  PersonRepository personRepository ; 
 	final CoordinatesRepository coordinatesRepository;
 	@Autowired
@@ -36,6 +37,12 @@ class PersonServiceImpl implements PersonService {
 	public final  List<Person>  persons(final PersonStringAware person, final AddressStringAware address, final Contact contact, Circle circle) {
 		return personRepository.forCriterias(person,address, contact, circle);
 		
+	}
+	
+	@Override
+	public final  Paging paging(final PersonStringAware person, final AddressStringAware address, final Contact contact, Circle circle) {
+		final Number counter = personRepository.countFor(person, address, contact, circle);
+		return new SimpleResultSetPagingImpl(PAGE_SIZE, counter.longValue());
 	}
 	
 	@Override

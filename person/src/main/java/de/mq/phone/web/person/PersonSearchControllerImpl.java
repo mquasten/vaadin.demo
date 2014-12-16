@@ -19,6 +19,7 @@ import org.springframework.validation.Validator;
 
 
 
+
 import de.mq.phone.domain.person.AddressStringAware;
 import de.mq.phone.domain.person.Contact;
 import de.mq.phone.domain.person.GeoCoordinates;
@@ -26,6 +27,7 @@ import de.mq.phone.domain.person.Person;
 import de.mq.phone.domain.person.PersonService;
 import de.mq.phone.domain.person.PersonStringAware;
 import de.mq.phone.domain.person.support.DistanceCalculator;
+import de.mq.phone.domain.person.support.Paging;
 import de.mq.phone.web.person.ValidatorQualifier.Type;
 
 @Controller()
@@ -37,6 +39,7 @@ private final PersonService personService;
 private final DistanceCalculator distanceCalculator;
 private final Validator validator; 
 private final NumberFormat numberFormat = NumberFormat.getNumberInstance();
+private Paging paging;
 	
 	@Autowired
 	PersonSearchControllerImpl(final PersonService personService, DistanceCalculator distanceCalculator , @ValidatorQualifier(Type.Distance) final Validator validator) {
@@ -57,6 +60,7 @@ private final NumberFormat numberFormat = NumberFormat.getNumberInstance();
 		final Contact contact = model.getSearchCriteriaContact();
 		final AddressStringAware address = model.getSearchCriteriaAddress();
 		final Circle circle = model.getSearchCriteriaDistance();
+		paging=personService.paging(person, address, contact, circle);
 		model.setPersons(personService.persons(person,address, contact, circle));
 	}
 	

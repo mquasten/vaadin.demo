@@ -105,6 +105,16 @@ public class PersonMongoRepositoryImpl implements PersonRepository {
 	 */
 	@Override
 	public final List<Person>forCriterias(final PersonStringAware person, final AddressStringAware address, final Contact contact, final Circle circle) {
+		return Collections.unmodifiableList(mongoOperations.find(query(person, address, contact, circle), Person.class, "person"));
+	
+	}
+	
+	@Override
+	public final Number countFor(final PersonStringAware person, final AddressStringAware address, final Contact contact, final Circle circle) {
+		return Long.valueOf(mongoOperations.count(query(person, address, contact, circle), "person"));
+	}
+
+	private Query query(final PersonStringAware person, final AddressStringAware address, final Contact contact, final Circle circle) {
 		final Query query = new Query();
 		
 		if( StringUtils.hasText(person.person())){
@@ -122,9 +132,7 @@ public class PersonMongoRepositoryImpl implements PersonRepository {
 		if( circle.getRadius().getValue() >= 0) {
 			query.addCriteria( new Criteria("address.geoCoordinates.location").withinSphere(circle));
 		}
-		
-		return Collections.unmodifiableList(mongoOperations.find(query, Person.class, "person"));
-	
+		return query;
 	}
 	
 	@Override

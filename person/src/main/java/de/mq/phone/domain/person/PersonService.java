@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.data.geo.Circle;
 
+import de.mq.phone.domain.person.support.Paging;
+
 
 public interface PersonService {
 
@@ -16,6 +18,8 @@ public interface PersonService {
 	void deletePerson(final String id);
 
 	Person defaultPerson();
+
+	Paging paging(final PersonStringAware person, final AddressStringAware address, final Contact contact, final Circle circle);
 	
 
 }

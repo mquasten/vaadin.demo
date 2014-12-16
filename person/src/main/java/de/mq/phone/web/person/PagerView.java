@@ -2,6 +2,7 @@ package de.mq.phone.web.person;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -16,8 +17,13 @@ import com.vaadin.ui.Label;
 public class PagerView extends HorizontalLayout{
 
 	
-	private static final long serialVersionUID = 1L;
+ private static final long serialVersionUID = 1L;
 	
+ private final PersonSearchModel personSearchModel;
+ @Autowired
+ PagerView( final PersonSearchModel personSearchModel) {
+	 this.personSearchModel=personSearchModel;
+ }
 	
  @PostConstruct
  final  void init() {
@@ -42,6 +48,12 @@ public class PagerView extends HorizontalLayout{
 	 final Button backEndButton = new Button();
 	 backEndButton.setIcon(new ThemeResource("arrow_out.png"));
 	 addComponent(backEndButton);
+	 
+	 
+	 nextButton.addClickListener(event -> { 
+		 
+		 System.out.println(personSearchModel.getSearchCriteriaAddress().address());
+	 });
 	 
  }
 

@@ -13,13 +13,13 @@ public interface PersonRepository {
 
 	void save(Person person);
 
-	//List<Person> forCriterias(final PersonStringAware person, final AddressStringAware address, Contact contact);
-
 	Person forId(final String id);
 
 	void delete(final String id);
 
-	List<Person> forCriterias(PersonStringAware person, AddressStringAware address, Contact contact, Circle circle);
+	List<Person> forCriterias(final PersonStringAware person, final AddressStringAware address, final Contact contact, final Circle circle);
+
+	Number countFor(final PersonStringAware person, final AddressStringAware address, final Contact contact, final Circle circle);
 	
 
 	
