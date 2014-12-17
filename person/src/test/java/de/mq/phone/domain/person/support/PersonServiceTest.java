@@ -20,6 +20,7 @@ public class PersonServiceTest {
 	private static final String ID = "19680528";
 	private final PersonRepository personRepository = Mockito.mock(PersonRepository.class);
 	private final CoordinatesRepository coordinatesRepository = Mockito.mock(CoordinatesRepository.class);
+	private final Paging paging = Mockito.mock(Paging.class);
 
 	@Test
 	public final void persons() {
@@ -30,8 +31,8 @@ public class PersonServiceTest {
 		final Circle circle = Mockito.mock(Circle.class);
 		final List<Person> persons = new ArrayList<>();
 		persons.add(Mockito.mock(Person.class));
-		Mockito.when(personRepository.forCriterias(person, address, contact, circle)).thenReturn(persons);
-		Assert.assertEquals(persons, personService.persons(person, address, contact, circle));
+		Mockito.when(personRepository.forCriterias(person, address, contact, circle, paging)).thenReturn(persons);
+		Assert.assertEquals(persons, personService.persons(person, address, contact, circle, paging));
 
 	}
 

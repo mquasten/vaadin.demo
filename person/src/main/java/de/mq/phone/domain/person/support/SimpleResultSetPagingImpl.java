@@ -73,7 +73,7 @@ public class SimpleResultSetPagingImpl implements Paging {
 	 */
 	@Override
 	public final Number firstRow() {
-		return (pageSize.longValue() - 1L) * pageSize.longValue();
+		return (currentPage.longValue() - 1L) * pageSize.longValue();
 	}
 
 	/* (non-Javadoc)

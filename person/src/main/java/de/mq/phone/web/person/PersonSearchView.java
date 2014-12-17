@@ -314,7 +314,7 @@ class PersonSearchView extends CustomComponent implements View {
 		table.setVisibleColumns(new Object[] { PERSON, CONTACTS, ADDRESS, BANKING_ACCOUNT, COORDINATES });
 
 		Arrays.stream(table.getVisibleColumns()).forEach(col -> table.setColumnExpandRatio(col, 1f));
-
+		table.setSortEnabled(false);
 	}
 	
 	@SuppressWarnings("unchecked")

@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.geo.Circle;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -104,8 +106,15 @@ public class PersonMongoRepositoryImpl implements PersonRepository {
 	 * @see de.mq.phone.domain.person.support.PersonPepository#forCriterias(de.mq.phone.domain.person.Person, de.mq.phone.domain.person.Contact)
 	 */
 	@Override
-	public final List<Person>forCriterias(final PersonStringAware person, final AddressStringAware address, final Contact contact, final Circle circle) {
-		return Collections.unmodifiableList(mongoOperations.find(query(person, address, contact, circle), Person.class, "person"));
+	public final List<Person>forCriterias(final PersonStringAware person, final AddressStringAware address, final Contact contact, final Circle circle, final Paging paging) {
+		final Query query = query(person, address, contact, circle);
+		query.limit(paging.pageSize().intValue());
+		System.out.println("***************");
+		System.out.println(("PageSize:" +paging.pageSize().intValue()));
+		System.out.println("FirstRow:" + paging.firstRow().intValue());
+		query.with(new Sort(new Order("person")));
+		query.skip(paging.firstRow().intValue());
+		return Collections.unmodifiableList(mongoOperations.find(query, Person.class, "person"));
 	
 	}
 	
@@ -132,6 +141,7 @@ public class PersonMongoRepositoryImpl implements PersonRepository {
 		if( circle.getRadius().getValue() >= 0) {
 			query.addCriteria( new Criteria("address.geoCoordinates.location").withinSphere(circle));
 		}
+	
 		return query;
 	}
 	

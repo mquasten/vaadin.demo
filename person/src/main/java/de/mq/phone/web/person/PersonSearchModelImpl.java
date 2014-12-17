@@ -20,7 +20,9 @@ import de.mq.phone.domain.person.Contact;
 import de.mq.phone.domain.person.GeoCoordinates;
 import de.mq.phone.domain.person.Person;
 import de.mq.phone.domain.person.PersonStringAware;
+import de.mq.phone.domain.person.support.Paging;
 import de.mq.phone.domain.person.support.PersonEntities;
+import de.mq.phone.domain.person.support.SimpleResultSetPagingImpl;
 import de.mq.vaadin.util.SubjectImpl;
 
 @Component
@@ -33,6 +35,8 @@ class PersonSearchModelImpl extends SubjectImpl<PersonSearchModel, PersonSearchM
 	private GeoCoordinates geoCoordinates ; 
 	
 	private final List<Person> persons;
+	private Paging paging = new SimpleResultSetPagingImpl(0, 0);
+	
 	
 	static final Distance UNDEFINED_DISTANCE = undefinedDistance();
 	static final Circle UNDEFINED_CIRCLE = undefinedCircle();
@@ -137,8 +141,19 @@ class PersonSearchModelImpl extends SubjectImpl<PersonSearchModel, PersonSearchM
 		return this.geoCoordinates!=null;
 	}
 	
+	@Override
 	public final GeoCoordinates getGeoCoordinates() {
 		return geoCoordinates;
 	}
+	@Override
+	public final Paging getPaging() {
+		return paging;
+	}
+
+	@Override
+	public final  void setPaging(final Paging paging) {
+		this.paging = paging;
+	}
+
 
 }

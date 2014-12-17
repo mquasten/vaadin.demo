@@ -9,7 +9,7 @@ import de.mq.phone.domain.person.support.Paging;
 
 public interface PersonService {
 
-	List<Person> persons(final PersonStringAware person,final AddressStringAware address, final Contact contact, final Circle distance);
+	List<Person> persons(final PersonStringAware person,final AddressStringAware address, final Contact contact, final Circle distance, final Paging paging);
 
 	void save(final Person person);
 

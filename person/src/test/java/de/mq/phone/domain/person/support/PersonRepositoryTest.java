@@ -102,7 +102,9 @@ public class PersonRepositoryTest {
 	@Test
 	public final void forCriterias() {
 		final PersonRepository personRepository = new PersonMongoRepositoryImpl(mongoOperations);
-		
+		final Paging paging = Mockito.mock(Paging.class);
+		Mockito.when(paging.pageSize()).thenReturn(PersonServiceImpl.PAGE_SIZE);
+		Mockito.when(paging.firstRow()).thenReturn(0);
 		final Person person = Mockito.mock(Person.class);
 		Mockito.when(person.person()).thenReturn(FIRSTNAME);
 		
@@ -123,7 +125,7 @@ public class PersonRepositoryTest {
 		Mockito.when(circle.getRadius()).thenReturn(distance);
 		Mockito.when(circle.getCenter()).thenReturn(point);
 		Mockito.when(mongoOperations.find(queryCaptor.capture(), classCaptor.capture(), collectionCaptor.capture())).thenReturn(persons);
-		Assert.assertEquals(persons, personRepository.forCriterias(person, address, contact, circle));
+		Assert.assertEquals(persons, personRepository.forCriterias(person, address, contact, circle, paging));
 		
 		Assert.assertEquals(Person.class, classCaptor.getValue());
 		Assert.assertEquals("person", collectionCaptor.getValue());
@@ -152,7 +154,9 @@ public class PersonRepositoryTest {
 	@Test
 	public final void forCriteriasNoCriteria() {
 		final PersonRepository personRepository = new PersonMongoRepositoryImpl(mongoOperations);
-		
+		final Paging paging = Mockito.mock(Paging.class);
+		Mockito.when(paging.pageSize()).thenReturn(PersonServiceImpl.PAGE_SIZE);
+		Mockito.when(paging.firstRow()).thenReturn(0L);
 		final Person person = Mockito.mock(Person.class);
 		final Address address = Mockito.mock(Address.class);
 		final Contact contact = Mockito.mock(Contact.class);
@@ -171,7 +175,7 @@ public class PersonRepositoryTest {
 		Mockito.when(mongoOperations.find(queryCaptor.capture(), classCaptor.capture(), collectionCaptor.capture())).thenReturn(persons);
 		
 		
-		Assert.assertEquals(persons, personRepository.forCriterias(person, address, contact, circle));
+		Assert.assertEquals(persons, personRepository.forCriterias(person, address, contact, circle, paging));
 		
 		final Map<String, Criteria> results = (Map<String, Criteria>) ReflectionTestUtils.getField(queryCaptor.getValue(), "criteria");
 		Assert.assertTrue(results.isEmpty());

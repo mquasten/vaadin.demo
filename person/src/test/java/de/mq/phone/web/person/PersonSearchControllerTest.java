@@ -22,6 +22,7 @@ import de.mq.phone.domain.person.Person;
 import de.mq.phone.domain.person.PersonService;
 import de.mq.phone.domain.person.PersonStringAware;
 import de.mq.phone.domain.person.support.DistanceCalculator;
+import de.mq.phone.domain.person.support.Paging;
 
 public class PersonSearchControllerTest {
 	
@@ -30,10 +31,11 @@ public class PersonSearchControllerTest {
 	private PersonService personService = Mockito.mock(PersonService.class);
 	private DistanceCalculator distanceCalculator = Mockito.mock(DistanceCalculator.class);
 	private final PersonSearchController personSearchController = new PersonSearchControllerImpl(personService, distanceCalculator, validator);
-	
+	private Paging paging = Mockito.mock(Paging.class);
 	@Test
 	public final void assign() {
 		final PersonSearchModel model = Mockito.mock(PersonSearchModel.class);
+		Mockito.when(model.getPaging()).thenReturn(paging);
 		final PersonStringAware person = Mockito.mock(PersonStringAware.class);
 		final Contact contact = Mockito.mock(Contact.class);
 		final AddressStringAware addressStringAware = Mockito.mock(AddressStringAware.class);
@@ -44,7 +46,7 @@ public class PersonSearchControllerTest {
 		Mockito.when(model.getSearchCriteriaDistance()).thenReturn(circle);
 		final List<Person> persons = new ArrayList<>();
 		persons.add(Mockito.mock(Person.class));
-		Mockito.when(personService.persons(person, addressStringAware, contact,circle)).thenReturn(persons);
+		Mockito.when(personService.persons(person, addressStringAware, contact,circle, paging)).thenReturn(persons);
 		personSearchController.assignPersons(model);
 		Mockito.verify(model, Mockito.times(1)).setPersons(persons);
 	}

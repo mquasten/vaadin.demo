@@ -1,5 +1,6 @@
 package de.mq.phone.domain.person.support;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import org.junit.Ignore;
@@ -14,6 +15,7 @@ import org.springframework.data.geo.Point;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.ReflectionUtils;
 
 import de.mq.phone.domain.person.Address;
 import de.mq.phone.domain.person.Contact;
@@ -27,6 +29,8 @@ public class PersonRepositoryIntegrationTest {
 	
 	@Autowired
 	private PersonMongoRepositoryImpl personMongoRepository;
+	
+	private Paging paging = new SimpleResultSetPagingImpl(Integer.MAX_VALUE, Integer.MAX_VALUE);
 	
 	
 	
@@ -73,12 +77,11 @@ public class PersonRepositoryIntegrationTest {
 	
 	
 	@Test
-  @Ignore
 	public final void forCriteria() {
 		final Contact contact = new PhoneImpl("19680528");
 		final Person person = new PersonImpl("Minogue ", "Kylie");
 		final Address address = new AddressImpl(null, "Wegberg" , null , null);
-		List<Person> results = personMongoRepository.forCriterias(person, address, contact, null);
+		List<Person> results = personMongoRepository.forCriterias(person, address, contact, undefinedCircle(), paging);
 		System.out.println(results.size());
 		for( final Person result : results){
 			System.out.println("-------------------------------------------");
@@ -100,11 +103,28 @@ public class PersonRepositoryIntegrationTest {
 		final Contact contact = BeanUtils.instantiateClass(EMailContact.class);
 		final Address address = BeanUtils.instantiateClass(AddressImpl.class);
 		final Circle  circle = new Circle(new Point(6.2829833d ,  51.166913d), new Distance(67.1d, Metrics.KILOMETERS));
-		final List<Person> results = personMongoRepository.forCriterias(person, address, contact,circle);
+		final List<Person> results = personMongoRepository.forCriterias(person, address, contact,circle, paging);
 	//	System.out.println(results.iterator().next().address().address());
 		System.out.println(results.size());
 		System.out.println(results.iterator().next().person());
 		
+	}
+	
+	private  Circle undefinedCircle() {
+		final Circle circle = new Circle(new Point(0d ,  0d ), new Distance(0)); 
+		final Field field = ReflectionUtils.findField(Circle.class, "radius");
+		field.setAccessible(true);
+		ReflectionUtils.setField(field, circle, undefinedDistance());
+		return circle;
+		
+	}
+	
+	private  Distance undefinedDistance() {
+		final Distance distance =  new Distance(0, Metrics.KILOMETERS);
+		final Field field = ReflectionUtils.findField(Distance.class, "value");
+		field.setAccessible(true);
+		ReflectionUtils.setField(field, distance, -1d);
+		return distance;
 	}
 	
 	

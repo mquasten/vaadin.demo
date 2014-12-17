@@ -34,8 +34,8 @@ class PersonServiceImpl implements PersonService {
 	 * @see de.mq.phone.domain.person.support.PersonService#persons(de.mq.phone.domain.person.Person, de.mq.phone.domain.person.Contact)
 	 */
 	@Override
-	public final  List<Person>  persons(final PersonStringAware person, final AddressStringAware address, final Contact contact, Circle circle) {
-		return personRepository.forCriterias(person,address, contact, circle);
+	public final  List<Person>  persons(final PersonStringAware person, final AddressStringAware address, final Contact contact, Circle circle,  final Paging paging) {
+		return personRepository.forCriterias(person,address, contact, circle, paging);
 		
 	}
 	

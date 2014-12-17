@@ -9,6 +9,7 @@ import de.mq.phone.domain.person.Contact;
 import de.mq.phone.domain.person.GeoCoordinates;
 import de.mq.phone.domain.person.Person;
 import de.mq.phone.domain.person.PersonStringAware;
+import de.mq.phone.domain.person.support.Paging;
 import de.mq.vaadin.util.Subject;
 
 interface PersonSearchModel extends Subject<PersonSearchModel, PersonSearchModel.EventType > {
@@ -37,6 +38,10 @@ interface PersonSearchModel extends Subject<PersonSearchModel, PersonSearchModel
 	boolean hasGeoCoordinates();
 	
 	GeoCoordinates getGeoCoordinates();
+
+	Paging getPaging();
+
+	void setPaging(final Paging paging);
 
 	
 

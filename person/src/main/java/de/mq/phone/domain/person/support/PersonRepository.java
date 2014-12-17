@@ -17,7 +17,7 @@ public interface PersonRepository {
 
 	void delete(final String id);
 
-	List<Person> forCriterias(final PersonStringAware person, final AddressStringAware address, final Contact contact, final Circle circle);
+	List<Person> forCriterias(final PersonStringAware person, final AddressStringAware address, final Contact contact, final Circle circle, final Paging paging);
 
 	Number countFor(final PersonStringAware person, final AddressStringAware address, final Contact contact, final Circle circle);
 	
