@@ -153,6 +153,7 @@ class PersonSearchModelImpl extends SubjectImpl<PersonSearchModel, PersonSearchM
 	@Override
 	public final  void setPaging(final Paging paging) {
 		this.paging = paging;
+		notifyObservers(EventType.PagingChanges);
 	}
 
 

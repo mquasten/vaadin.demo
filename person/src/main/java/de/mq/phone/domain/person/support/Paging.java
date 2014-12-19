@@ -2,22 +2,17 @@ package de.mq.phone.domain.person.support;
 
 public interface Paging {
 
-	public  boolean hasNextPage();
-
-	public  boolean hasPreviousPage();
-
-	public  void inc();
-
-	public  void dec();
-
-	public  void first();
-
-	public void last();
-
-	public  Number firstRow();
-
-	public  Number pageSize();
-
+	boolean hasNextPage();
+	boolean isEnd();
+	boolean hasPreviousPage();
+	boolean isBegin();
+	boolean inc();
+	void dec();
+	void first();
+	void last();
+	Number firstRow();
+	Number pageSize();
 	Number maxPages();
+	Number currentPage();
 
 }

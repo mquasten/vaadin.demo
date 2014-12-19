@@ -20,9 +20,11 @@ public class PagerView extends HorizontalLayout{
  private static final long serialVersionUID = 1L;
 	
  private final PersonSearchModel personSearchModel;
+ private final PersonSearchController personSearchController;
  @Autowired
- PagerView( final PersonSearchModel personSearchModel) {
+ PagerView( final PersonSearchModel personSearchModel, final PersonSearchController personSearchController) {
 	 this.personSearchModel=personSearchModel;
+	 this.personSearchController=personSearchController;
  }
 	
  @PostConstruct
@@ -39,7 +41,7 @@ public class PagerView extends HorizontalLayout{
 	// nextEndButton.setStyleName(BaseTheme.BUTTON_LINK);
 	 addComponent(nextEndButton);
 	 final Label pageLabel = new Label();
-	 pageLabel.setValue("Seite 1/1");
+	
 	 addComponent(pageLabel);
 	 setComponentAlignment(pageLabel, Alignment.MIDDLE_CENTER);
 	 final Button backButton = new Button();
@@ -49,11 +51,29 @@ public class PagerView extends HorizontalLayout{
 	 backEndButton.setIcon(new ThemeResource("arrow_out.png"));
 	 addComponent(backEndButton);
 	 
+	 nextButton.setDisableOnClick(true);
+	 nextEndButton.setDisableOnClick(true);
+	 backButton.setDisableOnClick(true);
+	 backEndButton.setDisableOnClick(true);
 	 
-	 nextButton.addClickListener(event -> { 
-		 
-		 System.out.println(personSearchModel.getSearchCriteriaAddress().address());
-	 });
+	 nextButton.setEnabled(false);
+	 backButton.setEnabled(false);
+	 nextEndButton.setEnabled(false);
+	 backEndButton.setEnabled(false);
+	
+	
+	
+	 nextButton.addClickListener(event -> { personSearchModel.getPaging().inc(); personSearchController.page(personSearchModel);});
+	 backButton.addClickListener(event -> { personSearchModel.getPaging().dec(); personSearchController.page(personSearchModel);});
+	 
+	 personSearchModel.register(event -> { 
+		 nextButton.setEnabled(personSearchModel.getPaging().hasNextPage());
+		 nextEndButton.setEnabled(! personSearchModel.getPaging().isEnd());
+		 backButton.setEnabled(personSearchModel.getPaging().hasPreviousPage());
+		 backEndButton.setEnabled(! personSearchModel.getPaging().isBegin());
+		
+		 pageLabel.setValue( String.format("%s/%s", personSearchModel.getPaging().currentPage(),  personSearchModel.getPaging().maxPages()));
+	 }, PersonSearchModel.EventType.PagingChanges);
 	 
  }
 

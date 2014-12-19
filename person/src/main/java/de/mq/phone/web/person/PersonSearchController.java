@@ -20,7 +20,7 @@ interface PersonSearchController {
 	
 	Collection<String> geoInfos(final GeoCoordinates geoCoordinates, final PersonSearchModel model, final Locale locale);
 
-	
+	void page(final PersonSearchModel model);
 
 
 }

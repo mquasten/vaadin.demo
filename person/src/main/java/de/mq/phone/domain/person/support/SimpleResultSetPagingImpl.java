@@ -34,11 +34,12 @@ public class SimpleResultSetPagingImpl implements Paging {
 	 * @see de.mq.phone.domain.person.support.Paging#inc()
 	 */
 	@Override
-	public final void inc() {
+	public final boolean  inc() {
 		if (!hasNextPage()) {
-			return;
+			return false;
 		}
 		currentPage = new Long(currentPage.longValue() + 1L);
+		return true;
 	}
 
 	/* (non-Javadoc)
@@ -87,5 +88,20 @@ public class SimpleResultSetPagingImpl implements Paging {
 	@Override
 	public final Number maxPages() {
 		 return maxPages;
+	}
+
+	@Override
+	public final Number currentPage() {
+		return currentPage;
+	}
+
+	@Override
+	public boolean isEnd() {
+		return currentPage.longValue() >= maxPages.longValue();
+	}
+
+	@Override
+	public boolean isBegin() {
+		return currentPage.longValue() <= 1L;
 	}
 }

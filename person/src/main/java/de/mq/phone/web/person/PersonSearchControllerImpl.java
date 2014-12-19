@@ -22,6 +22,7 @@ import de.mq.phone.domain.person.Person;
 import de.mq.phone.domain.person.PersonService;
 import de.mq.phone.domain.person.PersonStringAware;
 import de.mq.phone.domain.person.support.DistanceCalculator;
+import de.mq.phone.web.person.PersonSearchModel.EventType;
 import de.mq.phone.web.person.ValidatorQualifier.Type;
 
 @Controller()
@@ -57,6 +58,17 @@ private final NumberFormat numberFormat = NumberFormat.getNumberInstance();
 		model.setPaging(personService.paging(person, address, contact, circle));
 		model.setPersons(personService.persons(person,address, contact, circle, model.getPaging()));
 	}
+	
+	public  final void page(final PersonSearchModel model) {
+		final PersonStringAware person = model.getSearchCriteriaPerson();
+		final Contact contact = model.getSearchCriteriaContact();
+		final AddressStringAware address = model.getSearchCriteriaAddress();
+		final Circle circle = model.getSearchCriteriaDistance();
+		model.setPersons(personService.persons(person,address, contact, circle, model.getPaging()));
+		model.notifyObservers(EventType.PagingChanges);
+	}
+	
+	
 	
 	@Override
 	public final void assignGeoKoordinates(final PersonSearchModel model) {

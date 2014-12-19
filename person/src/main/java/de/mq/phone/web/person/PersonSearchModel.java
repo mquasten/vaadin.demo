@@ -16,7 +16,8 @@ interface PersonSearchModel extends Subject<PersonSearchModel, PersonSearchModel
 
 	enum EventType {
 		PersonsChanges,
-		HomeLocationChanges;
+		HomeLocationChanges,
+		PagingChanges;
 	}
 	
 	void setPersons(List<Person> persons);
