@@ -42,6 +42,7 @@ import com.vaadin.ui.themes.Reindeer;
 
 import de.mq.phone.domain.person.GeoCoordinates;
 import de.mq.phone.domain.person.Person;
+import de.mq.phone.domain.person.PersonService;
 import de.mq.vaadin.util.BindingResultsToFieldGroupMapper;
 import de.mq.vaadin.util.ViewNav;
 
@@ -238,6 +239,7 @@ class PersonSearchView extends CustomComponent implements View {
 		mainLayoout.setSpacing(true);
 
 		final Table table = new Table();
+		table.setPageLength(PersonService.PAGE_SIZE.intValue()*2);
 		table.setSelectable(true);
 		tableLayout.addComponent(table);
 		table.setSizeFull();

@@ -35,7 +35,7 @@ class PersonSearchModelImpl extends SubjectImpl<PersonSearchModel, PersonSearchM
 	private GeoCoordinates geoCoordinates ; 
 	
 	private final List<Person> persons;
-	private Paging paging = new SimpleResultSetPagingImpl(0, 0);
+	private SimpleResultSetPagingImpl paging = new SimpleResultSetPagingImpl();
 	
 	
 	static final Distance UNDEFINED_DISTANCE = undefinedDistance();
@@ -152,9 +152,32 @@ class PersonSearchModelImpl extends SubjectImpl<PersonSearchModel, PersonSearchM
 
 	@Override
 	public final  void setPaging(final Paging paging) {
-		this.paging = paging;
+		this.paging = new SimpleResultSetPagingImpl(paging);
 		notifyObservers(EventType.PagingChanges);
 	}
-
+	
+	@Override
+	public  final void incPaging() {
+		paging.inc();
+		notifyObservers(EventType.PagingChanges);
+	}
+	
+	@Override
+	public  final void endPaging() {
+		paging.last();
+		notifyObservers(EventType.PagingChanges);
+	}
+	
+	@Override
+	public  final void decPaging() {
+		paging.dec(); 
+		notifyObservers(EventType.PagingChanges);
+	}
+	
+	@Override
+	public  final void beginPaging() {
+		paging.first();
+		notifyObservers(EventType.PagingChanges);
+	}
 
 }

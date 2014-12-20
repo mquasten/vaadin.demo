@@ -20,7 +20,7 @@ import de.mq.phone.domain.person.PersonStringAware;
 class PersonServiceImpl implements PersonService {
 	
 	static final UUID DEFAULT_PERSON_ID = new UUID(19680528L, 19680528L);
-	static Number PAGE_SIZE = 3L;
+
 	private final  PersonRepository personRepository ; 
 	final CoordinatesRepository coordinatesRepository;
 	@Autowired

@@ -8,21 +8,16 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.geo.Circle;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.MapBindingResult;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import de.mq.phone.domain.person.AddressStringAware;
-import de.mq.phone.domain.person.Contact;
 import de.mq.phone.domain.person.GeoCoordinates;
 import de.mq.phone.domain.person.Person;
 import de.mq.phone.domain.person.PersonService;
-import de.mq.phone.domain.person.PersonStringAware;
 import de.mq.phone.domain.person.support.DistanceCalculator;
-import de.mq.phone.web.person.PersonSearchModel.EventType;
 import de.mq.phone.web.person.ValidatorQualifier.Type;
 
 @Controller()
@@ -51,23 +46,34 @@ private final NumberFormat numberFormat = NumberFormat.getNumberInstance();
 	 */
 	@Override
 	public  final void assignPersons(final PersonSearchModel model) {
-		final PersonStringAware person = model.getSearchCriteriaPerson();
-		final Contact contact = model.getSearchCriteriaContact();
-		final AddressStringAware address = model.getSearchCriteriaAddress();
-		final Circle circle = model.getSearchCriteriaDistance();
-		model.setPaging(personService.paging(person, address, contact, circle));
-		model.setPersons(personService.persons(person,address, contact, circle, model.getPaging()));
+		model.setPaging(personService.paging(model.getSearchCriteriaPerson(), model.getSearchCriteriaAddress(), model.getSearchCriteriaContact(), model.getSearchCriteriaDistance()));
+		model.setPersons(personService.persons(model.getSearchCriteriaPerson(),model.getSearchCriteriaAddress(), model.getSearchCriteriaContact(), model.getSearchCriteriaDistance(), model.getPaging()));
+	}
+	@Override
+	public  final void incPaging(final PersonSearchModel model) {
+		model.incPaging();
+		model.setPersons(personService.persons(model.getSearchCriteriaPerson(),model.getSearchCriteriaAddress(), model.getSearchCriteriaContact(), model.getSearchCriteriaDistance(), model.getPaging()));
+		
+	}
+	@Override
+	public  final void endPaging(final PersonSearchModel model) {
+		model.endPaging();
+		model.setPersons(personService.persons(model.getSearchCriteriaPerson(),model.getSearchCriteriaAddress(), model.getSearchCriteriaContact(), model.getSearchCriteriaDistance(), model.getPaging()));
+		
+	}
+	@Override
+	public  final void decPaging(final PersonSearchModel model) {
+		model.decPaging();
+		model.setPersons(personService.persons(model.getSearchCriteriaPerson(),model.getSearchCriteriaAddress(), model.getSearchCriteriaContact(), model.getSearchCriteriaDistance(), model.getPaging()));
+		
 	}
 	
-	public  final void page(final PersonSearchModel model) {
-		final PersonStringAware person = model.getSearchCriteriaPerson();
-		final Contact contact = model.getSearchCriteriaContact();
-		final AddressStringAware address = model.getSearchCriteriaAddress();
-		final Circle circle = model.getSearchCriteriaDistance();
-		model.setPersons(personService.persons(person,address, contact, circle, model.getPaging()));
-		model.notifyObservers(EventType.PagingChanges);
+	@Override
+	public  final void beginPaging(final PersonSearchModel model) {
+		model.beginPaging();
+		model.setPersons(personService.persons(model.getSearchCriteriaPerson(),model.getSearchCriteriaAddress(), model.getSearchCriteriaContact(), model.getSearchCriteriaDistance(), model.getPaging()));
+		
 	}
-	
 	
 	
 	@Override

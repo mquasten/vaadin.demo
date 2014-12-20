@@ -24,6 +24,10 @@ import de.mq.vaadin.util.BeforeSave;
 @Repository
 public class PersonMongoRepositoryImpl implements PersonRepository {
 	
+	private static final String ADDRESS_COORDINATES_LOCATION_NAME = "address.geoCoordinates.location";
+	private static final String ADDRESS_NAME = "address.address";
+	private static final String CONTACTS_NAME = "contacts.contact";
+	private static final String PERSON_COLLECTION_NAME = "person";
 	private final MongoOperations mongoOperations;
 	
 
@@ -109,37 +113,34 @@ public class PersonMongoRepositoryImpl implements PersonRepository {
 	public final List<Person>forCriterias(final PersonStringAware person, final AddressStringAware address, final Contact contact, final Circle circle, final Paging paging) {
 		final Query query = query(person, address, contact, circle);
 		query.limit(paging.pageSize().intValue());
-		System.out.println("***************");
-		System.out.println(("PageSize:" +paging.pageSize().intValue()));
-		System.out.println("FirstRow:" + paging.firstRow().intValue());
-		query.with(new Sort(new Order("person")));
+		query.with(new Sort(new Order(PERSON_COLLECTION_NAME)));
 		query.skip(paging.firstRow().intValue());
-		return Collections.unmodifiableList(mongoOperations.find(query, Person.class, "person"));
+		return Collections.unmodifiableList(mongoOperations.find(query, Person.class, PERSON_COLLECTION_NAME));
 	
 	}
 	
 	@Override
 	public final Number countFor(final PersonStringAware person, final AddressStringAware address, final Contact contact, final Circle circle) {
-		return Long.valueOf(mongoOperations.count(query(person, address, contact, circle), "person"));
+		return Long.valueOf(mongoOperations.count(query(person, address, contact, circle), PERSON_COLLECTION_NAME));
 	}
 
 	private Query query(final PersonStringAware person, final AddressStringAware address, final Contact contact, final Circle circle) {
 		final Query query = new Query();
 		
 		if( StringUtils.hasText(person.person())){
-			query.addCriteria(new Criteria("person").regex(StringUtils.trimWhitespace(person.person())));
+			query.addCriteria(new Criteria(PERSON_COLLECTION_NAME).regex(StringUtils.trimWhitespace(person.person())));
 		}
 		
 		if(  StringUtils.hasText(contact.contact())) {
-			query.addCriteria(new Criteria("contacts.contact").regex(StringUtils.trimWhitespace(contact.contact())));
+			query.addCriteria(new Criteria(CONTACTS_NAME).regex(StringUtils.trimWhitespace(contact.contact())));
 		}
 		
 		if( StringUtils.hasLength(address.address())){
-			query.addCriteria(new Criteria("address.address").regex(StringUtils.trimWhitespace(address.address())));
+			query.addCriteria(new Criteria(ADDRESS_NAME).regex(StringUtils.trimWhitespace(address.address())));
 		}
 		
 		if( circle.getRadius().getValue() >= 0) {
-			query.addCriteria( new Criteria("address.geoCoordinates.location").withinSphere(circle));
+			query.addCriteria( new Criteria(ADDRESS_COORDINATES_LOCATION_NAME).withinSphere(circle));
 		}
 	
 		return query;

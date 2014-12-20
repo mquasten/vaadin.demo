@@ -44,6 +44,15 @@ interface PersonSearchModel extends Subject<PersonSearchModel, PersonSearchModel
 
 	void setPaging(final Paging paging);
 
+	void incPaging();
+
+	void endPaging();
+
+	void decPaging();
+
+	void beginPaging();
+
+	
 	
 
 }

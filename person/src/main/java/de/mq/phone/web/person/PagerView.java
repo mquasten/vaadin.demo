@@ -63,8 +63,10 @@ public class PagerView extends HorizontalLayout{
 	
 	
 	
-	 nextButton.addClickListener(event -> { personSearchModel.getPaging().inc(); personSearchController.page(personSearchModel);});
-	 backButton.addClickListener(event -> { personSearchModel.getPaging().dec(); personSearchController.page(personSearchModel);});
+	 nextButton.addClickListener(event -> personSearchController.incPaging(personSearchModel));
+	 nextEndButton.addClickListener(event -> personSearchController.endPaging(personSearchModel));
+	 backButton.addClickListener(event -> personSearchController.decPaging(personSearchModel));
+	 backEndButton.addClickListener(event -> personSearchController.beginPaging(personSearchModel));
 	 
 	 personSearchModel.register(event -> { 
 		 nextButton.setEnabled(personSearchModel.getPaging().hasNextPage());

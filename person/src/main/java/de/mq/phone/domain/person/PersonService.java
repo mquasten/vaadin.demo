@@ -8,6 +8,7 @@ import de.mq.phone.domain.person.support.Paging;
 
 
 public interface PersonService {
+	static Number PAGE_SIZE = 3L;
 
 	List<Person> persons(final PersonStringAware person,final AddressStringAware address, final Contact contact, final Circle distance, final Paging paging);
 

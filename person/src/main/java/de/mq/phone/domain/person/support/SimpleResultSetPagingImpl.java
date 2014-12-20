@@ -1,5 +1,7 @@
 package de.mq.phone.domain.person.support;
 
+
+
 public class SimpleResultSetPagingImpl implements Paging {
 
 	private final Number pageSize;
@@ -8,10 +10,20 @@ public class SimpleResultSetPagingImpl implements Paging {
 
 	private Number currentPage;
 
-	public SimpleResultSetPagingImpl(final Number pageSize, final Number counter) {
+	SimpleResultSetPagingImpl(final Number pageSize, final Number counter) {
 		this.pageSize = pageSize;
 		maxPages = Double.valueOf(Math.ceil( counter.doubleValue() / pageSize.doubleValue())).longValue();
 		currentPage = 1L;
+	}
+	
+	public SimpleResultSetPagingImpl() {
+		this(0,0);
+	}
+	
+	public SimpleResultSetPagingImpl(final Paging paging) {
+		this.pageSize = paging.pageSize();
+		maxPages =  paging.maxPages();
+		currentPage = paging.currentPage();
 	}
 
 	/* (non-Javadoc)
@@ -30,10 +42,7 @@ public class SimpleResultSetPagingImpl implements Paging {
 		return currentPage.longValue() > 1L;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.mq.phone.domain.person.support.Paging#inc()
-	 */
-	@Override
+	
 	public final boolean  inc() {
 		if (!hasNextPage()) {
 			return false;
@@ -42,10 +51,7 @@ public class SimpleResultSetPagingImpl implements Paging {
 		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.mq.phone.domain.person.support.Paging#dec()
-	 */
-	@Override
+
 	public final void dec() {
 		if (!hasPreviousPage()) {
 			return;
@@ -53,18 +59,12 @@ public class SimpleResultSetPagingImpl implements Paging {
 		currentPage = new Long(currentPage.longValue() - 1L);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.mq.phone.domain.person.support.Paging#first()
-	 */
-	@Override
+	
 	public final void first() {
 		currentPage = 1L;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.mq.phone.domain.person.support.Paging#last()
-	 */
-	@Override
+	
 	public final void last() {
 		currentPage = maxPages;
 	}

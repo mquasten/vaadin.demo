@@ -6,10 +6,7 @@ public interface Paging {
 	boolean isEnd();
 	boolean hasPreviousPage();
 	boolean isBegin();
-	boolean inc();
-	void dec();
-	void first();
-	void last();
+
 	Number firstRow();
 	Number pageSize();
 	Number maxPages();
