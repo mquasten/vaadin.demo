@@ -26,6 +26,7 @@ import de.mq.phone.domain.person.Person;
 
 public class PersonRepositoryTest {
 	
+	private static final Long NUM_ROWS = 42L;
 	private static final String ID = "19680528";
 	private static final String BANKING_ACCOUNT = "DE21 3012 0400 0000 0152 28";
 	private static final String HOUSE_NUMBER = "27";
@@ -199,5 +200,25 @@ public class PersonRepositoryTest {
 		personRepository.delete(ID);
 		Mockito.verify(mongoOperations).remove(person);
 	}
+	
+	@Test
+	public final void countFor() {
+		final PersonRepository personRepository = new PersonMongoRepositoryImpl(mongoOperations);
+		final Person person = Mockito.mock(Person.class);
+		final Address address = Mockito.mock(Address.class);
+		final Contact contact = Mockito.mock(Contact.class);
+		final Circle circle = Mockito.mock(Circle.class);
+		final Distance distance = Mockito.mock(Distance.class);
+		Mockito.when(distance.getValue()).thenReturn(-1d);
+		Mockito.when(circle.getRadius()).thenReturn(distance);
+		final ArgumentCaptor<Query> queryCaptor = ArgumentCaptor.forClass(Query.class);
+		final ArgumentCaptor<String> collectionCaptor = ArgumentCaptor.forClass(String.class);
+		Mockito.when(mongoOperations.count(queryCaptor.capture(), collectionCaptor.capture())).thenReturn(NUM_ROWS)	;
+		
+		Assert.assertEquals(NUM_ROWS, personRepository.countFor(person, address, contact, circle));
+		Assert.assertEquals(PersonMongoRepositoryImpl.PERSON_COLLECTION_NAME, collectionCaptor.getValue());
+		Assert.assertNull(queryCaptor.getValue().getFieldsObject());
+	}
+	
 
 }

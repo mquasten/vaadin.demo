@@ -27,7 +27,7 @@ public class PersonMongoRepositoryImpl implements PersonRepository {
 	private static final String ADDRESS_COORDINATES_LOCATION_NAME = "address.geoCoordinates.location";
 	private static final String ADDRESS_NAME = "address.address";
 	private static final String CONTACTS_NAME = "contacts.contact";
-	private static final String PERSON_COLLECTION_NAME = "person";
+	static final String PERSON_COLLECTION_NAME = "person";
 	private final MongoOperations mongoOperations;
 	
 
