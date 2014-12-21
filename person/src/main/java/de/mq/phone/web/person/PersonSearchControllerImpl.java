@@ -45,8 +45,8 @@ private final NumberFormat numberFormat = NumberFormat.getNumberInstance();
 	 * @see de.mq.phone.web.person.PersonSearchController#assignPersons(de.mq.phone.web.person.PersonSearchModel)
 	 */
 	@Override
-	public  final void assignPersons(final PersonSearchModel model) {
-		model.setPaging(personService.paging(model.getSearchCriteriaPerson(), model.getSearchCriteriaAddress(), model.getSearchCriteriaContact(), model.getSearchCriteriaDistance()));
+	public  final void assignPersons(final PersonSearchModel model, final int pageSize) {
+		model.setPaging(personService.paging(model.getSearchCriteriaPerson(), model.getSearchCriteriaAddress(), model.getSearchCriteriaContact(), model.getSearchCriteriaDistance(), pageSize));
 		model.setPersons(personService.persons(model.getSearchCriteriaPerson(),model.getSearchCriteriaAddress(), model.getSearchCriteriaContact(), model.getSearchCriteriaDistance(), model.getPaging()));
 	}
 	@Override

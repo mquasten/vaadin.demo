@@ -1,5 +1,8 @@
 package de.mq.phone.web.person;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +11,16 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
+import com.vaadin.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
+import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 import de.mq.vaadin.util.ViewNav;
 
@@ -20,6 +30,10 @@ import de.mq.vaadin.util.ViewNav;
 public class MainMenuBarView  extends CustomComponent{
 	
 	static final String I18N_MENU_ADDRESS = "settings_address";
+	
+	static final String I18N_MENU_USER = "settings_user";
+	static final String I18N_Page_SIZE_SAVE = "settings_page_size_save";
+	static final String I18N_Page_SIZE_BOX = "settings_page_size_box";
 
 	static final String I18N_NENU_SETTINGS = "menu_settings";
 
@@ -28,13 +42,17 @@ public class MainMenuBarView  extends CustomComponent{
 	private final UserModel userModel;
 	private final ViewNav viewNav;
 	private final PersonEditController personEditController;
+	private final PersonSearchController personSearchController;
+	private final PersonSearchModel personSearchModel;
 	private final MessageSource messageSource;
 	
 	@Autowired
-	MainMenuBarView(final UserModel userModel, final ViewNav viewNav, final PersonEditController personEditController, final MessageSource messageSource) {
+	MainMenuBarView(final UserModel userModel, final ViewNav viewNav, final PersonEditController personEditController,final PersonSearchController personSearchController, final PersonSearchModel personSearchModel, final MessageSource messageSource) {
 		this.userModel = userModel;
 		this.viewNav = viewNav;
 		this.personEditController=personEditController;
+		this.personSearchController=personSearchController;
+		this.personSearchModel=personSearchModel;
 		this.messageSource=messageSource;
 	}
 
@@ -49,11 +67,62 @@ public class MainMenuBarView  extends CustomComponent{
 		final Command command = item -> {
 			viewNav.navigateTo(PersonEditView.class, personEditController.defaultPerson().id());
 		};
+		
+		
+		Window dialog = new Window(getString(I18N_MENU_USER));
+
+
+		 final VerticalLayout content = new VerticalLayout();
+		 final ComboBox comboBox = new ComboBox(getString(I18N_Page_SIZE_BOX));
+		 comboBox.setNewItemsAllowed(false);
+		 comboBox.setInvalidAllowed(false);
+		 comboBox.setNullSelectionAllowed(false);
+		 final Collection<Integer> pageSize = new ArrayList<>();
+		 pageSize.add(3);
+		 pageSize.add(5);
+		 pageSize.add(10);
+		 pageSize.add(20);
+		 pageSize.add(50);
+		 pageSize.add(100);
+		 
+		 comboBox.addItems(pageSize);
+       content.addComponent(comboBox);
+       content.setMargin(true);
+       dialog.setContent(content);
+       dialog.setModal(true);
+       dialog.setResizable(false);
+     
+       final BeanFieldGroup<UserModel> binder = new BeanFieldGroup<>(UserModel.class);
+       binder.setBuffered(true);
+       binder.setItemDataSource(userModel);
+       binder.bind(comboBox, "pageSize");
+     
+       final Button ok = new Button(getString(I18N_Page_SIZE_SAVE));
+       content.addComponent(ok);
+       dialog.center();
+       ok.addClickListener( event -> { 
+      	 try {
+				binder.commit();
+				dialog.close(); 
+				personSearchController.assignPersons(personSearchModel, userModel.getPageSize());
+				
+			} catch (final Exception e) {
+			    
+			}
+      	});
+	
+
+		
+    
+		
+		
 		userModel.register(event -> { 
 			
 			menubar.removeItems();
 			
-			menubar.addItem(getString(I18N_NENU_SETTINGS), null).addItem(getString(I18N_MENU_ADDRESS),  command);
+			final MenuItem settings = menubar.addItem(getString(I18N_NENU_SETTINGS), null);
+			settings.addItem(getString(I18N_MENU_ADDRESS),  command);
+			settings.addItem(getString(I18N_MENU_USER), item -> UI.getCurrent().addWindow(dialog) );
 			
 			
 		}, UserModel.EventType.LocaleChanges);

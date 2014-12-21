@@ -40,9 +40,9 @@ class PersonServiceImpl implements PersonService {
 	}
 	
 	@Override
-	public final  Paging paging(final PersonStringAware person, final AddressStringAware address, final Contact contact, Circle circle) {
+	public final  Paging paging(final PersonStringAware person, final AddressStringAware address, final Contact contact, final Circle circle, final int pageSize) {
 		final Number counter = personRepository.countFor(person, address, contact, circle);
-		return new SimpleResultSetPagingImpl(PAGE_SIZE, counter.longValue());
+		return new SimpleResultSetPagingImpl(pageSize, counter.longValue());
 	}
 	
 	@Override

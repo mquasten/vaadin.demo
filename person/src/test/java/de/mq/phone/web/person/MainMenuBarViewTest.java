@@ -27,6 +27,8 @@ public class MainMenuBarViewTest {
 	private final ViewNav viewNav = Mockito.mock(ViewNav.class);
 	private final PersonEditController personEditController = Mockito.mock(PersonEditController.class);
 	private final MessageSource messageSource = Mockito.mock(MessageSource.class);
+	
+	private final 
 
 	private final MainMenuBarView mainMenuBarView = new MainMenuBarView(userModel, viewNav, personEditController, messageSource);
 

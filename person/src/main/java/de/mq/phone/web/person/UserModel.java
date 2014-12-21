@@ -20,7 +20,7 @@ public interface UserModel extends Subject<UserModel, UserModel.EventType> {
 	Collection<Locale> getSupportedLocales();
 
 	
-
+	Integer getPageSize();
 	
 	
 	

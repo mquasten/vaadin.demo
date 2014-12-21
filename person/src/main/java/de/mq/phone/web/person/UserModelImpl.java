@@ -18,6 +18,18 @@ public class UserModelImpl  extends SubjectImpl<UserModel, UserModel.EventType> 
 	private final Collection<Locale> supportedLocales = new ArrayList<>();
 	
 	private Locale locale ; 
+	
+	private Integer pageSize = 10 ;
+
+
+	public Integer getPageSize() {
+		return pageSize;
+	}
+
+
+	public void setPageSize(Integer pageSize) {
+		this.pageSize = pageSize;
+	}
 
 
 	@PostConstruct
