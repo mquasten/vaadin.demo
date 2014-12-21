@@ -67,6 +67,8 @@ public class PersonSearchViewTest {
 	private static final String LANGUAGE_BOX_CAPTION = "Sprache";
 	private static final String CONTACT_TABLE_PANEL_CAPTION = "Kontaktdaten";
 	private static final String CONTACT_TABLE_CAPTION = "table";
+	
+	private static final int PAGE_SIZE = 10; 
 	@SuppressWarnings("unchecked")
 	private final Converter<Item, Collection<Object>> itemToPersonSearchSetConverter = Mockito.mock(Converter.class);;
 	@SuppressWarnings("unchecked")
@@ -109,6 +111,8 @@ public class PersonSearchViewTest {
 		
 		
 		Mockito.when(userModel.getLocale()).thenReturn(Locale.GERMAN);
+		
+		Mockito.when(userModel.getPageSize()).thenReturn(PAGE_SIZE);
 		Collection<Locale> locales = new ArrayList<>();
 		locales.add(Locale.GERMAN);
 		locales.add(Locale.ENGLISH);
@@ -180,7 +184,7 @@ public class PersonSearchViewTest {
 			Mockito.verify(personSearchModel, Mockito.times(1)).setSearchCriteria(criteria);
 		}
 
-		Mockito.verify(personSearchController, Mockito.times(1)).assignPersons(personSearchModel);
+		Mockito.verify(personSearchController, Mockito.times(1)).assignPersons(personSearchModel, PAGE_SIZE);
 
 		final List<Person> persons = new ArrayList<>();
 		final Person searchResult = Mockito.mock(Person.class);
@@ -422,7 +426,7 @@ public class PersonSearchViewTest {
 		}
 		
 		Mockito.verifyZeroInteractions(itemToPersonSearchSetConverter);
-		Mockito.verify(personSearchController, Mockito.times(0)).assignPersons(Mockito.any(PersonSearchModel.class));
+		Mockito.verify(personSearchController, Mockito.times(0)).assignPersons(Mockito.any(PersonSearchModel.class), Mockito.anyInt());
 	}
 
 }

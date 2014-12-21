@@ -31,6 +31,7 @@ public class PersonSearchControllerTest {
 	private PersonService personService = Mockito.mock(PersonService.class);
 	private DistanceCalculator distanceCalculator = Mockito.mock(DistanceCalculator.class);
 	private final PersonSearchController personSearchController = new PersonSearchControllerImpl(personService, distanceCalculator, validator);
+	private int PAGE_SIZE = 10; 
 	private Paging paging = Mockito.mock(Paging.class);
 	@Test
 	public final void assign() {
@@ -47,7 +48,7 @@ public class PersonSearchControllerTest {
 		final List<Person> persons = new ArrayList<>();
 		persons.add(Mockito.mock(Person.class));
 		Mockito.when(personService.persons(person, addressStringAware, contact,circle, paging)).thenReturn(persons);
-		personSearchController.assignPersons(model);
+		personSearchController.assignPersons(model, PAGE_SIZE);
 		Mockito.verify(model, Mockito.times(1)).setPersons(persons);
 	}
 	

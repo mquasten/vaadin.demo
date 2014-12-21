@@ -37,6 +37,8 @@ public class PersonRepositoryTest {
 	private static final String FIRSTNAME = "Kylie";
 	private final MongoOperations mongoOperations = Mockito.mock(MongoOperations.class);
 	
+	private Integer PAGE_SIZE = 10; 
+	
 	@Test
 	public final void save() {
 		final Address address = new AddressImpl(ZIP, CITY, STREET, HOUSE_NUMBER);
@@ -103,7 +105,7 @@ public class PersonRepositoryTest {
 	public final void forCriterias() {
 		final PersonRepository personRepository = new PersonMongoRepositoryImpl(mongoOperations);
 		final Paging paging = Mockito.mock(Paging.class);
-		Mockito.when(paging.pageSize()).thenReturn(PersonServiceImpl.PAGE_SIZE);
+		Mockito.when(paging.pageSize()).thenReturn(PAGE_SIZE);
 		Mockito.when(paging.firstRow()).thenReturn(0);
 		final Person person = Mockito.mock(Person.class);
 		Mockito.when(person.person()).thenReturn(FIRSTNAME);
@@ -155,7 +157,7 @@ public class PersonRepositoryTest {
 	public final void forCriteriasNoCriteria() {
 		final PersonRepository personRepository = new PersonMongoRepositoryImpl(mongoOperations);
 		final Paging paging = Mockito.mock(Paging.class);
-		Mockito.when(paging.pageSize()).thenReturn(PersonServiceImpl.PAGE_SIZE);
+		Mockito.when(paging.pageSize()).thenReturn(PAGE_SIZE);
 		Mockito.when(paging.firstRow()).thenReturn(0L);
 		final Person person = Mockito.mock(Person.class);
 		final Address address = Mockito.mock(Address.class);

@@ -28,9 +28,11 @@ public class MainMenuBarViewTest {
 	private final PersonEditController personEditController = Mockito.mock(PersonEditController.class);
 	private final MessageSource messageSource = Mockito.mock(MessageSource.class);
 	
-	private final 
+	private final PersonSearchController personSearchController = Mockito.mock(PersonSearchController.class);
+	
+	private final PersonSearchModel personSearchView = Mockito.mock(PersonSearchModel.class);
 
-	private final MainMenuBarView mainMenuBarView = new MainMenuBarView(userModel, viewNav, personEditController, messageSource);
+	private final MainMenuBarView mainMenuBarView = new MainMenuBarView(userModel, viewNav, personEditController,personSearchController, personSearchView, messageSource);
 
 	private final Map<EventType, Observer<EventType>> observers = new HashMap<>();
 
@@ -46,6 +48,9 @@ public class MainMenuBarViewTest {
 		Mockito.when(userModel.getLocale()).thenReturn(Locale.GERMAN);
 		Mockito.when(messageSource.getMessage(MainMenuBarView.I18N_NENU_SETTINGS, null, Locale.GERMAN)).thenReturn(MainMenuBarView.I18N_NENU_SETTINGS);
 		Mockito.when(messageSource.getMessage(MainMenuBarView.I18N_MENU_ADDRESS, null, Locale.GERMAN)).thenReturn(MainMenuBarView.I18N_MENU_ADDRESS);
+		Mockito.when(messageSource.getMessage(MainMenuBarView.I18N_MENU_USER, null, Locale.GERMAN)).thenReturn(MainMenuBarView.I18N_MENU_USER);
+		
+		
 		Mockito.doAnswer(invocation -> {
 			observers.put((EventType) invocation.getArguments()[1], (Observer<EventType>) invocation.getArguments()[0]);
 			return null;
@@ -63,7 +68,7 @@ public class MainMenuBarViewTest {
 		Assert.assertEquals(MainMenuBarView.I18N_NENU_SETTINGS, menu.getItems().get(0).getText());
 		Assert.assertNull(menu.getItems().get(0).getCommand());
 
-		Assert.assertEquals(1, menu.getItems().get(0).getChildren().size());
+		Assert.assertEquals(2, menu.getItems().get(0).getChildren().size());
 		Assert.assertEquals(MainMenuBarView.I18N_MENU_ADDRESS, menu.getItems().get(0).getChildren().get(0).getText());
 
 		final Command command = menu.getItems().get(0).getChildren().get(0).getCommand();

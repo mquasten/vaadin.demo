@@ -36,7 +36,7 @@ class PersonSearchModelImpl extends SubjectImpl<PersonSearchModel, PersonSearchM
 	
 	private final List<Person> persons;
 	private SimpleResultSetPagingImpl paging = new SimpleResultSetPagingImpl();
-	
+	 
 	
 	static final Distance UNDEFINED_DISTANCE = undefinedDistance();
 	static final Circle UNDEFINED_CIRCLE = undefinedCircle();
