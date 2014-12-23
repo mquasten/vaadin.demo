@@ -52,11 +52,12 @@ public class SimpleResultSetPagingImpl implements Paging {
 	}
 
 
-	public final void dec() {
+	public final boolean  dec() {
 		if (!hasPreviousPage()) {
-			return;
+			return false;
 		}
 		currentPage = new Long(currentPage.longValue() - 1L);
+		return true;
 	}
 
 	

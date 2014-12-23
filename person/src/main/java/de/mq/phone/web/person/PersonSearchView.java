@@ -362,8 +362,6 @@ class PersonSearchView extends CustomComponent implements View {
 	public void enter(final ViewChangeEvent event) {
 		personSearchController.assignGeoKoordinates(model);
 		personSearchController.assignPersons(model, userModel.getPageSize());
-		System.out.println("*********");
-		
 	}
 
 }
