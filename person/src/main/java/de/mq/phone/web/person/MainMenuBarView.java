@@ -1,8 +1,5 @@
 package de.mq.phone.web.person;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +15,10 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+import de.mq.vaadin.util.VaadinOperations;
 import de.mq.vaadin.util.ViewNav;
 
 
@@ -46,8 +43,11 @@ public class MainMenuBarView  extends CustomComponent{
 	private final PersonSearchModel personSearchModel;
 	private final MessageSource messageSource;
 	
+	private final VaadinOperations vaadinOperations;
+	
 	@Autowired
-	MainMenuBarView(final UserModel userModel, final ViewNav viewNav, final PersonEditController personEditController,final PersonSearchController personSearchController, final PersonSearchModel personSearchModel, final MessageSource messageSource) {
+	MainMenuBarView(final VaadinOperations vaadinOperations, final UserModel userModel, final ViewNav viewNav, final PersonEditController personEditController,final PersonSearchController personSearchController, final PersonSearchModel personSearchModel, final MessageSource messageSource) {
+		this.vaadinOperations=vaadinOperations;
 		this.userModel = userModel;
 		this.viewNav = viewNav;
 		this.personEditController=personEditController;
@@ -77,15 +77,9 @@ public class MainMenuBarView  extends CustomComponent{
 		 comboBox.setNewItemsAllowed(false);
 		 comboBox.setInvalidAllowed(false);
 		 comboBox.setNullSelectionAllowed(false);
-		 final Collection<Integer> pageSize = new ArrayList<>();
-		 pageSize.add(3);
-		 pageSize.add(5);
-		 pageSize.add(10);
-		 pageSize.add(20);
-		 pageSize.add(50);
-		 pageSize.add(100);
+		
 		 
-		 comboBox.addItems(pageSize);
+		 comboBox.addItems(userModel.getPageSizes());
        content.addComponent(comboBox);
        content.setMargin(true);
        dialog.setContent(content);
@@ -107,7 +101,7 @@ public class MainMenuBarView  extends CustomComponent{
 				personSearchController.assignPersons(personSearchModel, userModel.getPageSize());
 				
 			} catch (final Exception e) {
-			    
+				
 			}
       	});
 	
@@ -122,7 +116,7 @@ public class MainMenuBarView  extends CustomComponent{
 			
 			final MenuItem settings = menubar.addItem(getString(I18N_NENU_SETTINGS), null);
 			settings.addItem(getString(I18N_MENU_ADDRESS),  command);
-			settings.addItem(getString(I18N_MENU_USER), item -> UI.getCurrent().addWindow(dialog) );
+			settings.addItem(getString(I18N_MENU_USER), item ->vaadinOperations.addWindow(dialog) );
 			
 			
 		}, UserModel.EventType.LocaleChanges);

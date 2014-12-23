@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
 
 @Component
 public class VaadinTemplate implements VaadinOperations {
@@ -20,6 +21,11 @@ public class VaadinTemplate implements VaadinOperations {
 	@Override
 	public final Navigator newNavigator() {
 		return new Navigator(UI.getCurrent(), UI.getCurrent());
+	}
+	
+	@Override
+	public void  addWindow(final Window window) {
+		 UI.getCurrent().addWindow(window);;
 	}
 
 }

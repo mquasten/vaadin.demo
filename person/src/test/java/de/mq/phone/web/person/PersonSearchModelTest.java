@@ -19,10 +19,15 @@ import de.mq.phone.domain.person.AddressStringAware;
 import de.mq.phone.domain.person.Contact;
 import de.mq.phone.domain.person.GeoCoordinates;
 import de.mq.phone.domain.person.Person;
+import de.mq.phone.domain.person.support.ModifyablePaging;
+
+import de.mq.phone.web.person.PersonSearchModel.EventType;
 import de.mq.vaadin.util.Observer;
 
 public class PersonSearchModelTest {
 	private final PersonSearchModel personSearchModel = new PersonSearchModelImpl();
+	
+
 	
 	@Test
 	public final void setPersons() {
@@ -144,5 +149,75 @@ public class PersonSearchModelTest {
 		Assert.assertEquals(geoCoordinates, personSearchModel.getGeoCoordinates());
 		Assert.assertTrue(personSearchModel.hasGeoCoordinates());
 	}
+	
+	
+	@Test
+	public final void paging() {
+		final ModifyablePaging paging = Mockito.mock(ModifyablePaging.class);
+		@SuppressWarnings("unchecked")
+		final Observer<EventType> observer = Mockito.mock(Observer.class);
+	   personSearchModel.register(observer, EventType.PagingChanges);
+		personSearchModel.setPaging(paging);
+		Assert.assertEquals(paging, personSearchModel.getPaging());
+		
+		Mockito.verify(observer, Mockito.times(1)).process(EventType.PagingChanges);
+	}
+
+	
+	
+	
+	
+	@Test
+	public final void  incPaging() {
+		@SuppressWarnings("unchecked")
+		final Observer<EventType> observer = Mockito.mock(Observer.class);
+		final ModifyablePaging paging = Mockito.mock(ModifyablePaging.class);
+		personSearchModel.setPaging(paging);
+		personSearchModel.register(observer, EventType.PagingChanges);
+		personSearchModel.incPaging();
+		
+		Mockito.verify(paging).inc();
+		Mockito.verify(observer).process(EventType.PagingChanges);
+	}
+
+	@Test
+	public final void  decPaging() {
+		@SuppressWarnings("unchecked")
+		final Observer<EventType> observer = Mockito.mock(Observer.class);
+		final ModifyablePaging paging = Mockito.mock(ModifyablePaging.class);
+		personSearchModel.setPaging(paging);
+		personSearchModel.register(observer, EventType.PagingChanges);
+		personSearchModel.decPaging();
+		
+		Mockito.verify(paging).dec();
+		Mockito.verify(observer).process(EventType.PagingChanges);
+	}
+	
+	@Test
+	public final void  beginPaging() {
+		@SuppressWarnings("unchecked")
+		final Observer<EventType> observer = Mockito.mock(Observer.class);
+		final ModifyablePaging paging = Mockito.mock(ModifyablePaging.class);
+		personSearchModel.setPaging(paging);
+		personSearchModel.register(observer, EventType.PagingChanges);
+		personSearchModel.beginPaging();
+		
+		Mockito.verify(paging).first();
+		Mockito.verify(observer).process(EventType.PagingChanges);
+	}
+	
+	@Test
+	public final void  endPaging() {
+		@SuppressWarnings("unchecked")
+		final Observer<EventType> observer = Mockito.mock(Observer.class);
+		final ModifyablePaging paging = Mockito.mock(ModifyablePaging.class);
+		personSearchModel.setPaging(paging);
+		personSearchModel.register(observer, EventType.PagingChanges);
+		personSearchModel.endPaging();
+		
+		Mockito.verify(paging).last();
+		Mockito.verify(observer).process(EventType.PagingChanges);
+	}
+
 	
 }

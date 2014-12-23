@@ -2,6 +2,7 @@ package de.mq.phone.web.person;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Locale;
 
 import javax.annotation.PostConstruct;
@@ -15,19 +16,21 @@ import de.mq.vaadin.util.SubjectImpl;
 @Scope("session")
 public class UserModelImpl  extends SubjectImpl<UserModel, UserModel.EventType> implements UserModel    {
 
+	static final int DEFAULT_PAGE_SIZE = 10;
+
 	private final Collection<Locale> supportedLocales = new ArrayList<>();
 	
 	private Locale locale ; 
 	
-	private Integer pageSize = 10 ;
+	private int pageSize = DEFAULT_PAGE_SIZE ;
 
 
-	public Integer getPageSize() {
+	public final Integer getPageSize() {
 		return pageSize;
 	}
 
 
-	public void setPageSize(Integer pageSize) {
+	public final void setPageSize(Integer pageSize) {
 		this.pageSize = pageSize;
 	}
 
@@ -56,5 +59,16 @@ public class UserModelImpl  extends SubjectImpl<UserModel, UserModel.EventType> 
 		
 	}
 	
+	@Override   
+	public final Collection<Integer> getPageSizes() {
+	 final Collection<Integer> pageSize = new ArrayList<>();
+	 pageSize.add(3);
+	 pageSize.add(5);
+	 pageSize.add(10);
+	 pageSize.add(20);
+	 pageSize.add(50);
+	 pageSize.add(100);
+    return Collections.unmodifiableCollection(pageSize);
+	}
 
 }

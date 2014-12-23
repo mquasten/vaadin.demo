@@ -2,7 +2,7 @@ package de.mq.phone.domain.person.support;
 
 
 
-public class SimpleResultSetPagingImpl implements Paging {
+public class SimpleResultSetPagingImpl implements ModifyablePaging {
 
 	private final Number pageSize;
 
@@ -18,12 +18,6 @@ public class SimpleResultSetPagingImpl implements Paging {
 	
 	public SimpleResultSetPagingImpl() {
 		this(0,0);
-	}
-	
-	public SimpleResultSetPagingImpl(final Paging paging) {
-		this.pageSize = paging.pageSize();
-		maxPages =  paging.maxPages();
-		currentPage = paging.currentPage();
 	}
 
 	/* (non-Javadoc)
@@ -61,13 +55,22 @@ public class SimpleResultSetPagingImpl implements Paging {
 	}
 
 	
-	public final void first() {
+	public final boolean  first() {
+		if( isBegin()){
+			return false;
+		}
 		currentPage = 1L;
+		return true;
 	}
 
 	
-	public final void last() {
+	public final boolean  last() {
+		if( isEnd()) {
+			return false;
+		}
 		currentPage = maxPages;
+		return true;
+		
 	}
 
 	/* (non-Javadoc)

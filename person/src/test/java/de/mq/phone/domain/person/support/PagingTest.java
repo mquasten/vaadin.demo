@@ -3,7 +3,6 @@ package de.mq.phone.domain.person.support;
 import junit.framework.Assert;
 
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
 
 public class PagingTest {
@@ -12,7 +11,6 @@ public class PagingTest {
 	private static final String CURRENT_PAGE2 = "currentPage";
 	private static final long SECOND_PAGE = 2L;
 	private static final int MAX_PAGES = 11;
-	private static final int CURRENT_PAGE = 5;
 	private static final int COUNTER = 102;
 	private static final int PAGE_SIZE = 10;
 
@@ -33,17 +31,6 @@ public class PagingTest {
 		Assert.assertEquals(0L, paging.maxPages());
 	}
 	
-	@Test
-	public final void createCopy() {
-		final Paging paging = Mockito.mock(Paging.class);
-		Mockito.when(paging.currentPage()).thenReturn(CURRENT_PAGE);
-		Mockito.when(paging.pageSize()).thenReturn(PAGE_SIZE);
-		Mockito.when(paging.maxPages()).thenReturn(MAX_PAGES);
-		final Paging newPaging = new SimpleResultSetPagingImpl(paging);
-		Assert.assertEquals(CURRENT_PAGE, newPaging.currentPage());
-		Assert.assertEquals(PAGE_SIZE, newPaging.pageSize());
-		Assert.assertEquals(MAX_PAGES, newPaging.maxPages());
-	}
 	
 	@Test
 	public final void  hasNextPage() {
@@ -82,15 +69,17 @@ public class PagingTest {
 		final SimpleResultSetPagingImpl paging = new SimpleResultSetPagingImpl(PAGE_SIZE, PAGE_SIZE+1 );
 		ReflectionTestUtils.setField(paging, CURRENT_PAGE2, SECOND_PAGE);
 		Assert.assertEquals(SECOND_PAGE, paging.currentPage());
-		paging.first();
+		Assert.assertTrue(paging.first());
 		Assert.assertEquals(1L, paging.currentPage());
+		Assert.assertFalse(paging.first());
 	}
 	
 	@Test
 	public final void last() {
 		final SimpleResultSetPagingImpl paging = new SimpleResultSetPagingImpl(PAGE_SIZE, COUNTER );
-		paging.last();
+		Assert.assertTrue(paging.last());
 		Assert.assertEquals((long) MAX_PAGES, paging.currentPage());
+		Assert.assertFalse(paging.last());
 
 	}
 	

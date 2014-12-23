@@ -15,6 +15,7 @@ import de.mq.vaadin.util.Observer;
 
 public class UserModelTest {
 	
+	private static final int PAGE_SIZE = 25;
 	private final UserModel userModel = new UserModelImpl();
 	
 	@Test
@@ -42,6 +43,19 @@ public class UserModelTest {
 		for(UserModel.EventType eventType : EventType.values()){
 			Assert.assertEquals(eventType, EventType.valueOf(eventType.name()));
 		}
+	}
+	
+	@Test
+	public final void pageSize() {
+		Assert.assertEquals( UserModelImpl.DEFAULT_PAGE_SIZE,(int) userModel.getPageSize());
+		((UserModelImpl)userModel).setPageSize(PAGE_SIZE);
+		Assert.assertEquals(PAGE_SIZE,(int)  userModel.getPageSize());
+	}
+	
+	@Test
+	public final void pageSizes() {
+		Assert.assertTrue(userModel.getPageSizes().size() > 1 ) ; 
+		Assert.assertTrue(userModel.getPageSizes().contains(UserModelImpl.DEFAULT_PAGE_SIZE));
 	}
 
 }

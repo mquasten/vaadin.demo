@@ -1,5 +1,7 @@
 package de.mq.phone.web.person;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -8,17 +10,23 @@ import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.context.MessageSource;
 
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
-
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
+import com.vaadin.ui.Window;
 
 import de.mq.phone.domain.person.Person;
 import de.mq.phone.web.person.UserModel.EventType;
 import de.mq.vaadin.util.Observer;
+import de.mq.vaadin.util.VaadinOperations;
 import de.mq.vaadin.util.ViewNav;
 
 public class MainMenuBarViewTest {
@@ -30,9 +38,10 @@ public class MainMenuBarViewTest {
 	
 	private final PersonSearchController personSearchController = Mockito.mock(PersonSearchController.class);
 	
-	private final PersonSearchModel personSearchView = Mockito.mock(PersonSearchModel.class);
+	private final PersonSearchModel personSearchModel = Mockito.mock(PersonSearchModel.class);
 
-	private final MainMenuBarView mainMenuBarView = new MainMenuBarView(userModel, viewNav, personEditController,personSearchController, personSearchView, messageSource);
+	private  VaadinOperations vaadinOperations = Mockito.mock(VaadinOperations.class);
+	private final MainMenuBarView mainMenuBarView = new MainMenuBarView(vaadinOperations, userModel, viewNav, personEditController,personSearchController, personSearchModel, messageSource);
 
 	private final Map<EventType, Observer<EventType>> observers = new HashMap<>();
 
@@ -49,7 +58,9 @@ public class MainMenuBarViewTest {
 		Mockito.when(messageSource.getMessage(MainMenuBarView.I18N_NENU_SETTINGS, null, Locale.GERMAN)).thenReturn(MainMenuBarView.I18N_NENU_SETTINGS);
 		Mockito.when(messageSource.getMessage(MainMenuBarView.I18N_MENU_ADDRESS, null, Locale.GERMAN)).thenReturn(MainMenuBarView.I18N_MENU_ADDRESS);
 		Mockito.when(messageSource.getMessage(MainMenuBarView.I18N_MENU_USER, null, Locale.GERMAN)).thenReturn(MainMenuBarView.I18N_MENU_USER);
-		
+		Mockito.when(messageSource.getMessage(MainMenuBarView.I18N_MENU_USER, null,  Locale.GERMAN)).thenReturn(MainMenuBarView.I18N_MENU_USER);
+		Mockito.when(messageSource.getMessage(MainMenuBarView.I18N_Page_SIZE_BOX, null,  Locale.GERMAN)).thenReturn(MainMenuBarView.I18N_Page_SIZE_BOX);
+		Mockito.when(messageSource.getMessage(MainMenuBarView.I18N_Page_SIZE_SAVE, null,  Locale.GERMAN)).thenReturn(MainMenuBarView.I18N_Page_SIZE_SAVE);
 		
 		Mockito.doAnswer(invocation -> {
 			observers.put((EventType) invocation.getArguments()[1], (Observer<EventType>) invocation.getArguments()[0]);
@@ -58,12 +69,12 @@ public class MainMenuBarViewTest {
 	}
 
 	@Test
-	public final void init() {
+	public final void initDefaultAddress() {
 		
 		mainMenuBarView.init();
 		observers.get(EventType.LocaleChanges).process(EventType.LocaleChanges);
 		ComponentTestHelper.components(mainMenuBarView, components);
-		MenuBar menu = (MenuBar) components.get(MainMenuBarView.I18N_NENU_SETTINGS);
+		final MenuBar menu = (MenuBar) components.get(MainMenuBarView.I18N_NENU_SETTINGS);
 		Assert.assertEquals(1, menu.getItems().size());
 		Assert.assertEquals(MainMenuBarView.I18N_NENU_SETTINGS, menu.getItems().get(0).getText());
 		Assert.assertNull(menu.getItems().get(0).getCommand());
@@ -75,7 +86,56 @@ public class MainMenuBarViewTest {
 		command.menuSelected(menu.getItems().get(0).getChildren().get(0));
 
 		Mockito.verify(viewNav, Mockito.times(1)).navigateTo(PersonEditView.class, person.id());
+		
+		
 
+	}
+	
+	@Test()
+	public final void initPageSize() {
+		Mockito.when(userModel.getPageSize()).thenReturn(10);
+		Collection<Integer> pageSizes = new ArrayList<>();
+		pageSizes.add(userModel.getPageSize());
+		Mockito.when(userModel.getPageSizes()).thenReturn(pageSizes);
+		mainMenuBarView.init();
+		observers.get(EventType.LocaleChanges).process(EventType.LocaleChanges);
+		ComponentTestHelper.components(mainMenuBarView, components);
+		final MenuBar menu = (MenuBar) components.get(MainMenuBarView.I18N_NENU_SETTINGS);
+		Assert.assertEquals(1, menu.getItems().size());
+		Assert.assertEquals(MainMenuBarView.I18N_NENU_SETTINGS, menu.getItems().get(0).getText());
+		Assert.assertNull(menu.getItems().get(0).getCommand());
+
+		
+		Assert.assertEquals(2, menu.getItems().get(0).getChildren().size());
+		final Command settingsCommand = menu.getItems().get(0).getChildren().get(1).getCommand();
+	
+		settingsCommand.menuSelected(menu.getItems().get(0).getChildren().get(1));
+		final ArgumentCaptor<Window> windowCaptor = ArgumentCaptor.forClass(Window.class);
+		Mockito.verify(vaadinOperations, Mockito.times(1)).addWindow(windowCaptor.capture());
+		final Window window = windowCaptor.getValue();
+		
+		final Map<String, Component> components = new HashMap<>(); 
+		ComponentTestHelper.components(window, components);
+		
+		final ComboBox box = (ComboBox) components.get(MainMenuBarView.I18N_Page_SIZE_BOX);
+		Assert.assertEquals(userModel.getPageSize(), box.getValue());
+		Assert.assertEquals(1, box.getItemIds().size());
+		Assert.assertEquals(pageSizes.iterator().next(),  box.getItemIds().iterator().next());
+		
+		final Button button = (Button) components.get(MainMenuBarView.I18N_Page_SIZE_SAVE);
+		
+		@SuppressWarnings("unchecked")
+		final Collection<ClickListener> listeners = (Collection<ClickListener>) button.getListeners(ClickEvent.class);
+		Assert.assertEquals(1, listeners.size());
+		final ClickEvent event = Mockito.mock(ClickEvent.class);
+		listeners.iterator().next().buttonClick(event);
+		
+		Mockito.verify(personSearchController, Mockito.times(1)).assignPersons(personSearchModel, userModel.getPageSize() );
+		
+		Mockito.when(userModel.getPageSize()).thenReturn(5);
+		
+		Mockito.doThrow(new IllegalArgumentException("Don't worry only for test")).when(personSearchController).assignPersons(personSearchModel, 5);
+		listeners.iterator().next().buttonClick(event);
 	}
 
 }

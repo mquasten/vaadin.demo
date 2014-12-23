@@ -20,6 +20,7 @@ import de.mq.phone.domain.person.Contact;
 import de.mq.phone.domain.person.GeoCoordinates;
 import de.mq.phone.domain.person.Person;
 import de.mq.phone.domain.person.PersonStringAware;
+import de.mq.phone.domain.person.support.ModifyablePaging;
 import de.mq.phone.domain.person.support.Paging;
 import de.mq.phone.domain.person.support.PersonEntities;
 import de.mq.phone.domain.person.support.SimpleResultSetPagingImpl;
@@ -35,7 +36,7 @@ class PersonSearchModelImpl extends SubjectImpl<PersonSearchModel, PersonSearchM
 	private GeoCoordinates geoCoordinates ; 
 	
 	private final List<Person> persons;
-	private SimpleResultSetPagingImpl paging = new SimpleResultSetPagingImpl();
+	private ModifyablePaging paging = new SimpleResultSetPagingImpl();
 	 
 	
 	static final Distance UNDEFINED_DISTANCE = undefinedDistance();
@@ -151,8 +152,8 @@ class PersonSearchModelImpl extends SubjectImpl<PersonSearchModel, PersonSearchM
 	}
 
 	@Override
-	public final  void setPaging(final Paging paging) {
-		this.paging = new SimpleResultSetPagingImpl(paging);
+	public final  void setPaging(final ModifyablePaging paging) {
+		this.paging = paging;
 		notifyObservers(EventType.PagingChanges);
 	}
 	

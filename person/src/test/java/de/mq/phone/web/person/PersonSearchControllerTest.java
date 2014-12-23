@@ -110,5 +110,47 @@ public class PersonSearchControllerTest {
 		
 		Assert.assertTrue(personSearchController.geoInfos(null, model, Locale.GERMAN).isEmpty());
 	}
+	
+	
+	@Test
+	public final void incPaging() {
+		final PersonSearchModel model = Mockito.mock(PersonSearchModel.class);
+		
+		personSearchController.incPaging(model);
+		
+		Mockito.verify(model).incPaging();
+		Mockito.verify(personService, Mockito.times(1)).persons(model.getSearchCriteriaPerson(), model.getSearchCriteriaAddress(), model.getSearchCriteriaContact(), model.getSearchCriteriaDistance(), model.getPaging());
+	}
+	
+	@Test
+	public final void decPaging() {
+		final PersonSearchModel model = Mockito.mock(PersonSearchModel.class);
+		
+		personSearchController.decPaging(model);
+		
+		Mockito.verify(model).decPaging();
+		Mockito.verify(personService, Mockito.times(1)).persons(model.getSearchCriteriaPerson(), model.getSearchCriteriaAddress(), model.getSearchCriteriaContact(), model.getSearchCriteriaDistance(), model.getPaging());
+	}
+	
+	@Test
+	public  final void endPaging() {
+		final PersonSearchModel model = Mockito.mock(PersonSearchModel.class);
+		
+		personSearchController.endPaging(model);
+		
+		Mockito.verify(model).endPaging();
+		Mockito.verify(personService, Mockito.times(1)).persons(model.getSearchCriteriaPerson(), model.getSearchCriteriaAddress(), model.getSearchCriteriaContact(), model.getSearchCriteriaDistance(), model.getPaging());
+	}
+	
+	@Test
+	public  final void beginPaging() {
+		final PersonSearchModel model = Mockito.mock(PersonSearchModel.class);
+		
+		personSearchController.beginPaging(model);
+		
+		Mockito.verify(model).beginPaging();
+		Mockito.verify(personService, Mockito.times(1)).persons(model.getSearchCriteriaPerson(), model.getSearchCriteriaAddress(), model.getSearchCriteriaContact(), model.getSearchCriteriaDistance(), model.getPaging());
+	}
+
 
 }
