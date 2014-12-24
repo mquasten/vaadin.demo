@@ -17,7 +17,15 @@ import com.vaadin.ui.Label;
 public class PagerView extends HorizontalLayout{
 
 	
- private static final long serialVersionUID = 1L;
+ static final String FIRST_BUTTON_ICON = "arrow_out.png";
+
+ static final String BACK_BUTTON_ICON = "arrow_left.png";
+
+ static final String LAST_BUTTON_ICON = "arrow_in.png";
+
+ static final String NEXT_BUTTON_ICON = "arrow_right.png";
+
+ static final long serialVersionUID = 1L;
 	
  private final PersonSearchModel personSearchModel;
  private final PersonSearchController personSearchController;
@@ -31,13 +39,13 @@ public class PagerView extends HorizontalLayout{
  final  void init() {
 	 
 	 
-	 
+	
 	 final Button nextButton = new Button();
-	 nextButton.setIcon(new ThemeResource("arrow_right.png"));
+	 nextButton.setIcon(new ThemeResource(NEXT_BUTTON_ICON));
 	
 	 final Button nextEndButton = new Button();
 	 addComponent(nextButton);
-	 nextEndButton.setIcon(new ThemeResource("arrow_in.png"));
+	 nextEndButton.setIcon(new ThemeResource(LAST_BUTTON_ICON));
 	// nextEndButton.setStyleName(BaseTheme.BUTTON_LINK);
 	 addComponent(nextEndButton);
 	 final Label pageLabel = new Label();
@@ -45,10 +53,10 @@ public class PagerView extends HorizontalLayout{
 	 addComponent(pageLabel);
 	 setComponentAlignment(pageLabel, Alignment.MIDDLE_CENTER);
 	 final Button backButton = new Button();
-	 backButton.setIcon(new ThemeResource("arrow_left.png"));
+	 backButton.setIcon(new ThemeResource(BACK_BUTTON_ICON));
 	 addComponent(backButton);
 	 final Button backEndButton = new Button();
-	 backEndButton.setIcon(new ThemeResource("arrow_out.png"));
+	 backEndButton.setIcon(new ThemeResource(FIRST_BUTTON_ICON));
 	 addComponent(backEndButton);
 	 
 	 nextButton.setDisableOnClick(true);
