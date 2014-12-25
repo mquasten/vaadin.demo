@@ -14,7 +14,7 @@ import org.junit.runners.Suite.SuiteClasses;
 		PhoneValidatorTest.class, PersonFieldSetValidatorTest.class, ContactMapperTest.class,
 		ContactMapperTest.class, MapToPersonConverterTest.class, ValidatorQualifierTest.class,
 		ContactEditorViewTest.class, PersonEditViewTest.class , StringCollectionToContainerConverterTest.class, 
-		DistanceValidatorTest.class, MainMenuBarViewTest.class 
+		DistanceValidatorTest.class, MainMenuBarViewTest.class, PagerViewTest.class 
 })
 public class JUnitSuiteWeb {
 
