@@ -30,7 +30,7 @@ public class UserModelImpl  extends SubjectImpl<UserModel, UserModel.EventType> 
 	}
 
 
-	public final void setPageSize(Integer pageSize) {
+	public final void setPageSize(final Integer pageSize) {
 		this.pageSize = pageSize;
 	}
 

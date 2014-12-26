@@ -26,12 +26,10 @@ import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.event.ListenerMethod;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -141,7 +139,7 @@ public class PersonSearchViewTest {
 	@Test
 	public void init() {
 
-		Assert.assertEquals(11, components.size());
+		Assert.assertEquals(10, components.size());
 		Assert.assertEquals(Panel.class, components.get(SEARCH_PANEL_CAPTION).getClass());
 
 		Assert.assertEquals(Button.class, components.get(SEARCH_BUTTON_CAPTION).getClass());
@@ -149,7 +147,7 @@ public class PersonSearchViewTest {
 		Assert.assertEquals(Button.class, components.get(CHANGE_BUTTON_CAPTION).getClass());
 		Assert.assertEquals(Button.class, components.get(NEW_BUTTON_CAPTION).getClass());
 
-		Assert.assertEquals(ComboBox.class, components.get(LANGUAGE_BOX_CAPTION).getClass());
+	
 
 		Assert.assertEquals(TextField.class, components.get(SEARCH_FIELD_CONTACT_CAPTION).getClass());
 		Assert.assertEquals(TextField.class, components.get(SEARCH_FIELD_ADDRESS_CAPTION).getClass());
@@ -228,29 +226,6 @@ public class PersonSearchViewTest {
 
 	}
 
-	@SuppressWarnings("unchecked")
-	@Test
-	public final void commitBinder() {
-		final ValueChangeEvent valueChangeEvent = Mockito.mock(ValueChangeEvent.class);
-		final ComboBox comboBox = (ComboBox) components.get(LANGUAGE_BOX_CAPTION);
-
-		for (final ValueChangeListener listener : (Collection<ValueChangeListener>) comboBox.getListeners(ValueChangeEvent.class)) {
-			listener.valueChange(valueChangeEvent);
-		}
-
-		Mockito.verify(userModel, Mockito.times(1)).setLocale(Locale.GERMAN);
-	}
-
-	@Test(expected = IllegalStateException.class)
-	public final void commitBinderSucks() throws Throwable {
-		final ComboBox comboBox = (ComboBox) components.get(LANGUAGE_BOX_CAPTION);
-		Mockito.doThrow(new IllegalStateException()).when(userModel).setLocale(Matchers.any(Locale.class));
-		try {
-			comboBox.setValue(Locale.ENGLISH);
-		} catch (ListenerMethod.MethodException ex) {
-			throw ex.getCause();
-		}
-	}
 
 	@Test
 	public final void neu() {

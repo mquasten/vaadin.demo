@@ -59,8 +59,9 @@ public class MainMenuBarViewTest {
 		Mockito.when(messageSource.getMessage(MainMenuBarView.I18N_MENU_ADDRESS, null, Locale.GERMAN)).thenReturn(MainMenuBarView.I18N_MENU_ADDRESS);
 		Mockito.when(messageSource.getMessage(MainMenuBarView.I18N_MENU_USER, null, Locale.GERMAN)).thenReturn(MainMenuBarView.I18N_MENU_USER);
 		Mockito.when(messageSource.getMessage(MainMenuBarView.I18N_MENU_USER, null,  Locale.GERMAN)).thenReturn(MainMenuBarView.I18N_MENU_USER);
-		Mockito.when(messageSource.getMessage(MainMenuBarView.I18N_Page_SIZE_BOX, null,  Locale.GERMAN)).thenReturn(MainMenuBarView.I18N_Page_SIZE_BOX);
-		Mockito.when(messageSource.getMessage(MainMenuBarView.I18N_Page_SIZE_SAVE, null,  Locale.GERMAN)).thenReturn(MainMenuBarView.I18N_Page_SIZE_SAVE);
+		Mockito.when(messageSource.getMessage(MainMenuBarView.I18N_PAGE_SIZE_BOX, null,  Locale.GERMAN)).thenReturn(MainMenuBarView.I18N_PAGE_SIZE_BOX);
+		Mockito.when(messageSource.getMessage(MainMenuBarView.I18N_PAGE_SIZE_SAVE, null,  Locale.GERMAN)).thenReturn(MainMenuBarView.I18N_PAGE_SIZE_SAVE);
+		Mockito.when(messageSource.getMessage(MainMenuBarView.I18N_LANGUAGE_BOX, null,  Locale.GERMAN)).thenReturn(MainMenuBarView.I18N_LANGUAGE_BOX);
 		
 		Mockito.doAnswer(invocation -> {
 			observers.put((EventType) invocation.getArguments()[1], (Observer<EventType>) invocation.getArguments()[0]);
@@ -97,6 +98,11 @@ public class MainMenuBarViewTest {
 		Collection<Integer> pageSizes = new ArrayList<>();
 		pageSizes.add(userModel.getPageSize());
 		Mockito.when(userModel.getPageSizes()).thenReturn(pageSizes);
+		final Collection<Locale> locales = new ArrayList<>();
+		locales.add(Locale.GERMAN);
+		locales.add(Locale.ENGLISH);
+		Mockito.when(userModel.getSupportedLocales()).thenReturn(locales);
+		
 		mainMenuBarView.init();
 		observers.get(EventType.LocaleChanges).process(EventType.LocaleChanges);
 		ComponentTestHelper.components(mainMenuBarView, components);
@@ -117,12 +123,22 @@ public class MainMenuBarViewTest {
 		final Map<String, Component> components = new HashMap<>(); 
 		ComponentTestHelper.components(window, components);
 		
-		final ComboBox box = (ComboBox) components.get(MainMenuBarView.I18N_Page_SIZE_BOX);
+		final ComboBox box = (ComboBox) components.get(MainMenuBarView.I18N_PAGE_SIZE_BOX);
 		Assert.assertEquals(userModel.getPageSize(), box.getValue());
 		Assert.assertEquals(1, box.getItemIds().size());
 		Assert.assertEquals(pageSizes.iterator().next(),  box.getItemIds().iterator().next());
 		
-		final Button button = (Button) components.get(MainMenuBarView.I18N_Page_SIZE_SAVE);
+		
+		final ComboBox languageBox = (ComboBox) components.get(MainMenuBarView.I18N_LANGUAGE_BOX);
+		Assert.assertEquals(Locale.GERMAN,languageBox.getValue());
+		
+		locales.forEach(locale -> Assert.assertEquals(locale.getDisplayLanguage(), languageBox.getItemCaption(locale)));
+	
+		
+		Assert.assertEquals(locales, languageBox.getItemIds());
+		
+		
+		final Button button = (Button) components.get(MainMenuBarView.I18N_PAGE_SIZE_SAVE);
 		
 		@SuppressWarnings("unchecked")
 		final Collection<ClickListener> listeners = (Collection<ClickListener>) button.getListeners(ClickEvent.class);
@@ -133,6 +149,9 @@ public class MainMenuBarViewTest {
 		Mockito.verify(personSearchController, Mockito.times(1)).assignPersons(personSearchModel, userModel.getPageSize() );
 		
 		Mockito.when(userModel.getPageSize()).thenReturn(5);
+		
+		
+		
 		
 		Mockito.doThrow(new IllegalArgumentException("Don't worry only for test")).when(personSearchController).assignPersons(personSearchModel, 5);
 		listeners.iterator().next().buttonClick(event);

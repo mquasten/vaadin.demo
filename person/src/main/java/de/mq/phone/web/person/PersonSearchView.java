@@ -2,7 +2,6 @@ package de.mq.phone.web.person;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 
@@ -19,7 +18,6 @@ import com.vaadin.data.Item;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.navigator.View;
@@ -27,7 +25,6 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
@@ -203,26 +200,7 @@ class PersonSearchView extends CustomComponent implements View {
 		boxLayout.setMargin(true);
 		boxLayout.setSpacing(true);
 		tableLayout.setSpacing(true);
-		final FormLayout languageLaylout = new FormLayout();
-		final ComboBox languageBox = new ComboBox();
-		languageLaylout.addComponent(languageBox);
-		languageBox.setNullSelectionAllowed(false);
-
-		
-		languageBox.setNewItemsAllowed(false);
-
-		languageBox.setContainerDataSource(new BeanItemContainer<Locale>(Locale.class, userModel.getSupportedLocales()));
-
-		languageBox.setImmediate(true);
-
-		boxLayout.addComponent(languageLaylout);
-		
 		gridLayout.addComponent(boxLayout);
- 
-		
-		languageBinder.bind(languageBox, "locale");
-
-		languageBox.addValueChangeListener(event -> commitBinder(languageBinder));
 
 		pagerView.setSpacing(true);
 		gridLayout.addComponent(pagerView);	
@@ -270,15 +248,12 @@ class PersonSearchView extends CustomComponent implements View {
 			tablePanel.setCaption(getString(I18N_CONTACT_TABLE_PANEL_CAPTION));
 			newButton.setCaption(getString(I18N_NEW_BUTTON_CAPTION));
 			updateButton.setCaption(getString(I18N_CHANGE_BUTTON_CAPTION));
-
-			languageBox.setCaption(getString(I18N_LANGUAGE_COMBOBOX_CAPTION));
 			table.setCaption(getString(I18N_CONTACT_TABLE_CAPTION));
 			table.setColumnHeader(PERSON, getString("table_person"));
 			table.setColumnHeader(ADDRESS, getString("table_address"));
 			table.setColumnHeader(BANKING_ACCOUNT, getString("table_bank"));
 			table.setColumnHeader(CONTACTS, getString("table_contacts"));
 			table.setColumnHeader(COORDINATES, getString("table_coordinates"));
-			languageBox.getItemIds().forEach(itemId -> languageBox.setItemCaption(itemId, ((Locale) itemId).getDisplayLanguage(userModel.getLocale())));
 
 			distanceField.setCaption(getString(I18N_SEARCH_DISTANCE_FIELD_CAPTION));
 			mainLayoout.removeAllComponents();
