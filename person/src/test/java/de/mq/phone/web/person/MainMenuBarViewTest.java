@@ -97,6 +97,7 @@ public class MainMenuBarViewTest {
 		Mockito.when(userModel.getPageSize()).thenReturn(10);
 		Collection<Integer> pageSizes = new ArrayList<>();
 		pageSizes.add(userModel.getPageSize());
+		pageSizes.add(2*userModel.getPageSize());
 		Mockito.when(userModel.getPageSizes()).thenReturn(pageSizes);
 		final Collection<Locale> locales = new ArrayList<>();
 		locales.add(Locale.GERMAN);
@@ -125,15 +126,16 @@ public class MainMenuBarViewTest {
 		
 		final ComboBox box = (ComboBox) components.get(MainMenuBarView.I18N_PAGE_SIZE_BOX);
 		Assert.assertEquals(userModel.getPageSize(), box.getValue());
-		Assert.assertEquals(1, box.getItemIds().size());
-		Assert.assertEquals(pageSizes.iterator().next(),  box.getItemIds().iterator().next());
+		Assert.assertEquals(2, box.getItemIds().size());
+		Assert.assertEquals(pageSizes,  box.getItemIds());
 		
 		
 		final ComboBox languageBox = (ComboBox) components.get(MainMenuBarView.I18N_LANGUAGE_BOX);
 		Assert.assertEquals(Locale.GERMAN,languageBox.getValue());
 		
 		locales.forEach(locale -> Assert.assertEquals(locale.getDisplayLanguage(), languageBox.getItemCaption(locale)));
-	
+
+		Mockito.when(userModel.pageSizeChanged(userModel.getPageSize())).thenReturn(true);
 		
 		Assert.assertEquals(locales, languageBox.getItemIds());
 		
@@ -153,8 +155,14 @@ public class MainMenuBarViewTest {
 		
 		
 		
+		Mockito.when(userModel.pageSizeChanged(Mockito.anyInt())).thenReturn(true);
 		Mockito.doThrow(new IllegalArgumentException("Don't worry only for test")).when(personSearchController).assignPersons(personSearchModel, 5);
 		listeners.iterator().next().buttonClick(event);
+		
+		Mockito.reset(personSearchController);
+		Mockito.when(userModel.pageSizeChanged(Mockito.anyInt())).thenReturn(false);
+		listeners.iterator().next().buttonClick(event);
+		Mockito.verify(personSearchController, Mockito.times(0)).assignPersons(Mockito.any(PersonSearchModel.class), Mockito.anyInt());
 	}
 
 }

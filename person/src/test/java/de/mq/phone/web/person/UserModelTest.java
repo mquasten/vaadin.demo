@@ -57,5 +57,11 @@ public class UserModelTest {
 		Assert.assertTrue(userModel.getPageSizes().size() > 1 ) ; 
 		Assert.assertTrue(userModel.getPageSizes().contains(UserModelImpl.DEFAULT_PAGE_SIZE));
 	}
+	
+	@Test
+	public final void pageModelChanged() {
+		Assert.assertFalse(userModel.pageSizeChanged(userModel.getPageSize()));
+		Assert.assertTrue(userModel.pageSizeChanged(2*userModel.getPageSize()));
+	}
 
 }

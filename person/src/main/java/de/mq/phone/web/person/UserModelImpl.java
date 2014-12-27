@@ -70,5 +70,12 @@ public class UserModelImpl  extends SubjectImpl<UserModel, UserModel.EventType> 
 	 pageSize.add(100);
     return Collections.unmodifiableCollection(pageSize);
 	}
+	
+	@Override
+	public boolean pageSizeChanged(final int pageSize) {
+		return this.pageSize  != pageSize;
+		
+		
+	}
 
 }

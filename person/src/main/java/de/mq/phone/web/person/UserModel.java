@@ -22,6 +22,8 @@ public interface UserModel extends Subject<UserModel, UserModel.EventType> {
 	Integer getPageSize();
 	
 	Collection<Integer> getPageSizes();
+
+	boolean pageSizeChanged(final int pageSize);
 	
 
 	

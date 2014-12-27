@@ -111,12 +111,17 @@ public class MainMenuBarView extends CustomComponent {
 		dialog.center();
 		okButton.addClickListener(event -> {
 			try {
+				
+				final Number pagesize = userModel.getPageSize();
 				binder.commit();
 				dialog.close();
-				personSearchController.assignPersons(personSearchModel, userModel.getPageSize());
+				if( userModel.pageSizeChanged(pagesize.intValue())) {
+					personSearchController.assignPersons(personSearchModel, userModel.getPageSize());
+				}
+				
 
 			} catch (final Exception e) {
-
+				
 			}
 		});
 

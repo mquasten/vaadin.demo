@@ -11,7 +11,7 @@ import de.mq.phone.domain.person.GeoCoordinates;
 
 interface PersonSearchController {
 
-	void assignPersons(PersonSearchModel model, final int pageSize);
+	void assignPersons(final PersonSearchModel model, final int pageSize);
 
 	void assignGeoKoordinates(final PersonSearchModel model);
 
@@ -26,6 +26,5 @@ interface PersonSearchController {
 	void endPaging(final PersonSearchModel model);
 	void decPaging(final PersonSearchModel model) ;
 	void beginPaging(final PersonSearchModel model); 
-
 
 }
