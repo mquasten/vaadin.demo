@@ -20,6 +20,7 @@ class AddressImpl implements Address {
 	
 	private final String houseNumber;
 	
+	
 	private GeoCoordinates geoCoordinates;
 	
 	@SuppressWarnings("unused")
