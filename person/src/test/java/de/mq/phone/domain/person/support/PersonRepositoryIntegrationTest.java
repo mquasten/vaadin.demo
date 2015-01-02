@@ -25,6 +25,7 @@ import de.mq.phone.domain.person.Person;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"/mongo-test.xml"})
+@Ignore
 public class PersonRepositoryIntegrationTest {
 	
 	@Autowired
