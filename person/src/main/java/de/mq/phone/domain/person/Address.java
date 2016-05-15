@@ -18,5 +18,6 @@ public interface Address extends AddressStringAware {
 
 	boolean hasGeoCoordinates();
 
+	
 
 }
